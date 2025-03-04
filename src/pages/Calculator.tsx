@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { AlertCircle, Calculator, Download } from 'lucide-react';
+import { AlertCircle, Calculator as CalculatorIcon, Download } from 'lucide-react';
 
 const CalculatorTab = () => {
   const [salary, setSalary] = useState<number>(0);
@@ -59,7 +59,7 @@ const CalculatorTab = () => {
   
   return (
     <div className="animate-fade-up space-y-8">
-      <Card className="glass-panel">
+      <Card>
         <CardHeader>
           <CardTitle>Income Details</CardTitle>
           <CardDescription>Enter your annual income from different sources</CardDescription>
@@ -130,14 +130,14 @@ const CalculatorTab = () => {
         </CardContent>
         <CardFooter>
           <Button onClick={calculateTax} className="button-shine">
-            <Calculator className="mr-2 h-4 w-4" />
+            <CalculatorIcon className="mr-2 h-4 w-4" />
             Calculate Tax
           </Button>
         </CardFooter>
       </Card>
       
       {calculatedTax !== null && (
-        <Card className="glass-panel">
+        <Card>
           <CardHeader>
             <CardTitle>Tax Calculation Results</CardTitle>
             <CardDescription>Based on the income details you provided</CardDescription>
@@ -196,7 +196,7 @@ const CalculatorTab = () => {
 
 const WHTab = () => (
   <div className="animate-fade-up">
-    <Card className="glass-panel">
+    <Card>
       <CardHeader>
         <CardTitle>Withholding Tax Calculator</CardTitle>
         <CardDescription>Calculate withholding tax for different transactions</CardDescription>
@@ -251,7 +251,7 @@ const WHTab = () => (
         </div>
         
         <Button className="w-full button-shine">
-          <Calculator className="mr-2 h-4 w-4" />
+          <CalculatorIcon className="mr-2 h-4 w-4" />
           Calculate Withholding Tax
         </Button>
       </CardContent>
@@ -259,7 +259,7 @@ const WHTab = () => (
   </div>
 );
 
-const Calculator = () => {
+const CalculatorPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -301,4 +301,4 @@ const Calculator = () => {
   );
 };
 
-export default Calculator;
+export default CalculatorPage;
