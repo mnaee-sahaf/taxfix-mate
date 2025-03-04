@@ -1,5 +1,6 @@
 
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,8 @@ import { Progress } from '@/components/ui/progress';
 import { FileText, Upload, Bell, CreditCard, ArrowRight, Calendar, ChevronRight } from 'lucide-react';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -66,7 +69,7 @@ const Dashboard = () => {
             </CardContent>
             <CardFooter className="flex justify-between">
               <Button variant="outline">Save & Exit</Button>
-              <Button>Continue Filing</Button>
+              <Button onClick={() => navigate('/filing')}>Continue Filing</Button>
             </CardFooter>
           </Card>
           
