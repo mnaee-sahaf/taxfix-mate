@@ -26,14 +26,18 @@ const CTASection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="rounded-full group button-shine">
-              <span>Get Started</span>
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Button>
+            <Link to="/filing">
+              <Button size="lg" className="rounded-full group button-shine">
+                <span>Get Started</span>
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
             
-            <Button size="lg" variant="outline" className="rounded-full">
-              <Link to="/calculator">Try Tax Calculator</Link>
-            </Button>
+            <Link to="/calculator">
+              <Button size="lg" variant="outline" className="rounded-full">
+                Try Tax Calculator
+              </Button>
+            </Link>
           </div>
           
           <div className="mt-8 text-sm text-muted-foreground">
