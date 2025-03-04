@@ -1,124 +1,115 @@
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
+import { MenuIcon, X } from 'lucide-react';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { currentLanguage, setLanguage, translations } = useLanguage();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
-  const toggleLanguage = () => {
-    setLanguage(currentLanguage === 'en' ? 'ur' : 'en');
-  };
-  
-  const t = translations.navbar;
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Dashboard', path: '/dashboard' },
+    { name: 'Tax Calculator', path: '/calculator' },
+    { name: 'Profile', path: '/profile' },
+  ];
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-background/80 backdrop-blur-md shadow-sm py-2' : 'bg-transparent py-4'
-    }`}>
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <div className={`font-bold text-xl ${isScrolled ? 'text-foreground' : 'text-white'}`}>
-              TaxFix
-            </div>
-          </Link>
-          
-          {/* Desktop menu */}
-          <div className="hidden md:flex items-center space-x-6">
-            <Link to="/calculator" className={`hover:text-primary transition ${isScrolled ? 'text-foreground' : 'text-white'}`}>
-              {t.calculator}
-            </Link>
-            <Link to="/filing" className={`hover:text-primary transition ${isScrolled ? 'text-foreground' : 'text-white'}`}>
-              {t.taxFiling}
-            </Link>
-            
-            {/* Language Switcher for Desktop */}
-            <Button 
-              onClick={toggleLanguage} 
-              variant="outline" 
-              size="sm" 
-              className={`border ${isScrolled ? 'border-input' : 'border-white/30 text-white'}`}
-            >
-              {currentLanguage === 'en' ? 'اردو' : 'English'}
-            </Button>
-            
-            <Link to="/dashboard">
-              <Button size="sm">{t.login}</Button>
-            </Link>
+    <header
+      className={cn(
+        'fixed w-full top-0 z-50 transition-all duration-300',
+        isScrolled
+          ? 'bg-white/80 dark:bg-black/80 backdrop-blur-lg shadow-sm py-3'
+          : 'bg-transparent py-5'
+      )}
+    >
+      <div className="container mx-auto px-4 flex justify-between items-center">
+        <Link to="/" className="flex items-center gap-2">
+          <div className="font-bold text-xl">
+            <span>Tax</span>
+            <span className="text-primary">Fix</span>
           </div>
-          
-          {/* Mobile menu button */}
-          <div className="flex items-center md:hidden space-x-4">
-            {/* Language Switcher for Mobile */}
-            <Button 
-              onClick={toggleLanguage} 
-              variant="outline" 
-              size="sm" 
-              className={`border ${isScrolled ? 'border-input' : 'border-white/30 text-white'}`}
+        </Link>
+
+        <nav className="hidden md:flex items-center space-x-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              className={cn(
+                'px-4 py-2 rounded-md text-sm font-medium transition-all duration-200',
+                isActive(link.path)
+                  ? 'text-primary bg-primary/10'
+                  : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5'
+              )}
             >
-              {currentLanguage === 'en' ? 'اردو' : 'English'}
-            </Button>
-            
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={toggleMenu}
-              className={isScrolled ? 'text-foreground' : 'text-white'}
-            >
-              {isMenuOpen ? <X /> : <Menu />}
-            </Button>
+              {link.name}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="hidden md:flex items-center gap-4">
+          <Button variant="outline" className="rounded-full">
+            Login
+          </Button>
+          <Button className="rounded-full button-shine">Sign Up</Button>
+        </div>
+
+        <button
+          className="md:hidden text-foreground"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          {mobileMenuOpen ? <X size={24} /> : <MenuIcon size={24} />}
+        </button>
+      </div>
+
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 glass-panel animate-fade-down">
+          <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={cn(
+                  'px-4 py-3 rounded-md text-sm font-medium',
+                  isActive(link.path)
+                    ? 'text-primary bg-primary/10'
+                    : 'text-foreground/80 hover:text-foreground hover:bg-foreground/5'
+                )}
+              >
+                {link.name}
+              </Link>
+            ))}
+            <div className="flex flex-col gap-2 pt-2 border-t border-border">
+              <Button variant="outline" className="w-full">
+                Login
+              </Button>
+              <Button className="w-full">Sign Up</Button>
+            </div>
           </div>
         </div>
-        
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="md:hidden pt-4 pb-2">
-            <div className="flex flex-col space-y-3">
-              <Link 
-                to="/calculator" 
-                className="px-2 py-1 hover:bg-muted rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t.calculator}
-              </Link>
-              <Link 
-                to="/filing" 
-                className="px-2 py-1 hover:bg-muted rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t.taxFiling}
-              </Link>
-              <Link 
-                to="/dashboard" 
-                className="px-2 py-1 hover:bg-muted rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t.login}
-              </Link>
-            </div>
-          </div>
-        )}
-      </div>
-    </nav>
+      )}
+    </header>
   );
 };
 
