@@ -8,31 +8,43 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ArrowRight, Save, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Check, Info } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Define the steps in the filing process
+// Define the steps in the filing process based on the comprehensive questionnaire
 const STEPS = [
   {
-    id: 'personal',
-    title: 'Personal Information',
-    description: 'Verify your personal details',
+    id: 'identification',
+    title: 'User Identification',
+    description: 'Verify your identity and taxpayer category',
+  },
+  {
+    id: 'residency',
+    title: 'Residency Status',
+    description: 'Determine your tax residency status',
   },
   {
     id: 'income',
     title: 'Income Sources',
-    description: 'Enter your income from various sources',
+    description: 'Enter all your income streams',
   },
   {
     id: 'deductions',
-    title: 'Tax Deductions',
-    description: 'Claim eligible deductions',
+    title: 'Deductions & Credits',
+    description: 'Claim eligible tax deductions and credits',
   },
   {
-    id: 'investments',
-    title: 'Investments',
-    description: 'Enter your investment details',
+    id: 'assets',
+    title: 'Assets & Liabilities',
+    description: 'Disclose your financial assets and liabilities',
+  },
+  {
+    id: 'withholding',
+    title: 'Withholding Taxes',
+    description: 'Record any taxes already withheld',
   },
   {
     id: 'review',
@@ -45,32 +57,84 @@ const TaxFiling = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [savedProgress, setSavedProgress] = useState(true);
   const [formData, setFormData] = useState({
-    // Personal details
-    fullName: 'Ahmed Khan',
-    cnic: '34201-1234567-1',
-    dob: '1985-04-15',
-    address: '123 Defense Housing Authority, Karachi',
-    phone: '+92 300 1234567',
-    email: 'ahmed.khan@example.com',
-    filingStatus: 'single',
+    // User Identification
+    cnic: '3420112345671',
+    firstTimeFiler: false,
+    taxpayerCategory: 'salaried-high',
     
-    // Income sources
-    salariedIncome: 1200000,
+    // Residency Status
+    residencyDays: 200,
+    governmentEmployee: false,
+    residencyStatus: 'resident',
+    
+    // Income Sources
+    incomeStreams: {
+      salary: true,
+      business: false,
+      rental: true,
+      agricultural: false,
+      capitalGains: true,
+      foreign: false
+    },
+    employerWithholdingTax: true,
+    taxExemptAllowances: {
+      conveyance: true,
+      medical: true,
+      houseRent: true
+    },
+    
+    // Income Values
+    salaryIncome: 1200000,
     businessIncome: 0,
     rentalIncome: 350000,
-    otherIncome: 100000,
+    agriculturalIncome: 0,
+    capitalGainsIncome: 150000,
+    foreignIncome: 0,
     
-    // Deductions
-    charityDonations: 50000,
-    educationExpenses: 120000,
-    healthInsurance: 60000,
-    retirement: 80000,
+    // Deductions & Credits
+    eligibleDeductions: {
+      lifeInsurance: true,
+      pension: true,
+      donations: true,
+      education: true
+    },
+    specialTaxCredits: {
+      firstTimeFiler: false,
+      itSector: false,
+      exportIndustry: false
+    },
     
-    // Investments
-    stocks: 250000,
-    mutualFunds: 300000,
-    governmentBonds: 150000,
-    realEstate: 5000000,
+    // Deduction Values
+    lifeInsuranceAmount: 50000,
+    pensionAmount: 120000,
+    donationAmount: 80000,
+    educationAmount: 150000,
+    
+    // Assets & Liabilities
+    bankAccounts: [
+      {
+        accountNumber: 'PK36SCBL0000001123456702',
+        bankName: 'Standard Chartered Bank',
+        currentBalance: 450000
+      }
+    ],
+    immovableProperty: {
+      residential: true,
+      commercial: false,
+      agricultural: false
+    },
+    
+    // Withholding Tax
+    withholdingTaxes: {
+      mobileBills: true,
+      vehicleRegistration: true,
+      electricityBills: false,
+      contractPayments: false
+    },
+    
+    // Declarations
+    penaltyUnderstanding: false,
+    paymentMethod: 'bank-transfer'
   });
   
   const { toast } = useToast();
@@ -80,10 +144,22 @@ const TaxFiling = () => {
     window.scrollTo(0, 0);
   }, [currentStep]);
   
-  const handleInputChange = (name: string, value: string | number) => {
+  const handleInputChange = (name: string, value: string | number | boolean) => {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+    setSavedProgress(false);
+  };
+  
+  // Handle nested object changes
+  const handleNestedChange = (category: string, field: string, value: boolean | string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      [category]: {
+        ...prev[category as keyof typeof prev] as any,
+        [field]: value
+      }
     }));
     setSavedProgress(false);
   };
@@ -127,83 +203,133 @@ const TaxFiling = () => {
   // Render current step content
   const renderStepContent = () => {
     switch (STEPS[currentStep].id) {
-      case 'personal':
+      case 'identification':
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name (as per CNIC)</Label>
-                <Input 
-                  id="fullName" 
-                  value={formData.fullName} 
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="cnic">CNIC Number</Label>
+                <Label htmlFor="cnic" className="text-base">Provide your 13-digit Computerized National Identity Card (CNIC) number</Label>
+                <p className="text-sm text-muted-foreground">Enter without hyphens. This is mandatory for FBR registration.</p>
                 <Input 
                   id="cnic" 
                   value={formData.cnic} 
                   onChange={(e) => handleInputChange('cnic', e.target.value)}
+                  placeholder="3420112345671"
+                  maxLength={13}
                 />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="dob">Date of Birth</Label>
-                <Input 
-                  id="dob" 
-                  type="date" 
-                  value={formData.dob} 
-                  onChange={(e) => handleInputChange('dob', e.target.value)}
-                />
+              <div className="space-y-2 pt-4">
+                <Label className="text-base">Is this your first time filing taxes through digital channels?</Label>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Switch 
+                    id="firstTimeFiler" 
+                    checked={formData.firstTimeFiler}
+                    onCheckedChange={(checked) => handleInputChange('firstTimeFiler', checked)}
+                  />
+                  <Label htmlFor="firstTimeFiler" className="cursor-pointer">
+                    {formData.firstTimeFiler ? 'Yes (you will receive guided onboarding)' : 'No'}
+                  </Label>
+                </div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="filingStatus">Filing Status</Label>
+              <div className="space-y-2 pt-4">
+                <Label htmlFor="taxpayerCategory" className="text-base">Select your taxpayer category:</Label>
                 <Select 
-                  value={formData.filingStatus} 
-                  onValueChange={(value) => handleInputChange('filingStatus', value)}
+                  value={formData.taxpayerCategory} 
+                  onValueChange={(value) => handleInputChange('taxpayerCategory', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select filing status" />
+                    <SelectValue placeholder="Select your taxpayer category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="single">Single</SelectItem>
-                    <SelectItem value="married">Married</SelectItem>
-                    <SelectItem value="widow">Widow/Widower</SelectItem>
+                    <SelectItem value="salaried-low">Salaried Individual (Basic Salary ≤ Rs. 100k)</SelectItem>
+                    <SelectItem value="salaried-high">Salaried Individual (Basic Salary > Rs. 100k)</SelectItem>
+                    <SelectItem value="business">Business Owner/Professional</SelectItem>
+                    <SelectItem value="aop">Association of Persons (AOP)</SelectItem>
+                    <SelectItem value="non-resident">Non-Resident Pakistani</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="address">Residential Address</Label>
-              <Input 
-                id="address" 
-                value={formData.address} 
-                onChange={(e) => handleInputChange('address', e.target.value)}
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          </div>
+        );
+      
+      case 'residency':
+        return (
+          <div className="space-y-6">
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="residencyDays" className="text-base">How many days did you physically reside in Pakistan during this tax year?</Label>
                 <Input 
-                  id="phone" 
-                  value={formData.phone} 
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  id="residencyDays" 
+                  type="number" 
+                  value={formData.residencyDays.toString()} 
+                  onChange={(e) => {
+                    const days = Number(e.target.value);
+                    let status = '';
+                    
+                    if (days < 120) status = 'non-resident';
+                    else if (days < 183) status = 'conditional';
+                    else status = 'resident';
+                    
+                    handleInputChange('residencyDays', days);
+                    handleInputChange('residencyStatus', status);
+                  }}
+                  min="0"
+                  max="366"
                 />
+                <div className="px-3 py-2 bg-secondary/40 rounded mt-2 text-sm">
+                  <div className="flex items-start gap-2">
+                    <Info className="h-4 w-4 mt-0.5 text-primary" />
+                    <span>
+                      {formData.residencyDays < 120 ? 
+                        "You are considered a Non-Resident for tax purposes." : 
+                        formData.residencyDays < 183 ? 
+                        "You are considered a Conditional Resident for tax purposes." : 
+                        "You are considered a Resident for tax purposes."}
+                    </span>
+                  </div>
+                </div>
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  value={formData.email} 
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                />
+              <div className="space-y-2 pt-4">
+                <Label className="text-base">Have you been a government employee posted abroad this tax year?</Label>
+                <p className="text-sm text-muted-foreground">If yes, you are automatically classified as a resident per FBR rules.</p>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Switch 
+                    id="governmentEmployee" 
+                    checked={formData.governmentEmployee}
+                    onCheckedChange={(checked) => {
+                      handleInputChange('governmentEmployee', checked);
+                      if (checked) {
+                        handleInputChange('residencyStatus', 'resident');
+                      } else {
+                        // Recalculate based on days
+                        const days = formData.residencyDays;
+                        let status = '';
+                        
+                        if (days < 120) status = 'non-resident';
+                        else if (days < 183) status = 'conditional';
+                        else status = 'resident';
+                        
+                        handleInputChange('residencyStatus', status);
+                      }
+                    }}
+                  />
+                  <Label htmlFor="governmentEmployee" className="cursor-pointer">
+                    {formData.governmentEmployee ? 'Yes' : 'No'}
+                  </Label>
+                </div>
+                
+                {formData.governmentEmployee && (
+                  <div className="px-3 py-2 bg-green-100 dark:bg-green-900/20 rounded mt-2 text-sm">
+                    <div className="flex items-start gap-2">
+                      <Check className="h-4 w-4 mt-0.5 text-green-600 dark:text-green-400" />
+                      <span>You are automatically classified as a resident for tax purposes.</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -213,58 +339,225 @@ const TaxFiling = () => {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="salariedIncome">Salaried Income (Annual in PKR)</Label>
-              <Input 
-                id="salariedIncome" 
-                type="number" 
-                value={formData.salariedIncome.toString()} 
-                onChange={(e) => handleInputChange('salariedIncome', Number(e.target.value))}
-              />
+              <Label className="text-base">Select all applicable income sources:</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="salary" 
+                    checked={formData.incomeStreams.salary}
+                    onCheckedChange={(checked) => handleNestedChange('incomeStreams', 'salary', checked)}
+                  />
+                  <Label htmlFor="salary" className="cursor-pointer">Salary/Wages</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="business" 
+                    checked={formData.incomeStreams.business}
+                    onCheckedChange={(checked) => handleNestedChange('incomeStreams', 'business', checked)}
+                  />
+                  <Label htmlFor="business" className="cursor-pointer">Business Income</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="rental" 
+                    checked={formData.incomeStreams.rental}
+                    onCheckedChange={(checked) => handleNestedChange('incomeStreams', 'rental', checked)}
+                  />
+                  <Label htmlFor="rental" className="cursor-pointer">Rental Income</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="agricultural" 
+                    checked={formData.incomeStreams.agricultural}
+                    onCheckedChange={(checked) => handleNestedChange('incomeStreams', 'agricultural', checked)}
+                  />
+                  <Label htmlFor="agricultural" className="cursor-pointer">Agricultural Income</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="capitalGains" 
+                    checked={formData.incomeStreams.capitalGains}
+                    onCheckedChange={(checked) => handleNestedChange('incomeStreams', 'capitalGains', checked)}
+                  />
+                  <Label htmlFor="capitalGains" className="cursor-pointer">Capital Gains</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="foreign" 
+                    checked={formData.incomeStreams.foreign}
+                    onCheckedChange={(checked) => handleNestedChange('incomeStreams', 'foreign', checked)}
+                  />
+                  <Label htmlFor="foreign" className="cursor-pointer">Foreign Income</Label>
+                </div>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="businessIncome">Business Income (Annual in PKR)</Label>
-              <Input 
-                id="businessIncome" 
-                type="number" 
-                value={formData.businessIncome.toString()} 
-                onChange={(e) => handleInputChange('businessIncome', Number(e.target.value))}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="rentalIncome">Rental Income (Annual in PKR)</Label>
-              <Input 
-                id="rentalIncome" 
-                type="number" 
-                value={formData.rentalIncome.toString()} 
-                onChange={(e) => handleInputChange('rentalIncome', Number(e.target.value))}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="otherIncome">Other Income (Annual in PKR)</Label>
-              <Input 
-                id="otherIncome" 
-                type="number" 
-                value={formData.otherIncome.toString()} 
-                onChange={(e) => handleInputChange('otherIncome', Number(e.target.value))}
-              />
-            </div>
-            
-            <div className="p-4 bg-secondary/30 rounded-lg">
-              <h3 className="font-medium mb-2">Total Annual Income</h3>
-              <p className="text-2xl font-bold">
-                PKR {
-                  new Intl.NumberFormat('en-US').format(
-                    formData.salariedIncome + 
-                    formData.businessIncome + 
-                    formData.rentalIncome + 
-                    formData.otherIncome
-                  )
-                }
-              </p>
-            </div>
+            <Tabs defaultValue="income-values" className="w-full pt-4">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="income-values">Income Values</TabsTrigger>
+                <TabsTrigger value="income-details">Additional Details</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="income-values" className="space-y-4 pt-4">
+                {formData.incomeStreams.salary && (
+                  <div className="space-y-2">
+                    <Label htmlFor="salaryIncome">Salary/Wages Income (Annual in PKR)</Label>
+                    <Input 
+                      id="salaryIncome" 
+                      type="number" 
+                      value={formData.salaryIncome.toString()} 
+                      onChange={(e) => handleInputChange('salaryIncome', Number(e.target.value))}
+                    />
+                  </div>
+                )}
+                
+                {formData.incomeStreams.business && (
+                  <div className="space-y-2">
+                    <Label htmlFor="businessIncome">Business Income (Annual in PKR)</Label>
+                    <Input 
+                      id="businessIncome" 
+                      type="number" 
+                      value={formData.businessIncome.toString()} 
+                      onChange={(e) => handleInputChange('businessIncome', Number(e.target.value))}
+                    />
+                  </div>
+                )}
+                
+                {formData.incomeStreams.rental && (
+                  <div className="space-y-2">
+                    <Label htmlFor="rentalIncome">Rental Income (Annual in PKR)</Label>
+                    <Input 
+                      id="rentalIncome" 
+                      type="number" 
+                      value={formData.rentalIncome.toString()} 
+                      onChange={(e) => handleInputChange('rentalIncome', Number(e.target.value))}
+                    />
+                  </div>
+                )}
+                
+                {formData.incomeStreams.agricultural && (
+                  <div className="space-y-2">
+                    <Label htmlFor="agriculturalIncome">Agricultural Income (Annual in PKR)</Label>
+                    <Input 
+                      id="agriculturalIncome" 
+                      type="number" 
+                      value={formData.agriculturalIncome.toString()} 
+                      onChange={(e) => handleInputChange('agriculturalIncome', Number(e.target.value))}
+                    />
+                    <p className="text-xs text-muted-foreground">Note: Exempt up to Rs. 4.8M</p>
+                  </div>
+                )}
+                
+                {formData.incomeStreams.capitalGains && (
+                  <div className="space-y-2">
+                    <Label htmlFor="capitalGainsIncome">Capital Gains Income (Annual in PKR)</Label>
+                    <Input 
+                      id="capitalGainsIncome" 
+                      type="number" 
+                      value={formData.capitalGainsIncome.toString()} 
+                      onChange={(e) => handleInputChange('capitalGainsIncome', Number(e.target.value))}
+                    />
+                  </div>
+                )}
+                
+                {formData.incomeStreams.foreign && (
+                  <div className="space-y-2">
+                    <Label htmlFor="foreignIncome">Foreign Income (Annual in PKR)</Label>
+                    <Input 
+                      id="foreignIncome" 
+                      type="number" 
+                      value={formData.foreignIncome.toString()} 
+                      onChange={(e) => handleInputChange('foreignIncome', Number(e.target.value))}
+                    />
+                  </div>
+                )}
+                
+                <div className="p-4 bg-secondary/30 rounded-lg mt-4">
+                  <h3 className="font-medium mb-2">Total Annual Income</h3>
+                  <p className="text-2xl font-bold">
+                    PKR {
+                      new Intl.NumberFormat('en-US').format(
+                        (formData.incomeStreams.salary ? formData.salaryIncome : 0) + 
+                        (formData.incomeStreams.business ? formData.businessIncome : 0) + 
+                        (formData.incomeStreams.rental ? formData.rentalIncome : 0) + 
+                        (formData.incomeStreams.agricultural ? formData.agriculturalIncome : 0) + 
+                        (formData.incomeStreams.capitalGains ? formData.capitalGainsIncome : 0) + 
+                        (formData.incomeStreams.foreign ? formData.foreignIncome : 0)
+                      )
+                    }
+                  </p>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="income-details" className="space-y-4 pt-4">
+                {formData.incomeStreams.salary && (
+                  <>
+                    <div className="space-y-2">
+                      <Label className="text-base">Does your employer deduct withholding tax at source?</Label>
+                      <div className="flex items-center space-x-2 mt-2">
+                        <Switch 
+                          id="employerWithholdingTax" 
+                          checked={formData.employerWithholdingTax}
+                          onCheckedChange={(checked) => handleInputChange('employerWithholdingTax', checked)}
+                        />
+                        <Label htmlFor="employerWithholdingTax" className="cursor-pointer">
+                          {formData.employerWithholdingTax ? 'Yes (please provide monthly deduction certificates)' : 'No (we will calculate advance tax liability)'}
+                        </Label>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2 pt-4">
+                      <Label className="text-base">Select tax-exempt allowances you receive:</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                        <div className="flex items-center space-x-2">
+                          <Switch 
+                            id="conveyance" 
+                            checked={formData.taxExemptAllowances.conveyance}
+                            onCheckedChange={(checked) => handleNestedChange('taxExemptAllowances', 'conveyance', checked)}
+                          />
+                          <Label htmlFor="conveyance" className="cursor-pointer">Conveyance (up to Rs. 7,200/month exempt)</Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Switch 
+                            id="medical" 
+                            checked={formData.taxExemptAllowances.medical}
+                            onCheckedChange={(checked) => handleNestedChange('taxExemptAllowances', 'medical', checked)}
+                          />
+                          <Label htmlFor="medical" className="cursor-pointer">Medical (up to 10% of basic salary)</Label>
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          <Switch 
+                            id="houseRent" 
+                            checked={formData.taxExemptAllowances.houseRent}
+                            onCheckedChange={(checked) => handleNestedChange('taxExemptAllowances', 'houseRent', checked)}
+                          />
+                          <Label htmlFor="houseRent" className="cursor-pointer">House Rent (50% of basic salary exempt)</Label>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+                
+                {formData.incomeStreams.business && (
+                  <div className="px-4 py-3 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
+                    <p className="text-sm">For business income, please attach your audited P&L statement in the next step.</p>
+                  </div>
+                )}
+                
+                {formData.incomeStreams.rental && (
+                  <div className="px-4 py-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+                    <p className="text-sm">For rental income, you'll need to provide lease agreements in the next step.</p>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
         );
       
@@ -272,54 +565,138 @@ const TaxFiling = () => {
         return (
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="charityDonations">Charitable Donations (PKR)</Label>
-              <Input 
-                id="charityDonations" 
-                type="number" 
-                value={formData.charityDonations.toString()} 
-                onChange={(e) => handleInputChange('charityDonations', Number(e.target.value))}
-              />
+              <Label className="text-base">Select eligible deductions under Section 63:</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="lifeInsurance" 
+                    checked={formData.eligibleDeductions.lifeInsurance}
+                    onCheckedChange={(checked) => handleNestedChange('eligibleDeductions', 'lifeInsurance', checked)}
+                  />
+                  <Label htmlFor="lifeInsurance" className="cursor-pointer">Life Insurance Premiums (7% of insured value)</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="pension" 
+                    checked={formData.eligibleDeductions.pension}
+                    onCheckedChange={(checked) => handleNestedChange('eligibleDeductions', 'pension', checked)}
+                  />
+                  <Label htmlFor="pension" className="cursor-pointer">Voluntary Pension Schemes (up to Rs. 600k)</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="donations" 
+                    checked={formData.eligibleDeductions.donations}
+                    onCheckedChange={(checked) => handleNestedChange('eligibleDeductions', 'donations', checked)}
+                  />
+                  <Label htmlFor="donations" className="cursor-pointer">Charitable Donations (Zakat exempt)</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="education" 
+                    checked={formData.eligibleDeductions.education}
+                    onCheckedChange={(checked) => handleNestedChange('eligibleDeductions', 'education', checked)}
+                  />
+                  <Label htmlFor="education" className="cursor-pointer">Higher Education Expenses (children)</Label>
+                </div>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="educationExpenses">Education Expenses (PKR)</Label>
-              <Input 
-                id="educationExpenses" 
-                type="number" 
-                value={formData.educationExpenses.toString()} 
-                onChange={(e) => handleInputChange('educationExpenses', Number(e.target.value))}
-              />
+            <div className="space-y-4 pt-4">
+              {formData.eligibleDeductions.lifeInsurance && (
+                <div className="space-y-2">
+                  <Label htmlFor="lifeInsuranceAmount">Life Insurance Premium Amount (PKR)</Label>
+                  <Input 
+                    id="lifeInsuranceAmount" 
+                    type="number" 
+                    value={formData.lifeInsuranceAmount.toString()} 
+                    onChange={(e) => handleInputChange('lifeInsuranceAmount', Number(e.target.value))}
+                  />
+                </div>
+              )}
+              
+              {formData.eligibleDeductions.pension && (
+                <div className="space-y-2">
+                  <Label htmlFor="pensionAmount">Voluntary Pension Contribution (PKR)</Label>
+                  <Input 
+                    id="pensionAmount" 
+                    type="number" 
+                    value={formData.pensionAmount.toString()} 
+                    onChange={(e) => handleInputChange('pensionAmount', Number(e.target.value))}
+                  />
+                  <p className="text-xs text-muted-foreground">Maximum deductible amount: Rs. 600,000</p>
+                </div>
+              )}
+              
+              {formData.eligibleDeductions.donations && (
+                <div className="space-y-2">
+                  <Label htmlFor="donationAmount">Charitable Donations (PKR)</Label>
+                  <Input 
+                    id="donationAmount" 
+                    type="number" 
+                    value={formData.donationAmount.toString()} 
+                    onChange={(e) => handleInputChange('donationAmount', Number(e.target.value))}
+                  />
+                </div>
+              )}
+              
+              {formData.eligibleDeductions.education && (
+                <div className="space-y-2">
+                  <Label htmlFor="educationAmount">Higher Education Expenses (PKR)</Label>
+                  <Input 
+                    id="educationAmount" 
+                    type="number" 
+                    value={formData.educationAmount.toString()} 
+                    onChange={(e) => handleInputChange('educationAmount', Number(e.target.value))}
+                  />
+                </div>
+              )}
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="healthInsurance">Health Insurance Premium (PKR)</Label>
-              <Input 
-                id="healthInsurance" 
-                type="number" 
-                value={formData.healthInsurance.toString()} 
-                onChange={(e) => handleInputChange('healthInsurance', Number(e.target.value))}
-              />
+            <div className="space-y-2 pt-4">
+              <Label className="text-base">Do you qualify for any special tax credits?</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="firstTimeFilerCredit" 
+                    checked={formData.specialTaxCredits.firstTimeFiler}
+                    onCheckedChange={(checked) => handleNestedChange('specialTaxCredits', 'firstTimeFiler', checked)}
+                  />
+                  <Label htmlFor="firstTimeFilerCredit" className="cursor-pointer">First-Time Filer (Rs. 50k credit)</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="itSector" 
+                    checked={formData.specialTaxCredits.itSector}
+                    onCheckedChange={(checked) => handleNestedChange('specialTaxCredits', 'itSector', checked)}
+                  />
+                  <Label htmlFor="itSector" className="cursor-pointer">IT Sector Employee (15% reduced rate)</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="exportIndustry" 
+                    checked={formData.specialTaxCredits.exportIndustry}
+                    onCheckedChange={(checked) => handleNestedChange('specialTaxCredits', 'exportIndustry', checked)}
+                  />
+                  <Label htmlFor="exportIndustry" className="cursor-pointer">Export Industry Worker (tax exemptions)</Label>
+                </div>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="retirement">Retirement Contributions (PKR)</Label>
-              <Input 
-                id="retirement" 
-                type="number" 
-                value={formData.retirement.toString()} 
-                onChange={(e) => handleInputChange('retirement', Number(e.target.value))}
-              />
-            </div>
-            
-            <div className="p-4 bg-secondary/30 rounded-lg">
+            <div className="p-4 bg-secondary/30 rounded-lg mt-4">
               <h3 className="font-medium mb-2">Total Claimed Deductions</h3>
               <p className="text-2xl font-bold">
                 PKR {
                   new Intl.NumberFormat('en-US').format(
-                    formData.charityDonations + 
-                    formData.educationExpenses + 
-                    formData.healthInsurance + 
-                    formData.retirement
+                    (formData.eligibleDeductions.lifeInsurance ? formData.lifeInsuranceAmount : 0) + 
+                    (formData.eligibleDeductions.pension ? formData.pensionAmount : 0) + 
+                    (formData.eligibleDeductions.donations ? formData.donationAmount : 0) + 
+                    (formData.eligibleDeductions.education ? formData.educationAmount : 0)
                   )
                 }
               </p>
@@ -327,71 +704,180 @@ const TaxFiling = () => {
           </div>
         );
       
-      case 'investments':
+      case 'assets':
         return (
           <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="stocks">Stocks Investment Value (PKR)</Label>
-              <Input 
-                id="stocks" 
-                type="number" 
-                value={formData.stocks.toString()} 
-                onChange={(e) => handleInputChange('stocks', Number(e.target.value))}
-              />
+            <div className="space-y-4">
+              <h3 className="text-base font-medium">Bank Account Details</h3>
+              <p className="text-sm text-muted-foreground">Provide all Pakistani bank accounts held between July 2024-June 2025.</p>
+              
+              <div className="space-y-4 border rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="bankName">Bank Name</Label>
+                    <Input 
+                      id="bankName" 
+                      value={formData.bankAccounts[0].bankName} 
+                      onChange={(e) => {
+                        const updatedAccounts = [...formData.bankAccounts];
+                        updatedAccounts[0].bankName = e.target.value;
+                        handleInputChange('bankAccounts', updatedAccounts);
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="accountNumber">Account Number (IBAN format)</Label>
+                    <Input 
+                      id="accountNumber" 
+                      value={formData.bankAccounts[0].accountNumber} 
+                      onChange={(e) => {
+                        const updatedAccounts = [...formData.bankAccounts];
+                        updatedAccounts[0].accountNumber = e.target.value;
+                        handleInputChange('bankAccounts', updatedAccounts);
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="currentBalance">Current Balance (PKR)</Label>
+                    <Input 
+                      id="currentBalance" 
+                      type="number"
+                      value={formData.bankAccounts[0].currentBalance.toString()} 
+                      onChange={(e) => {
+                        const updatedAccounts = [...formData.bankAccounts];
+                        updatedAccounts[0].currentBalance = Number(e.target.value);
+                        handleInputChange('bankAccounts', updatedAccounts);
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex justify-end">
+                  <Button variant="outline" size="sm" type="button">
+                    + Add Another Account
+                  </Button>
+                </div>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="mutualFunds">Mutual Funds Investment (PKR)</Label>
-              <Input 
-                id="mutualFunds" 
-                type="number" 
-                value={formData.mutualFunds.toString()} 
-                onChange={(e) => handleInputChange('mutualFunds', Number(e.target.value))}
-              />
+            <div className="space-y-4 pt-4">
+              <h3 className="text-base font-medium">Immovable Property Holdings</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="residential" 
+                    checked={formData.immovableProperty.residential}
+                    onCheckedChange={(checked) => handleNestedChange('immovableProperty', 'residential', checked)}
+                  />
+                  <Label htmlFor="residential" className="cursor-pointer">Residential (exempt if single self-owned)</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="commercial" 
+                    checked={formData.immovableProperty.commercial}
+                    onCheckedChange={(checked) => handleNestedChange('immovableProperty', 'commercial', checked)}
+                  />
+                  <Label htmlFor="commercial" className="cursor-pointer">Commercial (declare rental income)</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="agriculturalProperty" 
+                    checked={formData.immovableProperty.agricultural}
+                    onCheckedChange={(checked) => handleNestedChange('immovableProperty', 'agricultural', checked)}
+                  />
+                  <Label htmlFor="agriculturalProperty" className="cursor-pointer">Agricultural (exempt up to 50 acres)</Label>
+                </div>
+              </div>
+              
+              {formData.immovableProperty.commercial && (
+                <div className="px-4 py-3 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg mt-2">
+                  <p className="text-sm">Please ensure you've declared all rental income from commercial property in the Income section.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      
+      case 'withholding':
+        return (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <Label className="text-base">Select withholding taxes you've paid this year:</Label>
+              <p className="text-sm text-muted-foreground">You'll need to attach certificates for these in the next step.</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="mobileBills" 
+                    checked={formData.withholdingTaxes.mobileBills}
+                    onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'mobileBills', checked)}
+                  />
+                  <Label htmlFor="mobileBills" className="cursor-pointer">Mobile Topups (WHT @ 10-15%)</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="vehicleRegistration" 
+                    checked={formData.withholdingTaxes.vehicleRegistration}
+                    onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'vehicleRegistration', checked)}
+                  />
+                  <Label htmlFor="vehicleRegistration" className="cursor-pointer">Vehicle Registration (advance tax)</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="electricityBills" 
+                    checked={formData.withholdingTaxes.electricityBills}
+                    onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'electricityBills', checked)}
+                  />
+                  <Label htmlFor="electricityBills" className="cursor-pointer">Electricity Bills (WHT if >Rs. 25k/month)</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="contractPayments" 
+                    checked={formData.withholdingTaxes.contractPayments}
+                    onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'contractPayments', checked)}
+                  />
+                  <Label htmlFor="contractPayments" className="cursor-pointer">Contract Payments (WHT @ 7.5-15%)</Label>
+                </div>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="governmentBonds">Government Bonds (PKR)</Label>
-              <Input 
-                id="governmentBonds" 
-                type="number" 
-                value={formData.governmentBonds.toString()} 
-                onChange={(e) => handleInputChange('governmentBonds', Number(e.target.value))}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="realEstate">Real Estate Investment Value (PKR)</Label>
-              <Input 
-                id="realEstate" 
-                type="number" 
-                value={formData.realEstate.toString()} 
-                onChange={(e) => handleInputChange('realEstate', Number(e.target.value))}
-              />
-            </div>
-            
-            <div className="p-4 bg-secondary/30 rounded-lg">
-              <h3 className="font-medium mb-2">Total Investment Portfolio</h3>
-              <p className="text-2xl font-bold">
-                PKR {
-                  new Intl.NumberFormat('en-US').format(
-                    formData.stocks + 
-                    formData.mutualFunds + 
-                    formData.governmentBonds + 
-                    formData.realEstate
-                  )
-                }
-              </p>
+            <div className="space-y-4 pt-6">
+              <div className="border border-dashed border-muted-foreground/50 rounded-lg p-6 text-center">
+                <div className="space-y-2">
+                  <h3 className="font-medium">Upload Withholding Certificates</h3>
+                  <p className="text-sm text-muted-foreground">Drag and drop your withholding tax certificates here, or click to browse</p>
+                  <Button variant="outline" className="mt-2">
+                    Browse Files
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         );
       
       case 'review':
         // Calculate total income, deductions and tax liability
-        const totalIncome = formData.salariedIncome + formData.businessIncome + 
-                           formData.rentalIncome + formData.otherIncome;
-        const totalDeductions = formData.charityDonations + formData.educationExpenses + 
-                               formData.healthInsurance + formData.retirement;
+        const totalIncome = 
+          (formData.incomeStreams.salary ? formData.salaryIncome : 0) + 
+          (formData.incomeStreams.business ? formData.businessIncome : 0) + 
+          (formData.incomeStreams.rental ? formData.rentalIncome : 0) + 
+          (formData.incomeStreams.agricultural ? formData.agriculturalIncome : 0) + 
+          (formData.incomeStreams.capitalGains ? formData.capitalGainsIncome : 0) + 
+          (formData.incomeStreams.foreign ? formData.foreignIncome : 0);
+        
+        const totalDeductions = 
+          (formData.eligibleDeductions.lifeInsurance ? formData.lifeInsuranceAmount : 0) + 
+          (formData.eligibleDeductions.pension ? formData.pensionAmount : 0) + 
+          (formData.eligibleDeductions.donations ? formData.donationAmount : 0) + 
+          (formData.eligibleDeductions.education ? formData.educationAmount : 0);
+        
         const taxableIncome = Math.max(0, totalIncome - totalDeductions);
         
         // Simple tax calculation (just for demo)
@@ -410,6 +896,15 @@ const TaxFiling = () => {
           taxLiability = 810000 + (taxableIncome - 6000000) * 0.25;
         }
         
+        // Apply special tax credits
+        if (formData.specialTaxCredits.firstTimeFiler) {
+          taxLiability = Math.max(0, taxLiability - 50000);
+        }
+        
+        if (formData.specialTaxCredits.itSector) {
+          taxLiability = taxLiability * 0.85; // 15% reduced rate
+        }
+        
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -419,16 +914,26 @@ const TaxFiling = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Full Name:</span>
-                    <span className="font-medium">{formData.fullName}</span>
-                  </div>
-                  <div className="flex justify-between">
                     <span className="text-muted-foreground">CNIC:</span>
                     <span className="font-medium">{formData.cnic}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Filing Status:</span>
-                    <span className="font-medium capitalize">{formData.filingStatus}</span>
+                    <span className="text-muted-foreground">Category:</span>
+                    <span className="font-medium capitalize">
+                      {formData.taxpayerCategory === 'salaried-low' ? 'Salaried (≤ Rs. 100k)' :
+                       formData.taxpayerCategory === 'salaried-high' ? 'Salaried (> Rs. 100k)' :
+                       formData.taxpayerCategory === 'business' ? 'Business Owner' :
+                       formData.taxpayerCategory === 'aop' ? 'Association of Persons' :
+                       'Non-Resident Pakistani'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Residency Status:</span>
+                    <span className="font-medium capitalize">
+                      {formData.residencyStatus === 'resident' ? 'Resident' :
+                       formData.residencyStatus === 'conditional' ? 'Conditional Resident' :
+                       'Non-Resident'}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -462,26 +967,104 @@ const TaxFiling = () => {
                 <div className="p-4 bg-primary/10 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-lg">Tax Liability:</span>
-                    <span className="text-2xl font-bold">PKR {new Intl.NumberFormat('en-US').format(taxLiability)}</span>
+                    <span className="text-2xl font-bold">PKR {new Intl.NumberFormat('en-US').format(Math.round(taxLiability))}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Tax Rate:</span>
-                    <span className="font-medium">{Math.round((taxLiability / taxableIncome) * 100) || 0}%</span>
+                    <span className="text-muted-foreground">Effective Tax Rate:</span>
+                    <span className="font-medium">{taxableIncome > 0 ? Math.round((taxLiability / taxableIncome) * 100) : 0}%</span>
                   </div>
+                  
+                  {(formData.specialTaxCredits.firstTimeFiler || formData.specialTaxCredits.itSector || formData.specialTaxCredits.exportIndustry) && (
+                    <div className="mt-4 pt-4 border-t border-primary/20">
+                      <p className="text-sm font-medium mb-2">Applied Tax Credits:</p>
+                      <ul className="text-sm space-y-1">
+                        {formData.specialTaxCredits.firstTimeFiler && (
+                          <li className="flex items-center">
+                            <Check className="mr-1 h-4 w-4 text-primary" />
+                            First-Time Filer Credit (Rs. 50,000)
+                          </li>
+                        )}
+                        {formData.specialTaxCredits.itSector && (
+                          <li className="flex items-center">
+                            <Check className="mr-1 h-4 w-4 text-primary" />
+                            IT Sector Employee (15% reduced rate)
+                          </li>
+                        )}
+                        {formData.specialTaxCredits.exportIndustry && (
+                          <li className="flex items-center">
+                            <Check className="mr-1 h-4 w-4 text-primary" />
+                            Export Industry Worker (tax exemptions)
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
             
+            <div className="space-y-4">
+              <Label className="text-base font-medium">Select preferred payment method for dues:</Label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="border rounded-lg p-4 cursor-pointer relative hover:bg-secondary/20 transition-colors duration-200"
+                     onClick={() => handleInputChange('paymentMethod', 'bank-transfer')}>
+                  <div className="text-center space-y-2">
+                    <h4 className="font-medium">Direct Bank Transfer</h4>
+                    <p className="text-sm text-muted-foreground">(PSID generation)</p>
+                  </div>
+                  {formData.paymentMethod === 'bank-transfer' && (
+                    <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                      <Check className="h-4 w-4" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="border rounded-lg p-4 cursor-pointer relative hover:bg-secondary/20 transition-colors duration-200"
+                     onClick={() => handleInputChange('paymentMethod', 'card')}>
+                  <div className="text-center space-y-2">
+                    <h4 className="font-medium">Debit/Credit Card</h4>
+                    <p className="text-sm text-muted-foreground">(3% processing fee)</p>
+                  </div>
+                  {formData.paymentMethod === 'card' && (
+                    <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                      <Check className="h-4 w-4" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="border rounded-lg p-4 cursor-pointer relative hover:bg-secondary/20 transition-colors duration-200"
+                     onClick={() => handleInputChange('paymentMethod', 'mobile')}>
+                  <div className="text-center space-y-2">
+                    <h4 className="font-medium">Mobile Payment</h4>
+                    <p className="text-sm text-muted-foreground">(JazzCash/Easypaisa)</p>
+                  </div>
+                  {formData.paymentMethod === 'mobile' && (
+                    <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                      <Check className="h-4 w-4" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
             <div className="p-4 bg-secondary/30 rounded-lg">
               <h3 className="font-medium mb-4">Declaration</h3>
-              <p className="text-sm text-muted-foreground mb-2">
+              <p className="text-sm text-muted-foreground mb-4">
                 I hereby declare that the information provided in this tax return is correct and complete 
                 to the best of my knowledge and belief. I understand that providing false information 
                 is a violation of tax laws and may result in penalties.
               </p>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" id="declaration" className="rounded" />
-                <Label htmlFor="declaration">I agree to the declaration</Label>
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Switch 
+                    id="penaltyUnderstanding" 
+                    checked={formData.penaltyUnderstanding}
+                    onCheckedChange={(checked) => handleInputChange('penaltyUnderstanding', checked)}
+                  />
+                  <Label htmlFor="penaltyUnderstanding">
+                    I confirm my understanding of penalties: Late Filing (0.1% daily, min Rs. 5k), Underreporting (25% of evaded tax + surcharge)
+                  </Label>
+                </div>
               </div>
             </div>
           </div>
@@ -510,7 +1093,7 @@ const TaxFiling = () => {
             
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
               <div>
-                <h1 className="text-3xl font-bold">2023 Tax Return</h1>
+                <h1 className="text-3xl font-bold">2024-25 Tax Return</h1>
                 <p className="text-muted-foreground">Complete your filing step by step</p>
               </div>
               
@@ -532,7 +1115,7 @@ const TaxFiling = () => {
               {STEPS.map((step, index) => (
                 <div 
                   key={step.id}
-                  className={`flex flex-col items-center w-1/5 ${
+                  className={`flex flex-col items-center w-1/${STEPS.length} ${
                     index < currentStep ? 'text-primary' : 
                     index === currentStep ? 'text-primary font-medium' : 'text-muted-foreground'
                   }`}
@@ -543,7 +1126,7 @@ const TaxFiling = () => {
                   }`}>
                     {index < currentStep ? <Check className="h-4 w-4" /> : (index + 1)}
                   </div>
-                  <span>{step.title}</span>
+                  <span className="text-center text-xs">{step.title}</span>
                 </div>
               ))}
             </div>
@@ -573,7 +1156,11 @@ const TaxFiling = () => {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
-                <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700">
+                <Button 
+                  onClick={handleSubmit} 
+                  className="bg-green-600 hover:bg-green-700"
+                  disabled={!formData.penaltyUnderstanding}
+                >
                   <Check className="mr-2 h-4 w-4" />
                   Submit Tax Return
                 </Button>
