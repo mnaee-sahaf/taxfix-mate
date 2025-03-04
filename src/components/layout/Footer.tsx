@@ -11,7 +11,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="font-bold text-xl">
               <span>Tax</span>
-              <span className="text-primary">Wise</span>
+              <span className="text-primary">Fix</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Simplifying tax filing for individuals and businesses in Pakistan.
@@ -84,7 +84,7 @@ const Footer = () => {
         
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} TaxWise. All rights reserved.
+            © {currentYear} TaxFix. All rights reserved.
           </p>
           
           <div className="flex items-center space-x-6">

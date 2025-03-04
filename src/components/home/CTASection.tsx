@@ -22,7 +22,7 @@ const CTASection = () => {
           
           <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
             Join thousands of Pakistani taxpayers who have simplified their tax
-            compliance with TaxWise. Get started today!
+            compliance with TaxFix. Get started today!
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -56,7 +56,7 @@ const Hero = () => {
           </h1>
           
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            TaxWise simplifies tax compliance for individuals and businesses in Pakistan, 
+            TaxFix simplifies tax compliance for individuals and businesses in Pakistan, 
             saving you time and maximizing your returns.
           </p>
           
