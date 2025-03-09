@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateTaxPDF } from '@/utils/pdfGenerator';
+import { triggerSuccessfulSubmission } from '@/utils/animations';
 
 const STEPS = [
   {
@@ -168,6 +169,8 @@ const TaxFiling = () => {
   };
   
   const saveProgress = () => {
+    localStorage.setItem('taxFilingProgress', JSON.stringify(formData));
+    
     toast({
       title: "Progress saved",
       description: "Your tax filing progress has been saved.",
@@ -179,13 +182,18 @@ const TaxFiling = () => {
   const handleSubmit = () => {
     generateTaxPDF(formData);
     
+    localStorage.removeItem('taxFilingProgress');
+    
+    triggerSuccessfulSubmission();
+    
     toast({
       title: "Tax return submitted!",
       description: "Your tax return has been successfully submitted to FBR and a PDF report has been downloaded.",
       duration: 5000,
+      variant: "success",
     });
     
-    setTimeout(() => navigate('/dashboard'), 2000);
+    setTimeout(() => navigate('/dashboard'), 3000);
   };
   
   const progressPercentage = Math.round(((currentStep + 1) / STEPS.length) * 100);
@@ -1059,6 +1067,24 @@ const TaxFiling = () => {
         return null;
     }
   };
+  
+  useEffect(() => {
+    const savedData = localStorage.getItem('taxFilingProgress');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setFormData(parsedData);
+        
+        toast({
+          title: "Progress loaded",
+          description: "Your previously saved tax filing progress has been loaded.",
+          duration: 3000,
+        });
+      } catch (error) {
+        console.error('Error parsing saved tax filing data:', error);
+      }
+    }
+  }, []);
   
   return (
     <div className="min-h-screen flex flex-col">
