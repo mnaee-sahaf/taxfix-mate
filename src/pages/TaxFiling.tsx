@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -52,9 +51,6 @@ const STEPS = [
     description: 'Review your information before submission',
   },
 ];
-
-// Local storage key for saving tax filing data
-const TAX_FILING_STORAGE_KEY = 'tax_filing_data';
 
 const TaxFiling = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -134,27 +130,6 @@ const TaxFiling = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  // Load saved data from localStorage when component mounts
-  useEffect(() => {
-    const savedData = localStorage.getItem(TAX_FILING_STORAGE_KEY);
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-        setFormData(parsedData.formData);
-        setCurrentStep(parsedData.currentStep || 0);
-        toast({
-          title: "Progress loaded",
-          description: "Your previous tax filing progress has been loaded.",
-          duration: 3000,
-        });
-      } catch (error) {
-        console.error("Error loading saved tax filing data:", error);
-      }
-    }
-    
-    window.scrollTo(0, 0);
-  }, []);
-  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentStep]);
@@ -193,18 +168,9 @@ const TaxFiling = () => {
   };
   
   const saveProgress = () => {
-    // Save to localStorage
-    const dataToSave = {
-      formData,
-      currentStep,
-      lastSaved: new Date().toISOString()
-    };
-    
-    localStorage.setItem(TAX_FILING_STORAGE_KEY, JSON.stringify(dataToSave));
-    
     toast({
       title: "Progress saved",
-      description: "Your tax filing progress has been saved to your browser.",
+      description: "Your tax filing progress has been saved.",
       duration: 3000,
     });
     setSavedProgress(true);
@@ -212,9 +178,6 @@ const TaxFiling = () => {
   
   const handleSubmit = () => {
     generateTaxPDF(formData);
-    
-    // Clear saved progress after successful submission
-    localStorage.removeItem(TAX_FILING_STORAGE_KEY);
     
     toast({
       title: "Tax return submitted!",
@@ -832,6 +795,8 @@ const TaxFiling = () => {
           <div className="space-y-6">
             <div className="space-y-4">
               <Label className="text-base">Select withholding taxes you've paid this year:</Label>
+              <p className="text-sm text-muted-foreground">You'll need to attach certificates for these in the next step.</p>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                 <div className="flex items-center space-x-2">
                   <Switch 
@@ -839,7 +804,7 @@ const TaxFiling = () => {
                     checked={formData.withholdingTaxes.mobileBills}
                     onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'mobileBills', checked)}
                   />
-                  <Label htmlFor="mobileBills" className="cursor-pointer">Mobile Phone Bills (15%)</Label>
+                  <Label htmlFor="mobileBills" className="cursor-pointer">Mobile Topups (WHT @ 10-15%)</Label>
                 </div>
                 
                 <div className="flex items-center space-x-2">
@@ -848,7 +813,7 @@ const TaxFiling = () => {
                     checked={formData.withholdingTaxes.vehicleRegistration}
                     onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'vehicleRegistration', checked)}
                   />
-                  <Label htmlFor="vehicleRegistration" className="cursor-pointer">Vehicle Registration Tax</Label>
+                  <Label htmlFor="vehicleRegistration" className="cursor-pointer">Vehicle Registration (advance tax)</Label>
                 </div>
                 
                 <div className="flex items-center space-x-2">
@@ -857,7 +822,7 @@ const TaxFiling = () => {
                     checked={formData.withholdingTaxes.electricityBills}
                     onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'electricityBills', checked)}
                   />
-                  <Label htmlFor="electricityBills" className="cursor-pointer">Electricity Bills (>Rs. 25,000)</Label>
+                  <Label htmlFor="electricityBills" className="cursor-pointer">Electricity Bills (WHT if >Rs. 25k/month)</Label>
                 </div>
                 
                 <div className="flex items-center space-x-2">
@@ -866,181 +831,225 @@ const TaxFiling = () => {
                     checked={formData.withholdingTaxes.contractPayments}
                     onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'contractPayments', checked)}
                   />
-                  <Label htmlFor="contractPayments" className="cursor-pointer">Contract Payments</Label>
+                  <Label htmlFor="contractPayments" className="cursor-pointer">Contract Payments (WHT @ 7.5-15%)</Label>
                 </div>
               </div>
-              
-              <div className="px-3 py-2 bg-secondary/40 rounded mt-4 text-sm">
-                <p>Withholding taxes are deductible from your final tax liability. You will need to provide evidence of these payments.</p>
+            </div>
+            
+            <div className="space-y-4 pt-6">
+              <div className="border border-dashed border-muted-foreground/50 rounded-lg p-6 text-center">
+                <div className="space-y-2">
+                  <h3 className="font-medium">Upload Withholding Certificates</h3>
+                  <p className="text-sm text-muted-foreground">Drag and drop your withholding tax certificates here, or click to browse</p>
+                  <Button variant="outline" className="mt-2">
+                    Browse Files
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         );
       
       case 'review':
+        const totalIncome = 
+          (formData.incomeStreams.salary ? formData.salaryIncome : 0) + 
+          (formData.incomeStreams.business ? formData.businessIncome : 0) + 
+          (formData.incomeStreams.rental ? formData.rentalIncome : 0) + 
+          (formData.incomeStreams.agricultural ? formData.agriculturalIncome : 0) + 
+          (formData.incomeStreams.capitalGains ? formData.capitalGainsIncome : 0) + 
+          (formData.incomeStreams.foreign ? formData.foreignIncome : 0);
+        
+        const totalDeductions = 
+          (formData.eligibleDeductions.lifeInsurance ? formData.lifeInsuranceAmount : 0) + 
+          (formData.eligibleDeductions.pension ? formData.pensionAmount : 0) + 
+          (formData.eligibleDeductions.donations ? formData.donationAmount : 0) + 
+          (formData.eligibleDeductions.education ? formData.educationAmount : 0);
+        
+        const taxableIncome = Math.max(0, totalIncome - totalDeductions);
+        
+        let taxLiability = 0;
+        if (taxableIncome <= 600000) {
+          taxLiability = 0;
+        } else if (taxableIncome <= 1200000) {
+          taxLiability = (taxableIncome - 600000) * 0.05;
+        } else if (taxableIncome <= 2400000) {
+          taxLiability = 30000 + (taxableIncome - 1200000) * 0.10;
+        } else if (taxableIncome <= 3600000) {
+          taxLiability = 150000 + (taxableIncome - 2400000) * 0.15;
+        } else if (taxableIncome <= 6000000) {
+          taxLiability = 330000 + (taxableIncome - 3600000) * 0.20;
+        } else {
+          taxLiability = 810000 + (taxableIncome - 6000000) * 0.25;
+        }
+        
+        if (formData.specialTaxCredits.firstTimeFiler) {
+          taxLiability = Math.max(0, taxLiability - 50000);
+        }
+        
+        if (formData.specialTaxCredits.itSector) {
+          taxLiability = taxLiability * 0.85; // 15% reduced rate
+        }
+        
         return (
           <div className="space-y-6">
-            <div className="space-y-4">
-              <h3 className="text-base font-medium">Review your tax filing information</h3>
-              <p className="text-sm text-muted-foreground">Please review all information carefully before submission. You are legally responsible for its accuracy.</p>
-              
-              <Card className="border-primary/30">
-                <CardHeader className="pb-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
                   <CardTitle>Personal Information</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm">
+                <CardContent className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">CNIC Number:</span>
+                    <span className="text-muted-foreground">CNIC:</span>
                     <span className="font-medium">{formData.cnic}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Taxpayer Category:</span>
-                    <span className="font-medium">
+                    <span className="text-muted-foreground">Category:</span>
+                    <span className="font-medium capitalize">
                       {formData.taxpayerCategory === 'salaried-low' ? 'Salaried (≤ Rs. 100k)' :
                        formData.taxpayerCategory === 'salaried-high' ? 'Salaried (> Rs. 100k)' :
                        formData.taxpayerCategory === 'business' ? 'Business Owner' :
-                       formData.taxpayerCategory === 'aop' ? 'Association of Persons' : 'Non-Resident'}
+                       formData.taxpayerCategory === 'aop' ? 'Association of Persons' :
+                       'Non-Resident Pakistani'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Residence Status:</span>
-                    <span className="font-medium">
+                    <span className="text-muted-foreground">Residency Status:</span>
+                    <span className="font-medium capitalize">
                       {formData.residencyStatus === 'resident' ? 'Resident' :
-                       formData.residencyStatus === 'conditional' ? 'Conditional Resident' : 'Non-Resident'}
+                       formData.residencyStatus === 'conditional' ? 'Conditional Resident' :
+                       'Non-Resident'}
                     </span>
                   </div>
                 </CardContent>
               </Card>
               
               <Card>
-                <CardHeader className="pb-2">
+                <CardHeader>
                   <CardTitle>Income Summary</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  {formData.incomeStreams.salary && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Salary Income:</span>
-                      <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(formData.salaryIncome)}</span>
-                    </div>
-                  )}
-                  
-                  {formData.incomeStreams.business && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Business Income:</span>
-                      <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(formData.businessIncome)}</span>
-                    </div>
-                  )}
-                  
-                  {formData.incomeStreams.rental && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Rental Income:</span>
-                      <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(formData.rentalIncome)}</span>
-                    </div>
-                  )}
-                  
-                  {formData.incomeStreams.capitalGains && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Capital Gains:</span>
-                      <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(formData.capitalGainsIncome)}</span>
-                    </div>
-                  )}
-                  
-                  <div className="border-t pt-2 mt-2">
-                    <div className="flex justify-between font-bold">
-                      <span>Total Income:</span>
-                      <span>PKR {
-                        new Intl.NumberFormat('en-US').format(
-                          (formData.incomeStreams.salary ? formData.salaryIncome : 0) + 
-                          (formData.incomeStreams.business ? formData.businessIncome : 0) + 
-                          (formData.incomeStreams.rental ? formData.rentalIncome : 0) + 
-                          (formData.incomeStreams.agricultural ? formData.agriculturalIncome : 0) + 
-                          (formData.incomeStreams.capitalGains ? formData.capitalGainsIncome : 0) + 
-                          (formData.incomeStreams.foreign ? formData.foreignIncome : 0)
-                        )
-                      }</span>
-                    </div>
+                <CardContent className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Total Income:</span>
+                    <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(totalIncome)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Total Deductions:</span>
+                    <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(totalDeductions)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Taxable Income:</span>
+                    <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(taxableIncome)}</span>
                   </div>
                 </CardContent>
               </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle>Deductions Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  {formData.eligibleDeductions.lifeInsurance && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Life Insurance:</span>
-                      <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(formData.lifeInsuranceAmount)}</span>
-                    </div>
-                  )}
-                  
-                  {formData.eligibleDeductions.pension && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Pension Contributions:</span>
-                      <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(formData.pensionAmount)}</span>
-                    </div>
-                  )}
-                  
-                  {formData.eligibleDeductions.donations && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Charitable Donations:</span>
-                      <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(formData.donationAmount)}</span>
-                    </div>
-                  )}
-                  
-                  {formData.eligibleDeductions.education && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Education Expenses:</span>
-                      <span className="font-medium">PKR {new Intl.NumberFormat('en-US').format(formData.educationAmount)}</span>
-                    </div>
-                  )}
-                  
-                  <div className="border-t pt-2 mt-2">
-                    <div className="flex justify-between font-bold">
-                      <span>Total Deductions:</span>
-                      <span>PKR {
-                        new Intl.NumberFormat('en-US').format(
-                          (formData.eligibleDeductions.lifeInsurance ? formData.lifeInsuranceAmount : 0) + 
-                          (formData.eligibleDeductions.pension ? formData.pensionAmount : 0) + 
-                          (formData.eligibleDeductions.donations ? formData.donationAmount : 0) + 
-                          (formData.eligibleDeductions.education ? formData.educationAmount : 0)
-                        )
-                      }</span>
-                    </div>
+            </div>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Tax Calculation</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="p-4 bg-primary/10 rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-lg">Tax Liability:</span>
+                    <span className="text-2xl font-bold">PKR {new Intl.NumberFormat('en-US').format(Math.round(taxLiability))}</span>
                   </div>
-                </CardContent>
-              </Card>
-              
-              <div className="space-y-2 mt-4">
-                <div className="flex items-center space-x-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Effective Tax Rate:</span>
+                    <span className="font-medium">{taxableIncome > 0 ? Math.round((taxLiability / taxableIncome) * 100) : 0}%</span>
+                  </div>
+                  
+                  {(formData.specialTaxCredits.firstTimeFiler || formData.specialTaxCredits.itSector || formData.specialTaxCredits.exportIndustry) && (
+                    <div className="mt-4 pt-4 border-t border-primary/20">
+                      <p className="text-sm font-medium mb-2">Applied Tax Credits:</p>
+                      <ul className="text-sm space-y-1">
+                        {formData.specialTaxCredits.firstTimeFiler && (
+                          <li className="flex items-center">
+                            <Check className="mr-1 h-4 w-4 text-primary" />
+                            First-Time Filer Credit (Rs. 50,000)
+                          </li>
+                        )}
+                        {formData.specialTaxCredits.itSector && (
+                          <li className="flex items-center">
+                            <Check className="mr-1 h-4 w-4 text-primary" />
+                            IT Sector Employee (15% reduced rate)
+                          </li>
+                        )}
+                        {formData.specialTaxCredits.exportIndustry && (
+                          <li className="flex items-center">
+                            <Check className="mr-1 h-4 w-4 text-primary" />
+                            Export Industry Worker (tax exemptions)
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <div className="space-y-4">
+              <Label className="text-base font-medium">Select preferred payment method for dues:</Label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="border rounded-lg p-4 cursor-pointer relative hover:bg-secondary/20 transition-colors duration-200"
+                     onClick={() => handleInputChange('paymentMethod', 'bank-transfer')}>
+                  <div className="text-center space-y-2">
+                    <h4 className="font-medium">Direct Bank Transfer</h4>
+                    <p className="text-sm text-muted-foreground">(PSID generation)</p>
+                  </div>
+                  {formData.paymentMethod === 'bank-transfer' && (
+                    <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                      <Check className="h-4 w-4" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="border rounded-lg p-4 cursor-pointer relative hover:bg-secondary/20 transition-colors duration-200"
+                     onClick={() => handleInputChange('paymentMethod', 'card')}>
+                  <div className="text-center space-y-2">
+                    <h4 className="font-medium">Debit/Credit Card</h4>
+                    <p className="text-sm text-muted-foreground">(3% processing fee)</p>
+                  </div>
+                  {formData.paymentMethod === 'card' && (
+                    <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                      <Check className="h-4 w-4" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="border rounded-lg p-4 cursor-pointer relative hover:bg-secondary/20 transition-colors duration-200"
+                     onClick={() => handleInputChange('paymentMethod', 'mobile')}>
+                  <div className="text-center space-y-2">
+                    <h4 className="font-medium">Mobile Payment</h4>
+                    <p className="text-sm text-muted-foreground">(JazzCash/Easypaisa)</p>
+                  </div>
+                  {formData.paymentMethod === 'mobile' && (
+                    <div className="absolute top-2 right-2 bg-primary text-white rounded-full p-1">
+                      <Check className="h-4 w-4" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-4 bg-secondary/30 rounded-lg">
+              <h3 className="font-medium mb-4">Declaration</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                I hereby declare that the information provided in this tax return is correct and complete 
+                to the best of my knowledge and belief. I understand that providing false information 
+                is a violation of tax laws and may result in penalties.
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
                   <Switch 
                     id="penaltyUnderstanding" 
                     checked={formData.penaltyUnderstanding}
                     onCheckedChange={(checked) => handleInputChange('penaltyUnderstanding', checked)}
                   />
-                  <Label htmlFor="penaltyUnderstanding" className="font-medium cursor-pointer">
-                    I understand that providing false information is punishable under tax laws with penalties of up to 100% of tax due.
+                  <Label htmlFor="penaltyUnderstanding">
+                    I confirm my understanding of penalties: Late Filing (0.1% daily, min Rs. 5k), Underreporting (25% of evaded tax + surcharge)
                   </Label>
                 </div>
-              </div>
-              
-              <div className="space-y-2 mt-4">
-                <Label htmlFor="paymentMethod" className="text-base">Select tax payment method:</Label>
-                <Select 
-                  value={formData.paymentMethod} 
-                  onValueChange={(value) => handleInputChange('paymentMethod', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select payment method" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="bank-transfer">Bank Transfer</SelectItem>
-                    <SelectItem value="direct-debit">Direct Debit (Standing Instruction)</SelectItem>
-                    <SelectItem value="atm-cash-deposit">ATM/Cash Deposit</SelectItem>
-                    <SelectItem value="online-payment">Online Payment Gateway</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
           </div>
@@ -1052,96 +1061,97 @@ const TaxFiling = () => {
   };
   
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-1 container mx-auto px-4 py-6 max-w-5xl">
-        <div className="flex flex-col space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Tax Filing 2024-2025</h1>
-              <p className="text-muted-foreground">Follow the step-by-step process to file your taxes</p>
+      <main className="flex-grow pt-24 pb-16">
+        <div className="container mx-auto px-4">
+          <div className="mb-8">
+            <Button 
+              variant="ghost" 
+              className="mb-4"
+              onClick={() => navigate('/dashboard')}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+            
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+              <div>
+                <h1 className="text-3xl font-bold">2024-25 Tax Return</h1>
+                <p className="text-muted-foreground">Complete your filing step by step</p>
+              </div>
+              
+              <Button variant="outline" onClick={saveProgress} disabled={savedProgress}>
+                <Save className="mr-2 h-4 w-4" />
+                {savedProgress ? 'Progress Saved' : 'Save Progress'}
+              </Button>
             </div>
             
-            <Button 
-              variant={savedProgress ? "outline" : "default"} 
-              onClick={saveProgress} 
-              className="flex items-center gap-2"
-            >
-              <Save className="h-4 w-4" />
-              {savedProgress ? "Progress Saved" : "Save Progress"}
-            </Button>
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium">Step {currentStep + 1} of {STEPS.length}: {STEPS[currentStep].title}</span>
+                <span className="text-sm text-muted-foreground">{progressPercentage}% Complete</span>
+              </div>
+              <Progress value={progressPercentage} className="h-2" />
+            </div>
+            
+            <div className="hidden md:flex justify-between items-center mb-8 text-sm">
+              {STEPS.map((step, index) => (
+                <div 
+                  key={step.id}
+                  className={`flex flex-col items-center w-1/${STEPS.length} ${
+                    index < currentStep ? 'text-primary' : 
+                    index === currentStep ? 'text-primary font-medium' : 'text-muted-foreground'
+                  }`}
+                >
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-full mb-2 ${
+                    index < currentStep ? 'bg-primary text-primary-foreground' : 
+                    index === currentStep ? 'bg-primary text-primary-foreground' : 'bg-secondary'
+                  }`}>
+                    {index < currentStep ? <Check className="h-4 w-4" /> : (index + 1)}
+                  </div>
+                  <span className="text-center text-xs">{step.title}</span>
+                </div>
+              ))}
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="md:col-span-1 space-y-4">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Your Progress</CardTitle>
-                  <CardDescription>{currentStep + 1} of {STEPS.length} steps</CardDescription>
-                </CardHeader>
-                <CardContent className="pb-4 space-y-4">
-                  <Progress value={progressPercentage} className="h-2" />
-                  
-                  <div className="space-y-1">
-                    {STEPS.map((step, index) => (
-                      <div key={step.id} className={`flex items-center py-1 pl-2 rounded-md ${currentStep === index ? 'bg-secondary' : ''}`}>
-                        <div className={`h-5 w-5 rounded-full mr-3 flex items-center justify-center text-xs
-                          ${index < currentStep ? 'bg-primary text-primary-foreground' : 
-                            index === currentStep ? 'border-2 border-primary text-primary' : 
-                            'border border-muted-foreground text-muted-foreground'}`}>
-                          {index < currentStep ? <Check className="h-3 w-3" /> : index + 1}
-                        </div>
-                        <span className={`text-sm ${currentStep === index ? 'font-medium' : ''}`}>{step.title}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <div className="md:col-span-3 space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{STEPS[currentStep].title}</CardTitle>
-                  <CardDescription>{STEPS[currentStep].description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {renderStepContent()}
-                </CardContent>
-                <CardFooter className="border-t pt-6 flex justify-between">
-                  <Button 
-                    variant="outline" 
-                    onClick={prevStep} 
-                    disabled={currentStep === 0}
-                    className="flex items-center gap-2"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Previous
-                  </Button>
-                  
-                  {currentStep < STEPS.length - 1 ? (
-                    <Button 
-                      onClick={nextStep} 
-                      className="flex items-center gap-2"
-                    >
-                      Next
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  ) : (
-                    <Button 
-                      onClick={handleSubmit} 
-                      disabled={!formData.penaltyUnderstanding}
-                      className="flex items-center gap-2"
-                    >
-                      Submit Tax Return
-                      <Check className="h-4 w-4" />
-                    </Button>
-                  )}
-                </CardFooter>
-              </Card>
-            </div>
-          </div>
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>{STEPS[currentStep].title}</CardTitle>
+              <CardDescription>{STEPS[currentStep].description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {renderStepContent()}
+            </CardContent>
+            <CardFooter className="flex justify-between">
+              <Button
+                variant="outline"
+                onClick={prevStep}
+                disabled={currentStep === 0}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Previous
+              </Button>
+              
+              {currentStep < STEPS.length - 1 ? (
+                <Button onClick={nextStep}>
+                  Next
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button 
+                  onClick={handleSubmit} 
+                  className="bg-green-600 hover:bg-green-700"
+                  disabled={!formData.penaltyUnderstanding}
+                >
+                  <Check className="mr-2 h-4 w-4" />
+                  Submit Tax Return
+                </Button>
+              )}
+            </CardFooter>
+          </Card>
         </div>
       </main>
       
