@@ -12,8 +12,8 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { generateTaxPDF } from '@/utils/pdfGenerator';
 
-// Define the steps in the filing process based on the comprehensive questionnaire
 const STEPS = [
   {
     id: 'identification',
@@ -56,17 +56,14 @@ const TaxFiling = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [savedProgress, setSavedProgress] = useState(true);
   const [formData, setFormData] = useState({
-    // User Identification
     cnic: '3420112345671',
     firstTimeFiler: false,
     taxpayerCategory: 'salaried-high',
     
-    // Residency Status
     residencyDays: 200,
     governmentEmployee: false,
     residencyStatus: 'resident',
     
-    // Income Sources
     incomeStreams: {
       salary: true,
       business: false,
@@ -82,7 +79,6 @@ const TaxFiling = () => {
       houseRent: true
     },
     
-    // Income Values
     salaryIncome: 1200000,
     businessIncome: 0,
     rentalIncome: 350000,
@@ -90,7 +86,6 @@ const TaxFiling = () => {
     capitalGainsIncome: 150000,
     foreignIncome: 0,
     
-    // Deductions & Credits
     eligibleDeductions: {
       lifeInsurance: true,
       pension: true,
@@ -103,13 +98,11 @@ const TaxFiling = () => {
       exportIndustry: false
     },
     
-    // Deduction Values
     lifeInsuranceAmount: 50000,
     pensionAmount: 120000,
     donationAmount: 80000,
     educationAmount: 150000,
     
-    // Assets & Liabilities
     bankAccounts: [
       {
         accountNumber: 'PK36SCBL0000001123456702',
@@ -123,7 +116,6 @@ const TaxFiling = () => {
       agricultural: false
     },
     
-    // Withholding Tax
     withholdingTaxes: {
       mobileBills: true,
       vehicleRegistration: true,
@@ -131,7 +123,6 @@ const TaxFiling = () => {
       contractPayments: false
     },
     
-    // Declarations
     penaltyUnderstanding: false,
     paymentMethod: 'bank-transfer'
   });
@@ -151,7 +142,6 @@ const TaxFiling = () => {
     setSavedProgress(false);
   };
   
-  // Handle nested object changes
   const handleNestedChange = (category: string, field: string, value: boolean | string | number) => {
     setFormData(prev => ({
       ...prev,
@@ -178,7 +168,6 @@ const TaxFiling = () => {
   };
   
   const saveProgress = () => {
-    // In a real application, this would save to backend
     toast({
       title: "Progress saved",
       description: "Your tax filing progress has been saved.",
@@ -188,18 +177,19 @@ const TaxFiling = () => {
   };
   
   const handleSubmit = () => {
+    generateTaxPDF(formData);
+    
     toast({
       title: "Tax return submitted!",
-      description: "Your tax return has been successfully submitted to FBR.",
+      description: "Your tax return has been successfully submitted to FBR and a PDF report has been downloaded.",
       duration: 5000,
     });
+    
     setTimeout(() => navigate('/dashboard'), 2000);
   };
   
-  // Calculate progress percentage
   const progressPercentage = Math.round(((currentStep + 1) / STEPS.length) * 100);
   
-  // Render current step content
   const renderStepContent = () => {
     switch (STEPS[currentStep].id) {
       case 'identification':
@@ -304,7 +294,6 @@ const TaxFiling = () => {
                       if (checked) {
                         handleInputChange('residencyStatus', 'resident');
                       } else {
-                        // Recalculate based on days
                         const days = formData.residencyDays;
                         let status = '';
                         
@@ -862,7 +851,6 @@ const TaxFiling = () => {
         );
       
       case 'review':
-        // Calculate total income, deductions and tax liability
         const totalIncome = 
           (formData.incomeStreams.salary ? formData.salaryIncome : 0) + 
           (formData.incomeStreams.business ? formData.businessIncome : 0) + 
@@ -879,7 +867,6 @@ const TaxFiling = () => {
         
         const taxableIncome = Math.max(0, totalIncome - totalDeductions);
         
-        // Simple tax calculation (just for demo)
         let taxLiability = 0;
         if (taxableIncome <= 600000) {
           taxLiability = 0;
@@ -895,7 +882,6 @@ const TaxFiling = () => {
           taxLiability = 810000 + (taxableIncome - 6000000) * 0.25;
         }
         
-        // Apply special tax credits
         if (formData.specialTaxCredits.firstTimeFiler) {
           taxLiability = Math.max(0, taxLiability - 50000);
         }
