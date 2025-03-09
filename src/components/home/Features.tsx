@@ -54,11 +54,11 @@ const Features = () => {
       title: "Tax Calculator",
       description: "Get real-time estimates of your tax liability or refund as you complete your return.",
     },
-    {
-      icon: <Database size={24} />,
-      title: "FBR Integration",
-      description: "Submit your returns directly to FBR and track their status in real-time.",
-    },
+    // {
+    //   icon: <Database size={24} />,
+    //   title: "FBR Integration",
+    //   description: "Submit your returns directly to FBR and track their status in real-time.",
+    // },
     {
       icon: <CreditCard size={24} />,
       title: "Easy Payments",

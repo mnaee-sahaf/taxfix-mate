@@ -1,12 +1,16 @@
 
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { VideoTutorial } from './videoTutorial';
+
+
 
 const Hero = () => {
   const heroRef = useRef<HTMLDivElement>(null);
-  
+  const navigate = useNavigate();
+
   useEffect(() => {
     const heroElement = heroRef.current;
     if (!heroElement) return;
@@ -41,11 +45,11 @@ const Hero = () => {
   return (
     <div 
       ref={heroRef}
-      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16"
+      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20"
     >
       <div className="hero-bg absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/30 transition-transform duration-500 ease-out transform z-0" />
       
-      <div className="container mx-auto px-4 z-10">
+      <div className="container mx-auto px-4 z-10 pt-10">
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-block mb-4 px-3 py-1 bg-primary/10 rounded-full text-primary text-sm font-medium">
             Tax filing simplified for Pakistan
@@ -59,9 +63,9 @@ const Hero = () => {
             TaxFix simplifies tax compliance for individuals and businesses in Pakistan, 
             saving you time and maximizing your returns.
           </p>
-          
+          <VideoTutorial />
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="rounded-full group button-shine">
+            <Button size="lg" className="rounded-full group button-shine" onClick={() => navigate('/dashboard')}>
               <span>Get Started</span>
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
