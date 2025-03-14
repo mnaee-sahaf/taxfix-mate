@@ -307,8 +307,8 @@ const TaxFiling = ({ updateTaxData }: TaxFilingProps) => {
       </Card>
       
       <div className="text-xs text-muted-foreground text-center">
-        <p>Protected by FBR encryption. All information is stored securely.</p>
-        <p className="mt-1">Need help? Contact the FBR helpline at 0800-00227 or email at helpline@fbr.gov.pk</p>
+        <p>Protected by TAXFIX encryption. All information is stored securely.</p>
+        <p className="mt-1">Need help? WhatsApp TAXFIX helpline at 0321-00227 or email at helpline@taxfix.pk</p>
       </div>
     </div>
   );
