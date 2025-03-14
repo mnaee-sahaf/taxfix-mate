@@ -71,6 +71,28 @@ export interface TaxFormData {
     contractPayments: boolean;
   };
   
+  expenses: {
+    gas: boolean;
+    electricity: boolean;
+    water: boolean;
+    telephone: boolean;
+    medical: boolean;
+    educational: boolean;
+    travel: boolean;
+    other: boolean;
+  };
+  
+  expenseAmounts: {
+    gas: number;
+    electricity: number;
+    water: number;
+    telephone: number;
+    medical: number;
+    educational: number;
+    travel: number;
+    other: number;
+  };
+  
   penaltyUnderstanding: boolean;
   paymentMethod: string;
   paidTax: number;
