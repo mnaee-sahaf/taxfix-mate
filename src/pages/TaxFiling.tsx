@@ -641,7 +641,7 @@ const TaxFiling = ({ updateTaxData }) => {
                 <Switch 
                   id="salary" 
                   checked={formData.incomeStreams.salary}
-                  onCheckedChange={(checked) => handleNestedChange('epenseType', 'utility', checked)}
+                  onCheckedChange={(checked) => handleNestedChange('expenseType', 'utility', checked)}
                 />
                 <Label htmlFor="salary" className="cursor-pointer">Salary/Wages</Label>
               </div>
@@ -718,4 +718,106 @@ const TaxFiling = ({ updateTaxData }) => {
                   <Input 
                     id="businessIncome" 
                     type="number" 
-                    value={formData.businessIncome
+                    value={formData.businessIncome.toString()} 
+                    onChange={(e) => handleInputChange('businessIncome', Number(e.target.value))}
+                  />
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="income-details" className="space-y-4 pt-4">
+              <div className="px-4 py-3 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
+                <p className="text-sm">Additional expense details will be implemented in the next version.</p>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+        );
+
+      case 'deductions':
+        return (
+          <div className="space-y-6">
+            <div className="px-4 py-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-sm">Deductions section is under development.</p>
+            </div>
+          </div>
+        );
+        
+      case 'assets':
+        return (
+          <div className="space-y-6">
+            <div className="px-4 py-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-sm">Assets section is under development.</p>
+            </div>
+          </div>
+        );
+        
+      case 'withholding':
+        return (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <Label className="text-base">Select applicable withholding taxes:</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="mobileBills" 
+                    checked={formData.withholdingTaxes.mobileBills}
+                    onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'mobileBills', checked)}
+                  />
+                  <Label htmlFor="mobileBills" className="cursor-pointer">Mobile Bills</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="vehicleRegistration" 
+                    checked={formData.withholdingTaxes.vehicleRegistration}
+                    onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'vehicleRegistration', checked)}
+                  />
+                  <Label htmlFor="vehicleRegistration" className="cursor-pointer">Vehicle Registration</Label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="electricityBills" 
+                    checked={formData.withholdingTaxes.electricityBills}
+                    onCheckedChange={(checked) => handleNestedChange('withholdingTaxes', 'electricityBills', checked)}
+                  />
+                  <Label htmlFor="electricityBills" className="cursor-pointer">Electricity Bills (WHT if {'>'}Rs. 25k/month)</Label>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-2 pt-4">
+              <Label htmlFor="paidTax" className="text-base">Total Tax Already Paid:</Label>
+              <Input 
+                id="paidTax" 
+                type="number" 
+                value={formData.paidTax.toString()} 
+                onChange={(e) => handleInputChange('paidTax', Number(e.target.value))}
+                placeholder="0"
+              />
+            </div>
+          </div>
+        );
+        
+      case 'review':
+        return (
+          <div className="space-y-6">
+            <div className="bg-secondary/30 p-4 rounded-lg">
+              <h3 className="text-lg font-medium mb-2">Review Your Information</h3>
+              <p className="text-sm text-muted-foreground mb-4">Please review the information you've provided before final submission.</p>
+              
+              <div className="space-y-3">
+                <div>
+                  <span className="text-sm font-medium">CNIC:</span> 
+                  <span className="text-sm ml-2">{formData.cnic}</span>
+                </div>
+                
+                <div>
+                  <span className="text-sm font-medium">Taxpayer Category:</span> 
+                  <span className="text-sm ml-2">{formData.taxpayerCategory}</span>
+                </div>
+                
+                <div>
+                  <span className="text-sm font-medium">Residency Status:</span> 
+                  <span className="text-sm ml-2">{formData.residencyStatus
