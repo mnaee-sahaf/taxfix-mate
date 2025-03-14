@@ -28,7 +28,8 @@ const ExpensesStep = ({ formData, handleInputChange, handleNestedChange }: Expen
 
   // Initialize expenses and expenseAmounts if they don't exist
   if (!formData.expenses) {
-    handleInputChange('expenses', {
+    // Instead of using handleInputChange for an object, initialize each field individually
+    const defaultExpenses = {
       gas: false,
       electricity: false,
       water: false,
@@ -37,11 +38,16 @@ const ExpensesStep = ({ formData, handleInputChange, handleNestedChange }: Expen
       educational: false,
       travel: false,
       other: false
+    };
+    
+    Object.entries(defaultExpenses).forEach(([key, value]) => {
+      handleNestedChange('expenses', key, value);
     });
   }
 
   if (!formData.expenseAmounts) {
-    handleInputChange('expenseAmounts', {
+    // Instead of using handleInputChange for an object, initialize each field individually
+    const defaultExpenseAmounts = {
       gas: 0,
       electricity: 0,
       water: 0,
@@ -50,6 +56,10 @@ const ExpensesStep = ({ formData, handleInputChange, handleNestedChange }: Expen
       educational: 0,
       travel: 0,
       other: 0
+    };
+    
+    Object.entries(defaultExpenseAmounts).forEach(([key, value]) => {
+      handleNestedChange('expenseAmounts', key, value);
     });
   }
 

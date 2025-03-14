@@ -103,3 +103,8 @@ export interface TaxData {
   paidTax: number;
   balanceDue: number;
 }
+
+// Add a new interface for the TaxFiling component props
+export interface TaxFilingProps {
+  updateTaxData?: (data: TaxData) => void;
+}

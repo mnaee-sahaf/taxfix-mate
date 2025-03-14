@@ -10,7 +10,7 @@ import { triggerSuccessfulSubmission } from '@/utils/animations';
 import TaxFormProgress from '@/components/tax-filing/TaxFormProgress';
 import TaxFormStepNavigation from '@/components/tax-filing/TaxFormStepNavigation';
 import StepRenderer from '@/components/tax-filing/StepRenderer';
-import { TaxFormData, Step, TaxData } from '@/components/tax-filing/types';
+import { TaxFormData, Step, TaxData, TaxFilingProps } from '@/components/tax-filing/types';
 
 const STEPS: Step[] = [
   {
@@ -55,7 +55,7 @@ const STEPS: Step[] = [
   },
 ];
 
-const TaxFiling: React.FC = () => {
+const TaxFiling: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [savedProgress, setSavedProgress] = useState(true);
   const [formData, setFormData] = useState<TaxFormData>({
@@ -124,6 +124,29 @@ const TaxFiling: React.FC = () => {
       vehicleRegistration: true,
       electricityBills: false,
       contractPayments: false
+    },
+    
+    // Add the missing properties
+    expenses: {
+      gas: false,
+      electricity: false,
+      water: false,
+      telephone: false,
+      medical: false,
+      educational: false,
+      travel: false,
+      other: false
+    },
+    
+    expenseAmounts: {
+      gas: 0,
+      electricity: 0,
+      water: 0,
+      telephone: 0,
+      medical: 0,
+      educational: 0,
+      travel: 0,
+      other: 0
     },
     
     penaltyUnderstanding: false,
@@ -230,6 +253,11 @@ const TaxFiling: React.FC = () => {
     };
     
     console.log("Calculated Values:", taxData);
+
+    // Call the updateTaxData callback if it exists
+    if (updateTaxData) {
+      updateTaxData(taxData);
+    }
 
     // Generate the PDF
     try {
