@@ -37,30 +37,32 @@ const DeductionsStep = ({
         <p className="text-sm">Claim all eligible deductions to reduce your taxable income.</p>
       </div>
 
+      <DeductionToggles 
+        formData={formData} 
+        handleDeductionToggle={handleDeductionToggle} 
+      />
+      
       <Tabs 
         value={activeTab} 
         onValueChange={setActiveTab} 
         className="w-full pt-4"
       >
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="deductions-form">Deduction Details</TabsTrigger>
+          <TabsTrigger value="deductions-form">Deduction Values</TabsTrigger>
           <TabsTrigger value="deductions-notes">Additional Notes</TabsTrigger>
         </TabsList>
         
         <TabsContent value="deductions-form">
-          <div className="space-y-6">
-            <DeductionToggles 
+          {Object.values(formData.eligibleDeductions || {}).some(Boolean) ? (
+            <DeductionValues 
               formData={formData} 
-              handleDeductionToggle={handleDeductionToggle} 
+              handleDeductionAmountChange={handleDeductionAmountChange} 
             />
-            
-            {Object.values(formData.eligibleDeductions || {}).some(Boolean) && (
-              <DeductionValues 
-                formData={formData} 
-                handleDeductionAmountChange={handleDeductionAmountChange} 
-              />
-            )}
-          </div>
+          ) : (
+            <div className="px-4 py-3 bg-muted rounded-lg mt-4">
+              <p className="text-sm text-muted-foreground">Please select at least one deduction type to enter values.</p>
+            </div>
+          )}
         </TabsContent>
         
         <TabsContent value="deductions-notes">
