@@ -1,5 +1,4 @@
-
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +12,20 @@ import { Switch } from '@/components/ui/switch';
 import { User, Settings, Lock, Bell, CreditCard, Shield, LogOut } from 'lucide-react';
 
 const Profile = () => {
+
+  const [fullName, setFullName] = useState('Ahmed Khan');
+  const [email, setEmail] = useState('ahmed.khan@gmail.com');
+  const [phone, setPhone] = useState('+92 300 1234567');
+  const [cnic, setCnic] = useState('42201-1234567-8');
+  const [address, setAddress] = useState('123 Main Street, DHA 2');
+  const [city, setCity] = useState('Lahore');
+  const [province, setProvince] = useState('Punjab');
+  const [postalCode, setPostalCode] = useState('54000');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState(''); 
+  const [joinDate, setJoinDate] = useState('January 2025');
+  const [accountType, setAccountType] = useState('Premium');
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -31,10 +44,10 @@ const Profile = () => {
               </Avatar>
               
               <div className="text-center md:text-left">
-                <h1 className="text-3xl font-bold mb-1">Ahmed Khan</h1>
-                <p className="text-muted-foreground mb-4">ahmed.khan@email.com</p>
+                <h1 className="text-3xl font-bold mb-1">{fullName}</h1>
+                <p className="text-muted-foreground mb-4">{email}</p>
                 <p className="text-sm text-muted-foreground">
-                  CNIC: 42201-1234567-8 • Account Type: Premium • Member since: January 2023
+                  CNIC: {cnic} • Account Type: {accountType} • Member since: {joinDate}
                 </p>
               </div>
             </div>
@@ -83,19 +96,19 @@ const Profile = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="full-name">Full Name</Label>
-                        <Input id="full-name" defaultValue="Ahmed Khan" />
+                        <Input id="full-name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
-                        <Input id="email" type="email" defaultValue="ahmed.khan@email.com" />
+                        <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="phone">Phone Number</Label>
-                        <Input id="phone" defaultValue="+92 300 1234567" />
+                        <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="cnic">CNIC</Label>
-                        <Input id="cnic" defaultValue="42201-1234567-8" disabled />
+                        <Input id="cnic" defaultValue="42201-1234567-8" onChange={(e) => setCnic(e.target.value)}/>
                       </div>
                     </div>
                     
@@ -103,21 +116,21 @@ const Profile = () => {
                     
                     <div className="space-y-2">
                       <Label htmlFor="address">Address</Label>
-                      <Input id="address" defaultValue="123 Main Street, Karachi" />
+                      <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="city">City</Label>
-                        <Input id="city" defaultValue="Karachi" />
+                        <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="province">Province</Label>
-                        <Input id="province" defaultValue="Sindh" />
+                        <Input id="province" value={province} onChange={(e) => setProvince(e.target.value)} />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="postal-code">Postal Code</Label>
-                        <Input id="postal-code" defaultValue="75600" />
+                        <Input id="postal-code" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
                       </div>
                     </div>
                   </CardContent>

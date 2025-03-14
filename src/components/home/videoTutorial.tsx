@@ -6,9 +6,9 @@ export function VideoTutorial() {
       <iframe
         width="560"
         height="315"
-        src="https://www.youtube.com/embed/R8E3arXq75Q&ab_channel=SaturdayNightLive"
+        src="https://www.youtube.com/embed/fbkVewraXr4?si=jP7l2_fP0r7eYkI1"
         title="YouTube video player"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture web-share"
         allowFullScreen
       ></iframe>
     </div>

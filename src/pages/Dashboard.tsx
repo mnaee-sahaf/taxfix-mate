@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -8,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { FileText, Upload, Bell, CreditCard, ArrowRight, Calendar, ChevronRight } from 'lucide-react';
 
-const Dashboard = () => {
+const currentYear = new Date().getFullYear();
+const Dashboard = ({ taxData }) => {
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -23,7 +23,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 animate-fade-up">
           <div className="flex flex-col md:flex-row items-start justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Welcome back, Ahmed</h1>
+              <h1 className="text-3xl font-bold mb-2">Hi there!</h1>
               <p className="text-muted-foreground">Here's an overview of your tax filing status</p>
             </div>
             
@@ -32,7 +32,7 @@ const Dashboard = () => {
                 <Bell size={18} className="mr-2" />
                 Notifications
               </Button>
-              <Button className="rounded-full button-shine">
+              <Button onClick={() => navigate('/filing')} className="rounded-full button-shine">
                 <FileText size={18} className="mr-2" />
                 New Return
               </Button>
@@ -42,28 +42,28 @@ const Dashboard = () => {
           {/* Status Card */}
           <Card className="mb-8 glass-panel">
             <CardHeader>
-              <CardTitle>2023 Tax Return Status</CardTitle>
-              <CardDescription>You've begun your 2023 tax return but haven't submitted it yet</CardDescription>
+              <CardTitle>{currentYear} Tax Return Status</CardTitle>
+              <CardDescription>Begin and submit your Tax Return to the FBR to avoid penalty charges</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="mb-2 flex justify-between items-center">
                 <span className="text-sm font-medium">Completion: 65%</span>
-                <span className="text-sm text-muted-foreground">Due: June 30, 2024</span>
+                <span className="text-sm text-muted-foreground">Due: September 30, {currentYear}</span>
               </div>
               <Progress value={65} className="h-2" />
               
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="rounded-lg p-4 bg-secondary/50">
                   <div className="text-muted-foreground text-sm">Calculated Tax</div>
-                  <div className="text-2xl font-bold">₨ 124,500</div>
+                  <div className="text-2xl font-bold">₨ {new Intl.NumberFormat('en-US').format(taxData.calculatedTax)}</div>
                 </div>
                 <div className="rounded-lg p-4 bg-secondary/50">
                   <div className="text-muted-foreground text-sm">Paid Tax</div>
-                  <div className="text-2xl font-bold">₨ 102,300</div>
+                  <div className="text-2xl font-bold">₨ {new Intl.NumberFormat('en-US').format(taxData.paidTax)}</div>
                 </div>
                 <div className="rounded-lg p-4 bg-secondary/50">
                   <div className="text-muted-foreground text-sm">Balance Due</div>
-                  <div className="text-2xl font-bold text-primary">₨ 22,200</div>
+                  <div className="text-2xl font-bold text-primary">₨ {new Intl.NumberFormat('en-US').format(taxData.balanceDue)}</div>
                 </div>
               </div>
             </CardContent>
