@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -126,7 +125,6 @@ const TaxFiling: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
       contractPayments: false
     },
     
-    // Add the missing properties
     expenses: {
       gas: false,
       electricity: false,
@@ -147,6 +145,30 @@ const TaxFiling: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
       educational: 0,
       travel: 0,
       other: 0
+    },
+    
+    assets: {
+      agriculturalProperty: false,
+      residentialProperty: false,
+      stocksBonds: false,
+      car: false,
+      motorbike: false,
+      cash: false,
+      gold: false,
+      other: false,
+      assetsOutsidePakistan: false
+    },
+    
+    assetValues: {
+      agriculturalProperty: 0,
+      residentialProperty: 0,
+      stocksBonds: 0,
+      car: 0,
+      motorbike: 0,
+      cash: 0,
+      gold: 0,
+      other: 0,
+      assetsOutsidePakistan: 0
     },
     
     penaltyUnderstanding: false,
@@ -206,7 +228,6 @@ const TaxFiling: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
   };
   
   const handleSubmit = () => {
-    // Calculate tax values
     const totalIncome = 
       (formData.incomeStreams.salary ? formData.salaryIncome : 0) + 
       (formData.incomeStreams.business ? formData.businessIncome : 0) + 
@@ -254,12 +275,10 @@ const TaxFiling: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
     
     console.log("Calculated Values:", taxData);
 
-    // Call the updateTaxData callback if it exists
     if (updateTaxData) {
       updateTaxData(taxData);
     }
 
-    // Generate the PDF
     try {
       generateTaxPDF(formData);
       console.log("PDF generated successfully");
@@ -277,7 +296,6 @@ const TaxFiling: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
       duration: 5000,
     });
     
-    // Ensure we navigate to the dashboard after submission
     setTimeout(() => {
       navigate('/dashboard');
     }, 2000);
