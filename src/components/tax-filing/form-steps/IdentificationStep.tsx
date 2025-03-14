@@ -1,11 +1,11 @@
 
 import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TaxFormData } from '../types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TaxFormData } from '../types';
 import IdentificationNotes from './identification/IdentificationNotes';
 
 interface IdentificationStepProps {
@@ -14,10 +14,14 @@ interface IdentificationStepProps {
 }
 
 const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepProps) => {
-  const [showNotes, setShowNotes] = useState(false);
+  const [activeTab, setActiveTab] = useState('identification-form');
 
   return (
     <div className="space-y-6">
+      <div className="px-4 py-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+        <p className="text-sm">Provide accurate identification details to ensure proper tax filing.</p>
+      </div>
+
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="cnic" className="text-base">Provide your 13-digit Computerized National Identity Card (CNIC) number</Label>
@@ -65,14 +69,18 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
         </div>
       </div>
 
-      <Tabs defaultValue="identification-form" className="w-full pt-4">
+      <Tabs 
+        value={activeTab} 
+        onValueChange={setActiveTab} 
+        className="w-full pt-4"
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="identification-form">Identification Details</TabsTrigger>
-          <TabsTrigger value="identification-notes" onClick={() => setShowNotes(true)}>Additional Notes</TabsTrigger>
+          <TabsTrigger value="identification-notes">Additional Notes</TabsTrigger>
         </TabsList>
         
         <TabsContent value="identification-form">
-          <div className="p-4 bg-secondary/30 rounded-lg">
+          <div className="p-4 bg-secondary/30 rounded-lg mt-4">
             <p className="text-sm">Please ensure all identification details match your official records.</p>
           </div>
         </TabsContent>
