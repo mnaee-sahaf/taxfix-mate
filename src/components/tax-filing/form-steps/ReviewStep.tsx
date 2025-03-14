@@ -1,8 +1,11 @@
 
+import { useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxFormData } from '../types';
+import ReviewNotes from './review/ReviewNotes';
 
 interface ReviewStepProps {
   formData: TaxFormData;
@@ -10,6 +13,8 @@ interface ReviewStepProps {
 }
 
 const ReviewStep = ({ formData, handleInputChange }: ReviewStepProps) => {
+  const [showNotes, setShowNotes] = useState(false);
+
   return (
     <div className="space-y-6">
       <div className="bg-secondary/30 p-4 rounded-lg">
@@ -95,6 +100,23 @@ const ReviewStep = ({ formData, handleInputChange }: ReviewStepProps) => {
           </SelectContent>
         </Select>
       </div>
+
+      <Tabs defaultValue="review-form" className="w-full pt-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="review-form">Review Summary</TabsTrigger>
+          <TabsTrigger value="review-notes" onClick={() => setShowNotes(true)}>Additional Notes</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="review-form">
+          <div className="p-4 bg-secondary/30 rounded-lg">
+            <p className="text-sm">Please carefully review all information before final submission.</p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="review-notes">
+          <ReviewNotes />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

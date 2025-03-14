@@ -1,8 +1,11 @@
 
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxFormData } from '../types';
+import WithholdingNotes from './withholding/WithholdingNotes';
 
 interface WithholdingStepProps {
   formData: TaxFormData;
@@ -11,6 +14,8 @@ interface WithholdingStepProps {
 }
 
 const WithholdingStep = ({ formData, handleInputChange, handleNestedChange }: WithholdingStepProps) => {
+  const [showNotes, setShowNotes] = useState(false);
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -55,6 +60,23 @@ const WithholdingStep = ({ formData, handleInputChange, handleNestedChange }: Wi
           placeholder="0"
         />
       </div>
+
+      <Tabs defaultValue="withholding-form" className="w-full pt-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="withholding-form">Withholding Details</TabsTrigger>
+          <TabsTrigger value="withholding-notes" onClick={() => setShowNotes(true)}>Additional Notes</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="withholding-form">
+          <div className="p-4 bg-secondary/30 rounded-lg">
+            <p className="text-sm">Report all withholding taxes paid to reduce your final tax liability.</p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="withholding-notes">
+          <WithholdingNotes />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

@@ -1,9 +1,12 @@
 
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxFormData } from '../types';
+import IdentificationNotes from './identification/IdentificationNotes';
 
 interface IdentificationStepProps {
   formData: TaxFormData;
@@ -11,6 +14,8 @@ interface IdentificationStepProps {
 }
 
 const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepProps) => {
+  const [showNotes, setShowNotes] = useState(false);
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -59,6 +64,23 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
           </Select>
         </div>
       </div>
+
+      <Tabs defaultValue="identification-form" className="w-full pt-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="identification-form">Identification Details</TabsTrigger>
+          <TabsTrigger value="identification-notes" onClick={() => setShowNotes(true)}>Additional Notes</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="identification-form">
+          <div className="p-4 bg-secondary/30 rounded-lg">
+            <p className="text-sm">Please ensure all identification details match your official records.</p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="identification-notes">
+          <IdentificationNotes />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

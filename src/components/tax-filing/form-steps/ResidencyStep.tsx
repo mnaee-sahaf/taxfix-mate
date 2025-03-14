@@ -1,9 +1,12 @@
 
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, Info } from 'lucide-react';
 import { TaxFormData } from '../types';
+import ResidencyNotes from './residency/ResidencyNotes';
 
 interface ResidencyStepProps {
   formData: TaxFormData;
@@ -11,6 +14,8 @@ interface ResidencyStepProps {
 }
 
 const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
+  const [showNotes, setShowNotes] = useState(false);
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -86,6 +91,23 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
           )}
         </div>
       </div>
+
+      <Tabs defaultValue="residency-form" className="w-full pt-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="residency-form">Residency Details</TabsTrigger>
+          <TabsTrigger value="residency-notes" onClick={() => setShowNotes(true)}>Additional Notes</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="residency-form">
+          <div className="p-4 bg-secondary/30 rounded-lg">
+            <p className="text-sm">Your residency status determines how your income will be taxed in Pakistan.</p>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="residency-notes">
+          <ResidencyNotes />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
