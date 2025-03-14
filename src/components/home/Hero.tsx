@@ -80,15 +80,15 @@ const Hero = () => {
               <div className="text-sm text-muted-foreground">Accuracy Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary">2M+</div>
+              <div className="text-3xl font-bold text-primary">2K+</div>
               <div className="text-sm text-muted-foreground">Returns Filed</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary">5K+</div>
+              <div className="text-3xl font-bold text-primary">50+</div>
               <div className="text-sm text-muted-foreground">5-Star Reviews</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary">₨15B</div>
+              <div className="text-3xl font-bold text-primary">₨1M</div>
               <div className="text-sm text-muted-foreground">Refunds Issued</div>
             </div>
           </div>

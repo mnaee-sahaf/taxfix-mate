@@ -59,10 +59,10 @@ const Dashboard = ({ taxData = { calculatedTax: 0, paidTax: 0, balanceDue: 0 } }
             </CardHeader>
             <CardContent>
               <div className="mb-2 flex justify-between items-center">
-                <span className="text-sm font-medium">Completion: 65%</span>
+                <span className="text-sm font-medium">Completion: 5%</span>
                 <span className="text-sm text-muted-foreground">Due: September 30, {currentYear}</span>
               </div>
-              <Progress value={65} className="h-2" />
+              <Progress value={5} className="h-2" />
               
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="rounded-lg p-4 bg-secondary/50">
@@ -81,7 +81,7 @@ const Dashboard = ({ taxData = { calculatedTax: 0, paidTax: 0, balanceDue: 0 } }
             </CardContent>
             <CardFooter className="flex justify-between">
               <Button variant="outline">Save & Exit</Button>
-              <Button onClick={() => navigate('/filing')}>Continue Filing</Button>
+              <Button onClick={() => navigate('/filing')}>Start Filing</Button>
             </CardFooter>
           </Card>
           
