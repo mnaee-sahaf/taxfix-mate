@@ -44,37 +44,28 @@ const TaxFormStepNavigation: React.FC<TaxFormStepNavigationProps> = ({
         Previous
       </Button>
       
-        {/* <Button
-          variant="outline"
-          onClick={saveProgress}
-          disabled={savedProgress}
+      <Button
+        className='pd-2'
+        variant="outline"
+        onClick={handleSaveAndExit}
+      >
+        <Home className="mr-2 h-4 w-4" />
+        Save & Exit
+      </Button>
+      
+      {isLastStep ? (
+        <Button 
+          onClick={handleSubmit}
+          disabled={!penaltyUnderstanding}
         >
-          <Save className="mr-2 h-4 w-4" />
-          Save Progress
-        </Button> */}
-        
-        <Button
-          className='pd-2'
-          variant="outline"
-          onClick={handleSaveAndExit}
-        >
-          <Home className="mr-2 h-4 w-4" />
-          Save & Exit
+          Submit Return
         </Button>
-        
-        {isLastStep ? (
-          <Button 
-            onClick={handleSubmit}
-            disabled={!penaltyUnderstanding}
-          >
-            Submit Return
-          </Button>
-        ) : (
-          <Button onClick={nextStep}>
-            Next
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        )}
+      ) : (
+        <Button onClick={nextStep}>
+          Next
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 };

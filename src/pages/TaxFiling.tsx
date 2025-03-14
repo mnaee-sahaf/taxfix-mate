@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from '@/hooks/use-toast';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from '@/components/ui/use-toast';
 import { generateTaxPDF } from '@/utils/pdfGenerator';
 import { triggerSuccessfulSubmission } from '@/utils/animations';
 import TaxFormProgress from '@/components/tax-filing/TaxFormProgress';
 import TaxFormStepNavigation from '@/components/tax-filing/TaxFormStepNavigation';
 import StepRenderer from '@/components/tax-filing/StepRenderer';
-import { Step, TaxFormData, TaxData } from '@/components/tax-filing/types';
+import { TaxFormData, Step, TaxData } from '@/components/tax-filing/types';
 
 const STEPS: Step[] = [
   {
@@ -27,7 +30,7 @@ const STEPS: Step[] = [
   },
   {
     id: 'expenses',
-    title: 'Expense',
+    title: 'Expenses',
     description: 'Enter all your expenses',
   },
   {
@@ -52,16 +55,7 @@ const STEPS: Step[] = [
   },
 ];
 
-interface TaxFilingProps {
-  updateTaxData: (data: TaxData) => void;
-}
-
-const TaxFiling = ({ updateTaxData }: TaxFilingProps) => {
-  if (!updateTaxData) {
-    console.error("updateTaxData is not defined!");
-    return null;
-  }
-
+const TaxFiling: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [savedProgress, setSavedProgress] = useState(true);
   const [formData, setFormData] = useState<TaxFormData>({
@@ -151,14 +145,6 @@ const TaxFiling = ({ updateTaxData }: TaxFilingProps) => {
     }));
     setSavedProgress(false);
   };
-
-  const handleNestedArrayChange = (name: string, value: any[]) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    setSavedProgress(false);
-  };
   
   const handleNestedChange = (category: string, field: string, value: boolean | string | number) => {
     setFormData(prev => ({
@@ -237,22 +223,21 @@ const TaxFiling = ({ updateTaxData }: TaxFilingProps) => {
       taxLiability = taxLiability * 0.85; // 15% reduced rate
     }
     
-    // Log the calculated values before updating
-    console.log("Calculated Values:", {
+    const taxData: TaxData = {
       calculatedTax: taxLiability,
       paidTax: formData.paidTax || 0,
       balanceDue: Math.max(0, taxLiability - (formData.paidTax || 0)),
-    });
+    };
+    
+    console.log("Calculated Values:", taxData);
 
-    // Update the parent component with the calculated values
-    updateTaxData({
-      calculatedTax: taxLiability,
-      paidTax: formData.paidTax || 0,
-      balanceDue: Math.max(0, taxLiability - (formData.paidTax || 0)),
-    });
-
-    // Generate and download the PDF report
-    generateTaxPDF(formData);
+    // Generate the PDF
+    try {
+      generateTaxPDF(formData);
+      console.log("PDF generated successfully");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
     
     localStorage.removeItem('taxFilingProgress');
     
@@ -262,54 +247,51 @@ const TaxFiling = ({ updateTaxData }: TaxFilingProps) => {
       title: "Tax return submitted!",
       description: "Your tax return has been successfully submitted to FBR and a PDF report has been downloaded.",
       duration: 5000,
-      variant: "success",
     });
     
-    setTimeout(() => navigate('/dashboard'), 3000);
+    // Ensure we navigate to the dashboard after submission
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 2000);
   };
   
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Tax Return Filing</h1>
-        <p className="text-muted-foreground">Complete your tax return for the tax year 2023-2024</p>
-      </div>
-      
-      <TaxFormProgress currentStep={currentStep} steps={STEPS} />
-      
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="text-xl">{STEPS[currentStep].title}</CardTitle>
-          <CardDescription>{STEPS[currentStep].description}</CardDescription>
-        </CardHeader>
-        
-        <CardContent>
-          <StepRenderer 
-            stepId={STEPS[currentStep].id} 
-            formData={formData} 
-            handleInputChange={handleInputChange} 
-            handleNestedChange={handleNestedChange} 
-          />
-        </CardContent>
-        
-        <CardFooter>
-          <TaxFormStepNavigation
-            currentStep={currentStep}
-            steps={STEPS}
-            prevStep={prevStep}
-            nextStep={nextStep}
-            saveProgress={saveProgress}
-            handleSubmit={handleSubmit}
-            savedProgress={savedProgress}
-            penaltyUnderstanding={formData.penaltyUnderstanding}
-          />
-        </CardFooter>
-      </Card>
-      
-      <div className="text-xs text-muted-foreground text-center">
-        <p>Protected by Taxfix encryption. All information is stored securely.</p>
-        <p className="mt-1">Need help? WhatsApp Taxfix helpline at 0321-4499907 or email at helpline@taxfix.pk</p>
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-grow container max-w-4xl mx-auto px-4 py-8 md:py-16 mt-16">
+        <Card>
+          <CardContent className="p-6">
+            <TaxFormProgress 
+              currentStep={currentStep} 
+              steps={STEPS} 
+            />
+            
+            <h2 className="text-2xl font-bold mb-2">{STEPS[currentStep].title}</h2>
+            <p className="text-muted-foreground mb-6">{STEPS[currentStep].description}</p>
+            
+            <div className="py-4">
+              <StepRenderer 
+                stepId={STEPS[currentStep].id}
+                formData={formData}
+                handleInputChange={handleInputChange}
+                handleNestedChange={handleNestedChange}
+              />
+            </div>
+            
+            <TaxFormStepNavigation 
+              currentStep={currentStep}
+              steps={STEPS}
+              prevStep={prevStep}
+              nextStep={nextStep}
+              saveProgress={saveProgress}
+              handleSubmit={handleSubmit}
+              savedProgress={savedProgress}
+              penaltyUnderstanding={formData.penaltyUnderstanding}
+            />
+          </CardContent>
+        </Card>
+      </main>
+      <Footer />
     </div>
   );
 };

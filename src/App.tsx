@@ -8,9 +8,9 @@ import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import CalculatorPage from "./pages/Calculator";
 import TaxFiling from "./pages/TaxFiling";
+import TaxManagement from "./pages/TaxManagement";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-import { TaxData } from "./components/tax-filing/types";
 
 const queryClient = new QueryClient();
 
@@ -24,9 +24,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/calculator" element={<CalculatorPage />} />
-          <Route path="/filing" element={<TaxFiling updateTaxData={function (data: TaxData): void {
-            throw new Error("Function not implemented.");
-          } }/>} />
+          <Route path="/filing" element={<TaxFiling />} />
+          <Route path="/tax-management" element={<TaxManagement />} />
           <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
