@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -52,7 +53,7 @@ const IncomeStep = ({ formData, handleInputChange, handleNestedChange }: IncomeS
   };
 
   const handleIncomeAmountChange = (field: keyof typeof formData.incomeAmounts) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleNestedChange('incomeAmounts', field, Number(e.target.value));
+    handleNestedChange('incomeAmounts', field as string, Number(e.target.value));
   };
   
   return (

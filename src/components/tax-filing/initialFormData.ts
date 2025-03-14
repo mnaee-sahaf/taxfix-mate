@@ -32,6 +32,16 @@ export const initialTaxFormData: TaxFormData = {
   capitalGainsIncome: 150000,
   foreignIncome: 0,
   
+  // Added incomeAmounts object to match the updated interface
+  incomeAmounts: {
+    salaryIncome: 1200000,
+    businessIncome: 0,
+    rentalIncome: 350000,
+    agriculturalIncome: 0,
+    capitalGainsIncome: 150000,
+    foreignIncome: 0
+  },
+  
   eligibleDeductions: {
     lifeInsurance: true,
     pension: true,

@@ -2,13 +2,23 @@
 import { TaxFormData, TaxData } from '@/components/tax-filing/types';
 
 export function calculateTax(formData: TaxFormData): TaxData {
+  // Use incomeAmounts object for calculations if it exists, otherwise use individual fields
+  const incomeAmounts = formData.incomeAmounts || {
+    salaryIncome: formData.salaryIncome,
+    businessIncome: formData.businessIncome,
+    rentalIncome: formData.rentalIncome,
+    agriculturalIncome: formData.agriculturalIncome,
+    capitalGainsIncome: formData.capitalGainsIncome,
+    foreignIncome: formData.foreignIncome
+  };
+  
   const totalIncome = 
-    (formData.incomeStreams.salary ? formData.salaryIncome : 0) + 
-    (formData.incomeStreams.business ? formData.businessIncome : 0) + 
-    (formData.incomeStreams.rental ? formData.rentalIncome : 0) + 
-    (formData.incomeStreams.agricultural ? formData.agriculturalIncome : 0) + 
-    (formData.incomeStreams.capitalGains ? formData.capitalGainsIncome : 0) + 
-    (formData.incomeStreams.foreign ? formData.foreignIncome : 0);
+    (formData.incomeStreams.salary ? incomeAmounts.salaryIncome : 0) + 
+    (formData.incomeStreams.business ? incomeAmounts.businessIncome : 0) + 
+    (formData.incomeStreams.rental ? incomeAmounts.rentalIncome : 0) + 
+    (formData.incomeStreams.agricultural ? incomeAmounts.agriculturalIncome : 0) + 
+    (formData.incomeStreams.capitalGains ? incomeAmounts.capitalGainsIncome : 0) + 
+    (formData.incomeStreams.foreign ? incomeAmounts.foreignIncome : 0);
   
   const totalDeductions = 
     (formData.eligibleDeductions.lifeInsurance ? formData.lifeInsuranceAmount : 0) + 

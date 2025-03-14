@@ -1,4 +1,3 @@
-
 export interface Step {
   id: string;
   title: string;
@@ -35,6 +34,15 @@ export interface TaxFormData {
   agriculturalIncome: number;
   capitalGainsIncome: number;
   foreignIncome: number;
+  
+  incomeAmounts: {
+    salaryIncome: number;
+    businessIncome: number;
+    rentalIncome: number;
+    agriculturalIncome: number;
+    capitalGainsIncome: number;
+    foreignIncome: number;
+  };
   
   eligibleDeductions: {
     lifeInsurance: boolean;
@@ -128,7 +136,6 @@ export interface TaxData {
   balanceDue: number;
 }
 
-// Add a new interface for the TaxFiling component props
 export interface TaxFilingProps {
   updateTaxData?: (data: TaxData) => void;
 }
