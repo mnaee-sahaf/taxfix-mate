@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { TaxFormData } from './types';
 import IdentificationStep from './form-steps/IdentificationStep';
 import ResidencyStep from './form-steps/ResidencyStep';
@@ -16,35 +17,69 @@ interface StepRendererProps {
   handleNestedChange: (category: string, field: string, value: boolean | string | number) => void;
 }
 
-const StepRenderer = ({ stepId, formData, handleInputChange, handleNestedChange }: StepRendererProps) => {
-  switch (stepId) {
-    case 'identification':
-      return <IdentificationStep formData={formData} handleInputChange={handleInputChange} />;
-    
-    case 'residency':
-      return <ResidencyStep formData={formData} handleInputChange={handleInputChange} />;
-    
-    case 'income':
-      return <IncomeStep formData={formData} handleInputChange={handleInputChange} handleNestedChange={handleNestedChange} />;
+const StepRenderer: React.FC<StepRendererProps> = ({ 
+  stepId, 
+  formData, 
+  handleInputChange, 
+  handleNestedChange 
+}) => {
+  // Map of step IDs to their corresponding components with required props
+  const stepComponents: Record<string, React.ReactNode> = {
+    'identification': (
+      <IdentificationStep 
+        formData={formData} 
+        handleInputChange={handleInputChange} 
+      />
+    ),
+    'residency': (
+      <ResidencyStep 
+        formData={formData} 
+        handleInputChange={handleInputChange} 
+      />
+    ),
+    'income': (
+      <IncomeStep 
+        formData={formData} 
+        handleInputChange={handleInputChange} 
+        handleNestedChange={handleNestedChange} 
+      />
+    ),
+    'expenses': (
+      <ExpensesStep 
+        formData={formData} 
+        handleInputChange={handleInputChange} 
+        handleNestedChange={handleNestedChange} 
+      />
+    ),
+    'deductions': (
+      <DeductionsStep 
+        formData={formData} 
+      />
+    ),
+    'assets': (
+      <AssetsStep 
+        formData={formData} 
+        handleInputChange={handleInputChange} 
+        handleNestedChange={handleNestedChange} 
+      />
+    ),
+    'withholding': (
+      <WithholdingStep 
+        formData={formData} 
+        handleInputChange={handleInputChange} 
+        handleNestedChange={handleNestedChange} 
+      />
+    ),
+    'review': (
+      <ReviewStep 
+        formData={formData} 
+        handleInputChange={handleInputChange} 
+      />
+    ),
+  };
 
-    case 'expenses':
-      return <ExpensesStep formData={formData} handleInputChange={handleInputChange} handleNestedChange={handleNestedChange} />;
-
-    case 'deductions':
-      return <DeductionsStep formData={formData} />;
-    
-    case 'assets':
-      return <AssetsStep formData={formData} handleInputChange={handleInputChange} handleNestedChange={handleNestedChange} />;
-    
-    case 'withholding':
-      return <WithholdingStep formData={formData} handleInputChange={handleInputChange} handleNestedChange={handleNestedChange} />;
-    
-    case 'review':
-      return <ReviewStep formData={formData} handleInputChange={handleInputChange} />;
-    
-    default:
-      return null;
-  }
+  // Return the component for the current step or null if not found
+  return stepComponents[stepId] || null;
 };
 
 export default StepRenderer;
