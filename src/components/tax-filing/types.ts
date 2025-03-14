@@ -1,3 +1,4 @@
+
 export interface Step {
   id: string;
   title: string;
@@ -49,6 +50,8 @@ export interface TaxFormData {
     pension: boolean;
     donations: boolean;
     education: boolean;
+    royalty: boolean;
+    zakat: boolean;
   };
   specialTaxCredits: {
     firstTimeFiler: boolean;
@@ -60,6 +63,8 @@ export interface TaxFormData {
   pensionAmount: number;
   donationAmount: number;
   educationAmount: number;
+  royaltyAmount: number;
+  zakatAmount: number;
   
   bankAccounts: {
     accountNumber: string;

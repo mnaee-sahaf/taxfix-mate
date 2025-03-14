@@ -46,7 +46,9 @@ export const initialTaxFormData: TaxFormData = {
     lifeInsurance: true,
     pension: true,
     donations: true,
-    education: true
+    education: true,
+    royalty: false,
+    zakat: false
   },
   specialTaxCredits: {
     firstTimeFiler: false,
@@ -58,6 +60,8 @@ export const initialTaxFormData: TaxFormData = {
   pensionAmount: 120000,
   donationAmount: 80000,
   educationAmount: 150000,
+  royaltyAmount: 0,
+  zakatAmount: 0,
   
   bankAccounts: [
     {

@@ -24,7 +24,9 @@ export function calculateTax(formData: TaxFormData): TaxData {
     (formData.eligibleDeductions.lifeInsurance ? formData.lifeInsuranceAmount : 0) + 
     (formData.eligibleDeductions.pension ? formData.pensionAmount : 0) + 
     (formData.eligibleDeductions.donations ? formData.donationAmount : 0) + 
-    (formData.eligibleDeductions.education ? formData.educationAmount : 0);
+    (formData.eligibleDeductions.education ? formData.educationAmount : 0) +
+    (formData.eligibleDeductions.royalty ? (formData.royaltyAmount || 0) : 0) +
+    (formData.eligibleDeductions.zakat ? (formData.zakatAmount || 0) : 0);
   
   const taxableIncome = Math.max(0, totalIncome - totalDeductions);
   

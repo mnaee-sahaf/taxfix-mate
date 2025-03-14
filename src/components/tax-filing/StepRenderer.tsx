@@ -54,6 +54,8 @@ const StepRenderer: React.FC<StepRendererProps> = ({
     'deductions': (
       <DeductionsStep 
         formData={formData} 
+        handleInputChange={handleInputChange} 
+        handleNestedChange={handleNestedChange} 
       />
     ),
     'assets': (
