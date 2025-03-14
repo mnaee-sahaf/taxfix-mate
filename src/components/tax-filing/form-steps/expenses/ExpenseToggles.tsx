@@ -16,7 +16,7 @@ import { TaxFormData } from '../../types';
 
 interface ExpenseTogglesProps {
   formData: TaxFormData;
-  handleExpenseToggle: (field: keyof typeof formData.expenses) => (checked: boolean) => void;
+  handleExpenseToggle: (field: keyof TaxFormData['expenses']) => (checked: boolean) => void;
 }
 
 const ExpenseToggles = ({ formData, handleExpenseToggle }: ExpenseTogglesProps) => {
