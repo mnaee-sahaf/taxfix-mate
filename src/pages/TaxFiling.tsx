@@ -1,8 +1,7 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { generateTaxPDF } from '@/utils/pdfGenerator';
 import { triggerSuccessfulSubmission } from '@/utils/animations';
 import TaxFormProgress from '@/components/tax-filing/TaxFormProgress';
@@ -252,6 +251,7 @@ const TaxFiling = ({ updateTaxData }: TaxFilingProps) => {
       balanceDue: Math.max(0, taxLiability - (formData.paidTax || 0)),
     });
 
+    // Generate and download the PDF report
     generateTaxPDF(formData);
     
     localStorage.removeItem('taxFilingProgress');

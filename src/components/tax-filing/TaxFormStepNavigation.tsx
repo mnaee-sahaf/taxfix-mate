@@ -1,7 +1,8 @@
 
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Home } from 'lucide-react';
 import { Step } from './types';
+import { useNavigate } from 'react-router-dom';
 
 interface TaxFormStepNavigationProps {
   currentStep: number;
@@ -25,6 +26,12 @@ const TaxFormStepNavigation: React.FC<TaxFormStepNavigationProps> = ({
   penaltyUnderstanding
 }) => {
   const isLastStep = currentStep === steps.length - 1;
+  const navigate = useNavigate();
+  
+  const handleSaveAndExit = () => {
+    saveProgress();
+    navigate('/dashboard');
+  };
 
   return (
     <div className="flex justify-between border-t px-6 pt-6">
@@ -45,6 +52,14 @@ const TaxFormStepNavigation: React.FC<TaxFormStepNavigationProps> = ({
         >
           <Save className="mr-2 h-4 w-4" />
           Save Progress
+        </Button>
+        
+        <Button
+          variant="outline"
+          onClick={handleSaveAndExit}
+        >
+          <Home className="mr-2 h-4 w-4" />
+          Save & Exit
         </Button>
         
         {isLastStep ? (
