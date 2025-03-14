@@ -4,7 +4,7 @@ import IncomeAmountInput from './IncomeAmountInput';
 
 interface IncomeAmountInputsProps {
   formData: TaxFormData;
-  handleIncomeAmountChange: (field: keyof typeof formData.incomeAmounts) => (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleIncomeAmountChange: (field: keyof TaxFormData['incomeAmounts']) => (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const IncomeAmountInputs = ({ formData, handleIncomeAmountChange }: IncomeAmountInputsProps) => {

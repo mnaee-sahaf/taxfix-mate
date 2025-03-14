@@ -5,7 +5,7 @@ import { TaxFormData } from '../../types';
 
 interface IncomeToggleSectionProps {
   formData: TaxFormData;
-  handleIncomeToggle: (field: keyof typeof formData.incomeStreams) => (checked: boolean) => void;
+  handleIncomeToggle: (field: keyof TaxFormData['incomeStreams']) => (checked: boolean) => void;
 }
 
 const IncomeToggleSection = ({ formData, handleIncomeToggle }: IncomeToggleSectionProps) => {
