@@ -34,7 +34,7 @@ const StepRenderer = ({ stepId, formData, handleInputChange, handleNestedChange 
       return <DeductionsStep formData={formData} />;
     
     case 'assets':
-      return <AssetsStep formData={formData} />;
+      return <AssetsStep formData={formData} handleInputChange={handleInputChange} handleNestedChange={handleNestedChange} />;
     
     case 'withholding':
       return <WithholdingStep formData={formData} handleInputChange={handleInputChange} handleNestedChange={handleNestedChange} />;

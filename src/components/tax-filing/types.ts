@@ -93,6 +93,30 @@ export interface TaxFormData {
     other: number;
   };
   
+  assets: {
+    agriculturalProperty: boolean;
+    residentialProperty: boolean;
+    stocksBonds: boolean;
+    car: boolean;
+    motorbike: boolean;
+    cash: boolean;
+    gold: boolean;
+    other: boolean;
+    assetsOutsidePakistan: boolean;
+  };
+  
+  assetValues: {
+    agriculturalProperty: number;
+    residentialProperty: number;
+    stocksBonds: number;
+    car: number;
+    motorbike: number;
+    cash: number;
+    gold: number;
+    other: number;
+    assetsOutsidePakistan: number;
+  };
+  
   penaltyUnderstanding: boolean;
   paymentMethod: string;
   paidTax: number;
