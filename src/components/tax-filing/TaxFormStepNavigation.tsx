@@ -34,7 +34,7 @@ const TaxFormStepNavigation: React.FC<TaxFormStepNavigationProps> = ({
   };
 
   return (
-    <div className="flex justify-between border-t px-6 pt-6">
+    <div className="flex justify-between border-t px-6 pt-6 space-x-4">
       <Button
         variant="outline"
         onClick={prevStep}
@@ -44,17 +44,17 @@ const TaxFormStepNavigation: React.FC<TaxFormStepNavigationProps> = ({
         Previous
       </Button>
       
-      <div className="flex items-center space-x-2">
-        <Button
+        {/* <Button
           variant="outline"
           onClick={saveProgress}
           disabled={savedProgress}
         >
           <Save className="mr-2 h-4 w-4" />
           Save Progress
-        </Button>
+        </Button> */}
         
         <Button
+          className='pd-2'
           variant="outline"
           onClick={handleSaveAndExit}
         >
@@ -75,7 +75,6 @@ const TaxFormStepNavigation: React.FC<TaxFormStepNavigationProps> = ({
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         )}
-      </div>
     </div>
   );
 };
