@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -7,13 +8,24 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { FileText, Upload, Bell, CreditCard, ArrowRight, Calendar, ChevronRight } from 'lucide-react';
 
+interface TaxDataProps {
+  calculatedTax: number;
+  paidTax: number;
+  balanceDue: number;
+}
+
 const currentYear = new Date().getFullYear();
-const Dashboard = ({ taxData }) => {
+const Dashboard = ({ taxData = { calculatedTax: 0, paidTax: 0, balanceDue: 0 } }: { taxData?: TaxDataProps }) => {
   const navigate = useNavigate();
   
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Using optional chaining and nullish coalescing to ensure safe data access
+  const calculatedTax = taxData?.calculatedTax ?? 0;
+  const paidTax = taxData?.paidTax ?? 0;
+  const balanceDue = taxData?.balanceDue ?? 0;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -55,15 +67,15 @@ const Dashboard = ({ taxData }) => {
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="rounded-lg p-4 bg-secondary/50">
                   <div className="text-muted-foreground text-sm">Calculated Tax</div>
-                  <div className="text-2xl font-bold">₨ {new Intl.NumberFormat('en-US').format(taxData.calculatedTax)}</div>
+                  <div className="text-2xl font-bold">₨ {new Intl.NumberFormat('en-US').format(calculatedTax)}</div>
                 </div>
                 <div className="rounded-lg p-4 bg-secondary/50">
                   <div className="text-muted-foreground text-sm">Paid Tax</div>
-                  <div className="text-2xl font-bold">₨ {new Intl.NumberFormat('en-US').format(taxData.paidTax)}</div>
+                  <div className="text-2xl font-bold">₨ {new Intl.NumberFormat('en-US').format(paidTax)}</div>
                 </div>
                 <div className="rounded-lg p-4 bg-secondary/50">
                   <div className="text-muted-foreground text-sm">Balance Due</div>
-                  <div className="text-2xl font-bold text-primary">₨ {new Intl.NumberFormat('en-US').format(taxData.balanceDue)}</div>
+                  <div className="text-2xl font-bold text-primary">₨ {new Intl.NumberFormat('en-US').format(balanceDue)}</div>
                 </div>
               </div>
             </CardContent>
