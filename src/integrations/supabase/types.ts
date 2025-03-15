@@ -9,7 +9,63 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          cnic: string | null
+          created_at: string
+          id: string
+          name: string | null
+          residency_status: string | null
+          taxpayer_category: string | null
+          updated_at: string
+        }
+        Insert: {
+          cnic?: string | null
+          created_at?: string
+          id: string
+          name?: string | null
+          residency_status?: string | null
+          taxpayer_category?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cnic?: string | null
+          created_at?: string
+          id?: string
+          name?: string | null
+          residency_status?: string | null
+          taxpayer_category?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tax_filings: {
+        Row: {
+          created_at: string
+          form_data: Json
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          form_data: Json
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          form_data?: Json
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

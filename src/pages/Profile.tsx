@@ -1,397 +1,336 @@
-import { useEffect, useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { User, Settings, Lock, Bell, CreditCard, Shield, LogOut } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import { TaxFormData } from '@/components/tax-filing/types';
+import { FileText, Calendar, CheckCircle, Clock } from 'lucide-react';
+
+interface UserProfile {
+  id: string;
+  name: string | null;
+  cnic: string | null;
+  taxpayer_category: string | null;
+  residency_status: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface TaxFiling {
+  id: string;
+  user_id: string;
+  form_data: TaxFormData;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
 
 const Profile = () => {
-
-  const [fullName, setFullName] = useState('Ahmed Khan');
-  const [email, setEmail] = useState('ahmed.khan@gmail.com');
-  const [phone, setPhone] = useState('+92 300 1234567');
-  const [cnic, setCnic] = useState('42201-1234567-8');
-  const [address, setAddress] = useState('123 Main Street, DHA 2');
-  const [city, setCity] = useState('Lahore');
-  const [province, setProvince] = useState('Punjab');
-  const [postalCode, setPostalCode] = useState('54000');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState(''); 
-  const [joinDate, setJoinDate] = useState('January 2025');
-  const [accountType, setAccountType] = useState('Premium');
-
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [taxFilings, setTaxFilings] = useState<TaxFiling[]>([]);
+  const [profileEdits, setProfileEdits] = useState({
+    name: '',
+    cnic: '',
+    taxpayer_category: '',
+    residency_status: ''
+  });
+  
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
+    if (!user) return;
+    
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch profile
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        if (profileError) throw profileError;
+        
+        setProfile(profileData);
+        setProfileEdits({
+          name: profileData.name || '',
+          cnic: profileData.cnic || '',
+          taxpayer_category: profileData.taxpayer_category || '',
+          residency_status: profileData.residency_status || ''
+        });
+        
+        // Fetch tax filings
+        const { data: filingsData, error: filingsError } = await supabase
+          .from('tax_filings')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('updated_at', { ascending: false });
+        
+        if (filingsError) throw filingsError;
+        
+        setTaxFilings(filingsData || []);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        toast({
+          title: "Error loading profile",
+          description: "There was an error loading your profile information.",
+          duration: 3000,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchUserData();
+  }, [user, toast]);
+  
+  const handleProfileUpdate = async () => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          name: profileEdits.name,
+          cnic: profileEdits.cnic,
+          taxpayer_category: profileEdits.taxpayer_category,
+          residency_status: profileEdits.residency_status,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+      
+      if (error) throw error;
+      
+      // Update local state
+      setProfile(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          name: profileEdits.name,
+          cnic: profileEdits.cnic,
+          taxpayer_category: profileEdits.taxpayer_category,
+          residency_status: profileEdits.residency_status,
+          updated_at: new Date().toISOString()
+        };
+      });
+      
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been updated successfully.",
+      });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Update failed",
+        description: "There was an error updating your profile information.",
+      });
+    }
+  };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setProfileEdits(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+  
+  const continueTaxFiling = (filing: TaxFiling) => {
+    // Store the form data in localStorage and navigate to tax filing page
+    localStorage.setItem('taxFilingProgress', JSON.stringify(filing.form_data));
+    navigate('/filing');
+  };
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <main className="flex-grow container max-w-4xl mx-auto px-4 py-8 md:py-16 mt-16">
+          <div className="flex items-center justify-center h-full">
+            <p>Loading profile information...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+  
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
-      <main className="flex-grow pt-24 pb-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto animate-fade-up">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-10">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-                <AvatarFallback>AK</AvatarFallback>
-              </Avatar>
-              
-              <div className="text-center md:text-left">
-                <h1 className="text-3xl font-bold mb-1">{fullName}</h1>
-                <p className="text-muted-foreground mb-4">{email}</p>
-                <p className="text-sm text-muted-foreground">
-                  CNIC: {cnic} • Account Type: {accountType} • Member since: {joinDate}
-                </p>
-              </div>
-            </div>
-            
-            <Tabs defaultValue="personal" className="w-full">
-              <div className="flex overflow-auto pb-2 mb-6">
-                <TabsList className="inline-flex h-auto bg-transparent p-0 w-full justify-start gap-2">
-                  <TabsTrigger 
-                    value="personal" 
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2"
-                  >
-                    <User className="h-4 w-4 mr-2" />
-                    Personal Info
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="security" 
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2"
-                  >
-                    <Lock className="h-4 w-4 mr-2" />
-                    Security
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="notifications" 
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2"
-                  >
-                    <Bell className="h-4 w-4 mr-2" />
-                    Notifications
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="payment" 
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-full px-4 py-2"
-                  >
-                    <CreditCard className="h-4 w-4 mr-2" />
-                    Payment Methods
-                  </TabsTrigger>
-                </TabsList>
-              </div>
-              
-              <TabsContent value="personal">
-                <Card className="glass-panel">
-                  <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
-                    <CardDescription>Update your personal details</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="full-name">Full Name</Label>
-                        <Input id="full-name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="cnic">CNIC</Label>
-                        <Input id="cnic" defaultValue="42201-1234567-8" onChange={(e) => setCnic(e.target.value)}/>
-                      </div>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Address</Label>
-                      <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="city">City</Label>
-                        <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="province">Province</Label>
-                        <Input id="province" value={province} onChange={(e) => setProvince(e.target.value)} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="postal-code">Postal Code</Label>
-                        <Input id="postal-code" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="justify-between">
-                    <Button variant="outline">Cancel</Button>
-                    <Button className="button-shine">Save Changes</Button>
-                  </CardFooter>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="security">
-                <Card className="glass-panel">
-                  <CardHeader>
-                    <CardTitle>Security Settings</CardTitle>
-                    <CardDescription>Manage your account security</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="current-password">Current Password</Label>
-                      <Input id="current-password" type="password" />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="new-password">New Password</Label>
-                        <Input id="new-password" type="password" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="confirm-password">Confirm New Password</Label>
-                        <Input id="confirm-password" type="password" />
-                      </div>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Two-Factor Authentication</h3>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="text-sm font-medium">SMS Authentication</div>
-                          <div className="text-xs text-muted-foreground">
-                            Receive a code via SMS for additional security
-                          </div>
-                        </div>
-                        <Switch />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="text-sm font-medium">Authenticator App</div>
-                          <div className="text-xs text-muted-foreground">
-                            Use an authenticator app for additional security
-                          </div>
-                        </div>
-                        <Switch defaultChecked />
-                      </div>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Linked Accounts</h3>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="text-sm font-medium">Google</div>
-                          <div className="text-xs text-muted-foreground">
-                            Connected to ahmed.khan@gmail.com
-                          </div>
-                        </div>
-                        <Button variant="outline" size="sm">Disconnect</Button>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="text-sm font-medium">Facebook</div>
-                          <div className="text-xs text-muted-foreground">Not connected</div>
-                        </div>
-                        <Button variant="outline" size="sm">Connect</Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="justify-between">
-                    <Button variant="outline" className="text-destructive">
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Log Out of All Devices
-                    </Button>
-                    <Button className="button-shine">Save Changes</Button>
-                  </CardFooter>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="notifications">
-                <Card className="glass-panel">
-                  <CardHeader>
-                    <CardTitle>Notification Preferences</CardTitle>
-                    <CardDescription>Manage how you receive notifications</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Email Notifications</h3>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="text-sm font-medium">Tax Updates</div>
-                          <div className="text-xs text-muted-foreground">
-                            Receive updates about tax laws and regulations
-                          </div>
-                        </div>
-                        <Switch defaultChecked />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="text-sm font-medium">Filing Reminders</div>
-                          <div className="text-xs text-muted-foreground">
-                            Get reminded about upcoming tax filing deadlines
-                          </div>
-                        </div>
-                        <Switch defaultChecked />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="text-sm font-medium">Payment Confirmations</div>
-                          <div className="text-xs text-muted-foreground">
-                            Receive confirmations for tax payments
-                          </div>
-                        </div>
-                        <Switch defaultChecked />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="text-sm font-medium">Marketing Emails</div>
-                          <div className="text-xs text-muted-foreground">
-                            Receive promotional offers and newsletters
-                          </div>
-                        </div>
-                        <Switch />
-                      </div>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium">SMS Notifications</h3>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="text-sm font-medium">Security Alerts</div>
-                          <div className="text-xs text-muted-foreground">
-                            Get alerts about important account security events
-                          </div>
-                        </div>
-                        <Switch defaultChecked />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <div className="text-sm font-medium">Tax Filing Updates</div>
-                          <div className="text-xs text-muted-foreground">
-                            Receive SMS updates about your tax filing status
-                          </div>
-                        </div>
-                        <Switch />
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button className="w-full button-shine">Save Preferences</Button>
-                  </CardFooter>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="payment">
-                <Card className="glass-panel">
-                  <CardHeader>
-                    <CardTitle>Payment Methods</CardTitle>
-                    <CardDescription>Manage your payment options</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="rounded-lg border border-border p-4">
-                      <div className="flex justify-between items-center mb-4">
-                        <div className="flex items-center">
-                          <div className="bg-primary/10 p-2 rounded mr-3">
-                            <CreditCard className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <div className="font-medium">Visa •••• 4321</div>
-                            <div className="text-xs text-muted-foreground">Expires 05/2025</div>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">Edit</Button>
-                          <Button variant="outline" size="sm">Remove</Button>
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground">Default payment method</div>
-                    </div>
-                    
-                    <div className="rounded-lg border border-border p-4">
-                      <div className="flex justify-between items-center mb-4">
-                        <div className="flex items-center">
-                          <div className="bg-primary/10 p-2 rounded mr-3">
-                            <CreditCard className="h-5 w-5 text-primary" />
-                          </div>
-                          <div>
-                            <div className="font-medium">Mastercard •••• 7890</div>
-                            <div className="text-xs text-muted-foreground">Expires 11/2024</div>
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">Edit</Button>
-                          <Button variant="outline" size="sm">Remove</Button>
-                        </div>
-                      </div>
-                      <div className="text-xs text-muted-foreground">Secondary payment method</div>
-                    </div>
-                    
-                    <Button variant="outline" className="w-full">
-                      <CreditCard className="h-4 w-4 mr-2" />
-                      Add New Payment Method
-                    </Button>
-                    
-                    <Separator />
-                    
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Billing Address</h3>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="billing-address">Address</Label>
-                        <Input id="billing-address" defaultValue="123 Main Street, Karachi" />
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="billing-city">City</Label>
-                          <Input id="billing-city" defaultValue="Karachi" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="billing-province">Province</Label>
-                          <Input id="billing-province" defaultValue="Sindh" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="billing-postal-code">Postal Code</Label>
-                          <Input id="billing-postal-code" defaultValue="75600" />
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button className="w-full button-shine">Save Changes</Button>
-                  </CardFooter>
-                </Card>
-              </TabsContent>
-            </Tabs>
+      <main className="flex-grow container max-w-4xl mx-auto px-4 py-8 md:py-16 mt-16">
+        <div className="grid gap-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold">My Profile</h1>
+            <Button variant="destructive" onClick={handleSignOut}>Sign Out</Button>
           </div>
+          
+          <Tabs defaultValue="profile" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="profile">Profile Information</TabsTrigger>
+              <TabsTrigger value="tax-filings">Tax Filings</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="profile">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile Information</CardTitle>
+                  <CardDescription>Update your personal information here</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" value={user?.email || ''} disabled />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input 
+                      id="name" 
+                      name="name"
+                      value={profileEdits.name} 
+                      onChange={handleInputChange}
+                      placeholder="Enter your full name" 
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="cnic">CNIC Number</Label>
+                    <Input 
+                      id="cnic" 
+                      name="cnic"
+                      value={profileEdits.cnic} 
+                      onChange={handleInputChange}
+                      placeholder="Enter your CNIC number" 
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="taxpayer_category">Taxpayer Category</Label>
+                    <Input 
+                      id="taxpayer_category" 
+                      name="taxpayer_category"
+                      value={profileEdits.taxpayer_category} 
+                      onChange={handleInputChange}
+                      placeholder="e.g. Salaried, Business, etc." 
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="residency_status">Residency Status</Label>
+                    <Input 
+                      id="residency_status" 
+                      name="residency_status"
+                      value={profileEdits.residency_status} 
+                      onChange={handleInputChange}
+                      placeholder="e.g. Resident, Non-Resident" 
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter>
+                  <Button onClick={handleProfileUpdate}>Save Changes</Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="tax-filings">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Tax Filings</CardTitle>
+                  <CardDescription>View and manage your tax filing history</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {taxFilings.length === 0 ? (
+                    <div className="text-center py-8">
+                      <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+                      <h3 className="mt-4 text-lg font-semibold">No tax filings yet</h3>
+                      <p className="text-muted-foreground">
+                        You haven't submitted any tax filings yet. Start a new tax filing to see it here.
+                      </p>
+                      <Button className="mt-4" onClick={() => navigate('/filing')}>
+                        Start New Filing
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {taxFilings.map((filing) => (
+                        <div 
+                          key={filing.id} 
+                          className="border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                        >
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-5 w-5 text-primary" />
+                              <h3 className="font-medium">
+                                Tax Filing {filing.form_data.name ? `for ${filing.form_data.name}` : ''}
+                              </h3>
+                              {filing.status === 'submitted' ? (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                  <CheckCircle className="mr-1 h-3 w-3" />
+                                  Submitted
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
+                                  <Clock className="mr-1 h-3 w-3" />
+                                  Draft
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Calendar className="h-4 w-4" />
+                              <span>Last updated: {formatDate(filing.updated_at)}</span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            {filing.status === 'draft' && (
+                              <Button onClick={() => continueTaxFiling(filing)}>
+                                Continue
+                              </Button>
+                            )}
+                            {filing.status === 'submitted' && (
+                              <Button variant="outline" onClick={() => continueTaxFiling(filing)}>
+                                View Details
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
-      
       <Footer />
     </div>
   );

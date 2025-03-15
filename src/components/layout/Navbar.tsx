@@ -4,12 +4,15 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { MenuIcon, X } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import UserProfileMenu from '../auth/UserProfileMenu';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,7 +37,7 @@ const Navbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const handleLogin = () => {
-    navigate('/dashboard');
+    navigate('/auth');
   };
 
   const handleSignUp = () => {
@@ -76,12 +79,18 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="outline" className="rounded-full" onClick={handleLogin}>
-            Login
-          </Button>
-          <Button className="rounded-full button-shine" onClick={handleSignUp}>
-            Sign Up
-          </Button>
+          {isAuthenticated ? (
+            <UserProfileMenu />
+          ) : (
+            <>
+              <Button variant="outline" className="rounded-full" onClick={handleLogin}>
+                Login
+              </Button>
+              <Button className="rounded-full button-shine" onClick={handleSignUp}>
+                Sign Up
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -112,12 +121,20 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="flex flex-col gap-2 pt-2 border-t border-border">
-              <Button variant="outline" className="w-full" onClick={handleLogin}>
-                Login
-              </Button>
-              <Button className="w-full" onClick={handleSignUp}>
-                Sign Up
-              </Button>
+              {isAuthenticated ? (
+                <Button variant="outline" onClick={() => navigate('/profile')}>
+                  My Profile
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" className="w-full" onClick={handleLogin}>
+                    Login
+                  </Button>
+                  <Button className="w-full" onClick={handleSignUp}>
+                    Sign Up
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
