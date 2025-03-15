@@ -1,30 +1,46 @@
 
 // Re-export all sidebar components from this index file
+
+// Main components from sidebar-components.tsx
 export {
   Sidebar,
-  SidebarContent,
+  SidebarTrigger,
+  SidebarRail,
+  SidebarInset,
+  SidebarInput,
+  SidebarHeader,
   SidebarFooter,
+  SidebarSeparator,
+  SidebarContent,
+} from './sidebar-components';
+
+// Group components from sidebar-group.tsx
+export {
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarGroupAction,
   SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarInput,
-  SidebarInset,
+} from './sidebar-group';
+
+// Menu components from sidebar-menu.tsx
+export {
   SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
   SidebarMenuAction,
   SidebarMenuBadge,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarMenuSkeleton,
+} from './sidebar-menu';
+
+// Submenu components from sidebar-submenu.tsx
+export {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarProvider,
-  SidebarRail,
-  SidebarSeparator,
-  SidebarTrigger,
-  useSidebar,
-} from './sidebar-components';
+} from './sidebar-submenu';
 
-export * from './sidebar-context';
+// Context provider
+export {
+  SidebarProvider,
+  useSidebar,
+} from './sidebar-context';
