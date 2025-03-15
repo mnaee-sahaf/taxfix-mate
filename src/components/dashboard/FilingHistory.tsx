@@ -2,9 +2,10 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileTextIcon, CheckCircleIcon } from 'lucide-react';
+import { FileTextIcon, CheckCircleIcon, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { TaxFormData } from '@/components/tax-filing/types';
+import { generateTaxPDF } from '@/utils/pdfGenerator';
 
 interface TaxFilingItem {
   id: string;
@@ -19,6 +20,17 @@ interface FilingHistoryProps {
 
 const FilingHistory = ({ taxFilings }: FilingHistoryProps) => {
   const navigate = useNavigate();
+  
+  const handleFilingAction = (filing: TaxFilingItem) => {
+    if (filing.status === 'submitted') {
+      // For submitted returns, just generate and show the PDF
+      generateTaxPDF(filing.form_data);
+    } else {
+      // For drafts, continue editing
+      localStorage.setItem('taxFilingProgress', JSON.stringify(filing.form_data));
+      navigate('/filing');
+    }
+  };
   
   return (
     <Card>
@@ -57,11 +69,15 @@ const FilingHistory = ({ taxFilings }: FilingHistoryProps) => {
                 </p>
               </div>
               
-              <Button variant="outline" size="sm" onClick={() => {
-                localStorage.setItem('taxFilingProgress', JSON.stringify(filing.form_data));
-                navigate('/filing');
-              }}>
-                {filing.status === 'submitted' ? 'View' : 'Continue'}
+              <Button variant="outline" size="sm" onClick={() => handleFilingAction(filing)}>
+                {filing.status === 'submitted' ? (
+                  <>
+                    <Eye className="mr-2 h-4 w-4" />
+                    View PDF
+                  </>
+                ) : (
+                  'Continue'
+                )}
               </Button>
             </div>
           ))}

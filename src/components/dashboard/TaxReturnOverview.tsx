@@ -3,8 +3,9 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle as CheckCircleIcon } from 'lucide-react';
+import { CheckCircle as CheckCircleIcon, FileText, Eye } from 'lucide-react';
 import { TaxFormData } from '@/components/tax-filing/types';
+import { generateTaxPDF } from '@/utils/pdfGenerator';
 
 interface TaxFilingItem {
   id: string;
@@ -20,6 +21,20 @@ interface TaxReturnOverviewProps {
 
 const TaxReturnOverview = ({ taxFilings, formatCurrency }: TaxReturnOverviewProps) => {
   const navigate = useNavigate();
+  
+  const handleViewReturn = () => {
+    if (taxFilings.length > 0) {
+      const latestFiling = taxFilings[0];
+      
+      if (latestFiling.status === 'submitted') {
+        // For submitted returns, just generate and show the PDF
+        generateTaxPDF(latestFiling.form_data);
+      } else {
+        // For drafts, navigate to the filing page
+        navigate('/filing');
+      }
+    }
+  };
   
   return (
     <Card>
@@ -86,9 +101,21 @@ const TaxReturnOverview = ({ taxFilings, formatCurrency }: TaxReturnOverviewProp
         )}
       </CardContent>
       <CardFooter>
-        <Button variant="outline" onClick={() => navigate('/filing')}>
-          View Complete Tax Return
-        </Button>
+        {taxFilings.length > 0 && (
+          <Button variant="outline" onClick={handleViewReturn}>
+            {taxFilings[0].status === 'submitted' ? (
+              <>
+                <Eye className="mr-2 h-4 w-4" />
+                View PDF Report
+              </>
+            ) : (
+              <>
+                <FileText className="mr-2 h-4 w-4" />
+                Continue Tax Return
+              </>
+            )}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

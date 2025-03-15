@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import TaxFiling from './TaxFiling';
@@ -7,10 +7,37 @@ import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { generateTaxPDF } from '@/utils/pdfGenerator';
 
 const Filing = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if the user is trying to edit a submitted return
+    const savedProgress = localStorage.getItem('taxFilingProgress');
+    if (savedProgress) {
+      try {
+        const formData = JSON.parse(savedProgress);
+        if (formData.isSubmitted) {
+          // This is a submitted return, redirect to dashboard and show PDF
+          toast({
+            title: "Submitted Tax Return",
+            description: "You cannot edit a submitted tax return. Viewing the PDF instead.",
+            variant: "destructive",
+          });
+          
+          // Show the PDF
+          generateTaxPDF(formData);
+          
+          // Redirect to dashboard
+          navigate('/dashboard');
+        }
+      } catch (error) {
+        console.error("Error parsing tax filing data:", error);
+      }
+    }
+  }, [navigate, toast]);
 
   const handleGoBack = () => {
     navigate('/dashboard');

@@ -41,8 +41,14 @@ export const useFormSubmission = ({
         duration: 3000,
       });
       
+      // Mark form as submitted
+      const submittedFormData = {
+        ...formData,
+        isSubmitted: true, // Add this flag to mark it as submitted
+      };
+      
       // Safe type conversion for Supabase
-      const formDataJson = formData as unknown as Json;
+      const formDataJson = submittedFormData as unknown as Json;
       
       // Save the completed form to Supabase
       if (user) {
@@ -95,12 +101,12 @@ export const useFormSubmission = ({
         if (profileError) console.error('Error updating profile:', profileError);
       }
       
-      // Generate PDF
-      generateTaxPDF(formData);
-      console.log("PDF generated successfully");
+      // Also update localStorage with the submitted flag
+      localStorage.setItem('taxFilingProgress', JSON.stringify(submittedFormData));
       
-      // Clean up localStorage
-      localStorage.removeItem('taxFilingProgress');
+      // Generate PDF
+      generateTaxPDF(submittedFormData);
+      console.log("PDF generated successfully");
       
       // Show success animation and message
       triggerSuccessfulSubmission();
