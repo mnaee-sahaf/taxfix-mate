@@ -9,8 +9,6 @@ import IncomeBreakdown from './IncomeBreakdown';
 import FilingHistory from './FilingHistory';
 import CompletionProgressCard from './CompletionProgressCard';
 import TaxDeadlineCard from './TaxDeadlineCard';
-import TaxInsightsPanel from './TaxInsightsPanel';
-import TaxSavingTips from './TaxSavingTips';
 
 interface TaxFiling {
   id: string;
@@ -68,11 +66,9 @@ const DashboardContent = ({
           </Tabs>
         </div>
         
-        {/* Right Sidebar */}
+        {/* Right Sidebar - Simplified to only show deadline */}
         <div className="space-y-6">
           <TaxDeadlineCard />
-          <TaxInsightsPanel taxData={taxData} />
-          <TaxSavingTips />
         </div>
       </div>
     </div>

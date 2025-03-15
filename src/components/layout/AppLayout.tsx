@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   SidebarProvider, 
@@ -17,6 +17,11 @@ const AppLayout = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+
+  // Redirect authenticated users away from the homepage
+  if (isAuthenticated && isHomePage) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   if (!isAuthenticated) {
     return (

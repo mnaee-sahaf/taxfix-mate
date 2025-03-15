@@ -7,7 +7,6 @@ import {
   FileText, 
   Calculator, 
   User, 
-  Settings, 
   ChevronRight,
   LogOut
 } from 'lucide-react';
@@ -32,7 +31,6 @@ const SidebarMenu = () => {
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Tax Filing', href: '/filing', icon: FileText },
     { name: 'Tax Calculator', href: '/calculator', icon: Calculator },
-    { name: 'Profile', href: '/profile', icon: User },
   ];
 
   const getInitials = (email: string) => {
@@ -44,12 +42,10 @@ const SidebarMenu = () => {
   return (
     <>
       <SidebarHeader className="px-2 py-2">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="font-bold text-xl">
-            <span>Tax</span>
-            <span className="text-primary">Fix</span>
-          </div>
-        </Link>
+        <div className="font-bold text-xl">
+          <span>Tax</span>
+          <span className="text-primary">Fix</span>
+        </div>
       </SidebarHeader>
       
       <SidebarGroup>
@@ -77,25 +73,29 @@ const SidebarMenu = () => {
       </SidebarGroup>
       
       <SidebarFooter className="mt-auto">
-        <div className="flex items-center gap-3 p-2">
-          <Avatar className="h-9 w-9">
-            <AvatarFallback className="bg-primary/10 text-primary">
-              {user?.email ? getInitials(user.email) : 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">
-              {user?.email && user.email.split('@')[0]}
-            </p>
-            <p className="text-xs text-muted-foreground truncate">
-              {user?.email}
-            </p>
-          </div>
+        <Separator className="my-2" />
+        <SidebarMenuItem>
+          <SidebarMenuButton 
+            asChild 
+            isActive={isActive('/profile')} 
+            tooltip="Profile"
+          >
+            <Link to="/profile">
+              <User className="h-5 w-5" />
+              <span>{user?.email}</span>
+              {isActive('/profile') && (
+                <ChevronRight className="h-4 w-4 ml-auto" />
+              )}
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <div className="p-2">
           <button 
             onClick={signOut}
-            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="w-full flex items-center gap-2 p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <LogOut className="h-4 w-4" />
+            <span>Sign out</span>
           </button>
         </div>
       </SidebarFooter>
