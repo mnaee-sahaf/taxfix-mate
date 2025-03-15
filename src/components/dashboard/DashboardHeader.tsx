@@ -35,11 +35,20 @@ const DashboardHeader = ({ taxFilings, refreshData }: DashboardHeaderProps) => {
 
   const handleRefresh = async () => {
     try {
+      // Clear any cached dashboard data
+      localStorage.removeItem('dashboardCache');
+      
+      // Refresh data from server
       await refreshData();
-      toast.success('Tax filings data refreshed');
+      
+      toast.success('Dashboard refreshed', {
+        description: 'The latest tax data has been loaded'
+      });
     } catch (error) {
       console.error('Error refreshing data:', error);
-      toast.error('Failed to refresh data');
+      toast.error('Failed to refresh data', {
+        description: 'Please try again later'
+      });
     }
   };
 
@@ -51,7 +60,7 @@ const DashboardHeader = ({ taxFilings, refreshData }: DashboardHeaderProps) => {
           variant="outline" 
           size="icon"
           onClick={handleRefresh} 
-          title="Refresh data"
+          title="Refresh dashboard data"
         >
           <RefreshCcw className="h-4 w-4" />
         </Button>

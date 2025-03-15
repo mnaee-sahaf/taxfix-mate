@@ -7,10 +7,8 @@ import {
   FileText, 
   Calculator, 
   User, 
-  ChevronRight,
-  LogOut
+  ChevronRight
 } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
 import { 
@@ -25,7 +23,7 @@ import {
 
 const SidebarMenu = () => {
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -33,16 +31,12 @@ const SidebarMenu = () => {
     { name: 'Tax Calculator', href: '/calculator', icon: Calculator },
   ];
 
-  const getInitials = (email: string) => {
-    return email.substring(0, 2).toUpperCase();
-  };
-
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <>
       <SidebarHeader className="px-2 py-2">
-        <div className="font-bold text-xl">
+        <div className="font-bold text-lg">
           <span>Tax</span>
           <span className="text-primary">Fix</span>
         </div>
@@ -59,10 +53,10 @@ const SidebarMenu = () => {
                   tooltip={item.name}
                 >
                   <Link to={item.href}>
-                    <item.icon className="h-5 w-5" />
+                    <item.icon className="h-4 w-4" />
                     <span>{item.name}</span>
                     {isActive(item.href) && (
-                      <ChevronRight className="h-4 w-4 ml-auto" />
+                      <ChevronRight className="h-3 w-3 ml-auto" />
                     )}
                   </Link>
                 </SidebarMenuButton>
@@ -81,23 +75,10 @@ const SidebarMenu = () => {
             tooltip="Profile"
           >
             <Link to="/profile">
-              <User className="h-5 w-5" />
-              <span>{user?.email}</span>
-              {isActive('/profile') && (
-                <ChevronRight className="h-4 w-4 ml-auto" />
-              )}
+              <User className="h-4 w-4" />
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
-        <div className="p-2">
-          <button 
-            onClick={signOut}
-            className="w-full flex items-center gap-2 p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Sign out</span>
-          </button>
-        </div>
       </SidebarFooter>
     </>
   );
