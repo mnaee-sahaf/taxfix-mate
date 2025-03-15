@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import IdentificationNotes from './identification/IdentificationNotes';
-import { AlertCircle, HelpCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface IdentificationStepProps {
   formData: TaxFormData;
@@ -25,7 +26,19 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name" className="text-base">Full Name (as per CNIC) <span className="required-field">*</span></Label>
+          <div className="flex items-center gap-1">
+            <Label htmlFor="name" className="text-base">Full Name (as per CNIC)</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-amber-500 ml-1">*</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Please enter your full name as it appears on your CNIC</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <Input 
             id="name" 
             value={formData.name} 
@@ -33,15 +46,22 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
             placeholder="Muhammad Ahmed"
             required
           />
-          {formData.name === '' && (
-            <p className="validation-message">
-              <HelpCircle className="h-3 w-3" /> Please enter your full name as it appears on your CNIC
-            </p>
-          )}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="cnic" className="text-base">Provide your 13-digit Computerized National Identity Card (CNIC) number <span className="required-field">*</span></Label>
+          <div className="flex items-center gap-1">
+            <Label htmlFor="cnic" className="text-base">Provide your 13-digit Computerized National Identity Card (CNIC) number</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-amber-500 ml-1">*</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Your CNIC number is required for tax filing</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <p className="text-sm text-muted-foreground">Enter without hyphens. This is mandatory for FBR registration.</p>
           <Input 
             id="cnic" 
@@ -51,11 +71,6 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
             maxLength={13}
             required
           />
-          {formData.cnic === '' && (
-            <p className="validation-message">
-              <HelpCircle className="h-3 w-3" /> Your CNIC number is required for tax filing
-            </p>
-          )}
         </div>
         
         <div className="space-y-2 pt-4">
@@ -73,7 +88,19 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
         </div>
         
         <div className="space-y-2 pt-4">
-          <Label htmlFor="taxpayerCategory" className="text-base">Select your taxpayer category: <span className="required-field">*</span></Label>
+          <div className="flex items-center gap-1">
+            <Label htmlFor="taxpayerCategory" className="text-base">Select your taxpayer category:</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-amber-500 ml-1">*</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Please select your taxpayer category</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <Select 
             value={formData.taxpayerCategory} 
             onValueChange={(value) => handleInputChange('taxpayerCategory', value)}
@@ -90,11 +117,6 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
               <SelectItem value="non-resident">Non-Resident Pakistani</SelectItem>
             </SelectContent>
           </Select>
-          {formData.taxpayerCategory === '' && (
-            <p className="validation-message">
-              <HelpCircle className="h-3 w-3" /> Please select your taxpayer category
-            </p>
-          )}
         </div>
       </div>
 

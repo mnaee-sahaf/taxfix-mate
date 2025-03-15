@@ -4,9 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, HelpCircle, Info } from 'lucide-react';
+import { Check, Info } from 'lucide-react';
 import { TaxFormData } from '../types';
 import ResidencyNotes from './residency/ResidencyNotes';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ResidencyStepProps {
   formData: TaxFormData;
@@ -20,7 +21,19 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="residencyDays" className="text-base">How many days did you physically reside in Pakistan during this tax year? <span className="required-field">*</span></Label>
+          <div className="flex items-center gap-1">
+            <Label htmlFor="residencyDays" className="text-base">How many days did you physically reside in Pakistan during this tax year?</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-amber-500 ml-1">*</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>This information is required to determine your tax residency status</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <Input 
             id="residencyDays" 
             type="number" 
@@ -41,11 +54,6 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
             placeholder="Enter number of days"
             required
           />
-          {formData.residencyDays === 0 && (
-            <p className="validation-message">
-              <HelpCircle className="h-3 w-3" /> This information is required to determine your tax residency status
-            </p>
-          )}
           <div className="px-3 py-2 bg-secondary/40 rounded mt-2 text-sm">
             <div className="flex items-start gap-2">
               <Info className="h-4 w-4 mt-0.5 text-primary" />

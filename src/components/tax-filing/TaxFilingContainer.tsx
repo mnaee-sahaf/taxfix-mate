@@ -107,7 +107,6 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
     } else if (validationError) {
       toast({
         description: validationError,
-        variant: "default",
       });
     }
   };
