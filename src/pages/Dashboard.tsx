@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -84,6 +85,12 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
     fetchTaxFilings();
   }, [user, isAuthenticated, propsTaxData]);
 
+  const handleNewTaxFiling = () => {
+    // Clear any existing tax filing data in localStorage
+    localStorage.removeItem('taxFilingProgress');
+    navigate('/filing');
+  };
+
   if (!isAuthenticated) {
     return <NotAuthenticatedView />;
   }
@@ -99,7 +106,7 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
         <div className="grid gap-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <h1 className="text-3xl font-bold">Tax Dashboard</h1>
-            <Button onClick={() => navigate('/filing')} className="flex items-center gap-2">
+            <Button onClick={handleNewTaxFiling} className="flex items-center gap-2">
               New Tax Filing
               <ArrowRightIcon className="h-4 w-4" />
             </Button>
