@@ -1,3 +1,4 @@
 
-// This file is just a re-export from the sidebar folder
-export * from './sidebar/index';
+// This file is kept empty since we're no longer using the sidebar
+// but other components might still import from it
+
