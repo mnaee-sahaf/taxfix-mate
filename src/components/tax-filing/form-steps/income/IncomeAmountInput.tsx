@@ -16,7 +16,7 @@ const IncomeAmountInput = ({ id, label, value, onChange }: IncomeAmountInputProp
       <Input 
         id={id} 
         type="number" 
-        value={value}
+        value={value === '0' ? '' : value}
         onChange={onChange}
         placeholder="0"
       />

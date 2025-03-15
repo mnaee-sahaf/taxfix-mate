@@ -23,7 +23,7 @@ const AssetAmountInput = ({
         id={id} 
         type="number" 
         placeholder="Enter value in PKR" 
-        value={value} 
+        value={value === 0 ? '' : value} 
         onChange={onChange}
       />
     </div>

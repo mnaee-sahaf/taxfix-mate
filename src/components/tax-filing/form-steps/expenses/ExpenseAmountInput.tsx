@@ -23,7 +23,7 @@ const ExpenseAmountInput = ({
         id={id} 
         type="number" 
         placeholder="Enter amount" 
-        value={value} 
+        value={value === 0 ? '' : value} 
         onChange={onChange}
       />
     </div>

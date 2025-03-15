@@ -23,7 +23,7 @@ const DeductionAmountInput = ({
         id={id} 
         type="number" 
         placeholder="Enter amount in PKR" 
-        value={value} 
+        value={value === 0 ? '' : value} 
         onChange={onChange}
       />
     </div>

@@ -14,7 +14,7 @@ const IncomeAmountInputs = ({ formData, handleIncomeAmountChange }: IncomeAmount
         <IncomeAmountInput
           id="salaryIncome"
           label="Salary Income"
-          value={formData.incomeAmounts.salaryIncome.toString()}
+          value={formData.incomeAmounts.salaryIncome === 0 ? '' : formData.incomeAmounts.salaryIncome.toString()}
           onChange={handleIncomeAmountChange('salaryIncome')}
         />
       )}
@@ -23,7 +23,7 @@ const IncomeAmountInputs = ({ formData, handleIncomeAmountChange }: IncomeAmount
         <IncomeAmountInput
           id="businessIncome"
           label="Business Income"
-          value={formData.incomeAmounts.businessIncome.toString()}
+          value={formData.incomeAmounts.businessIncome === 0 ? '' : formData.incomeAmounts.businessIncome.toString()}
           onChange={handleIncomeAmountChange('businessIncome')}
         />
       )}
@@ -32,7 +32,7 @@ const IncomeAmountInputs = ({ formData, handleIncomeAmountChange }: IncomeAmount
         <IncomeAmountInput
           id="rentalIncome"
           label="Rental Income"
-          value={formData.incomeAmounts.rentalIncome.toString()}
+          value={formData.incomeAmounts.rentalIncome === 0 ? '' : formData.incomeAmounts.rentalIncome.toString()}
           onChange={handleIncomeAmountChange('rentalIncome')}
         />
       )}
@@ -41,7 +41,7 @@ const IncomeAmountInputs = ({ formData, handleIncomeAmountChange }: IncomeAmount
         <IncomeAmountInput
           id="agriculturalIncome"
           label="Agricultural Income"
-          value={formData.incomeAmounts.agriculturalIncome.toString()}
+          value={formData.incomeAmounts.agriculturalIncome === 0 ? '' : formData.incomeAmounts.agriculturalIncome.toString()}
           onChange={handleIncomeAmountChange('agriculturalIncome')}
         />
       )}
@@ -50,7 +50,7 @@ const IncomeAmountInputs = ({ formData, handleIncomeAmountChange }: IncomeAmount
         <IncomeAmountInput
           id="capitalGainsIncome"
           label="Capital Gains Income"
-          value={formData.incomeAmounts.capitalGainsIncome.toString()}
+          value={formData.incomeAmounts.capitalGainsIncome === 0 ? '' : formData.incomeAmounts.capitalGainsIncome.toString()}
           onChange={handleIncomeAmountChange('capitalGainsIncome')}
         />
       )}
@@ -59,7 +59,7 @@ const IncomeAmountInputs = ({ formData, handleIncomeAmountChange }: IncomeAmount
         <IncomeAmountInput
           id="foreignIncome"
           label="Foreign Income"
-          value={formData.incomeAmounts.foreignIncome.toString()}
+          value={formData.incomeAmounts.foreignIncome === 0 ? '' : formData.incomeAmounts.foreignIncome.toString()}
           onChange={handleIncomeAmountChange('foreignIncome')}
         />
       )}
