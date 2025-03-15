@@ -1,5 +1,5 @@
 
-import { TaxFilingData } from '../pdfTypes';
+import { TaxFilingData } from './pdfTypes';
 
 export const calculateTotalIncome = (data: TaxFilingData): number => {
   const incomeAmounts = data.incomeAmounts || {
