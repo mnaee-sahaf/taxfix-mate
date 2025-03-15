@@ -70,7 +70,7 @@ const TaxReturnOverview = ({ taxFilings, formatCurrency }: TaxReturnOverviewProp
                   {Object.entries(taxFilings[0].form_data.incomeStreams).map(([key, value]) => 
                     value && (
                       <p key={key}>
-                        <span className="text-muted-foreground capitalize">{key}:</span> {formatCurrency(Number(taxFilings[0].form_data.incomeAmounts?.[key as keyof typeof taxFilings[0].form_data.incomeAmounts] || 0))}
+                        <span className="text-muted-foreground capitalize">{key}:</span> {formatCurrency(Number(taxFilings[0].form_data.incomeAmounts[key as keyof typeof taxFilings[0].form_data.incomeAmounts] || 0))}
                       </p>
                     )
                   )}
