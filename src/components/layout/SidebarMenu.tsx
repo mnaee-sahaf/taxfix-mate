@@ -6,8 +6,7 @@ import {
   LayoutDashboard, 
   FileText, 
   Calculator, 
-  User, 
-  ChevronRight
+  User
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
@@ -35,16 +34,15 @@ const SidebarMenu = () => {
 
   return (
     <>
-      <SidebarHeader className="px-1.5 py-1.5">
-        <div className="font-bold text-base">
-          <span>Tax</span>
-          <span className="text-primary">Fix</span>
+      <SidebarHeader className="px-2 py-3">
+        <div className="font-bold text-base flex items-center justify-center">
+          <span className="text-gradient bg-gradient-to-r from-primary to-blue-400 bg-clip-text text-transparent">TaxFix</span>
         </div>
       </SidebarHeader>
       
       <SidebarGroup>
         <SidebarGroupContent>
-          <Menu>
+          <Menu className="px-2">
             {navigation.map((item) => (
               <SidebarMenuItem key={item.name}>
                 <SidebarMenuButton 
@@ -52,24 +50,21 @@ const SidebarMenu = () => {
                   isActive={isActive(item.href)} 
                   tooltip={item.name}
                   className={cn(
-                    "transition-all duration-200",
-                    isActive(item.href) && "bg-primary/10 dark:bg-primary/20"
+                    "transition-all duration-200 mb-1",
+                    isActive(item.href) && "bg-primary/10"
                   )}
                 >
                   <Link to={item.href}>
                     <item.icon className={cn(
-                      "h-3.5 w-3.5 transition-all duration-200",
+                      "h-4 w-4 transition-all duration-200",
                       isActive(item.href) ? "text-primary" : "text-muted-foreground"
                     )} />
                     <span className={cn(
                       "text-sm",
-                      isActive(item.href) && "text-primary font-medium"
+                      isActive(item.href) ? "text-primary font-medium" : "text-muted-foreground"
                     )}>
                       {item.name}
                     </span>
-                    {isActive(item.href) && (
-                      <ChevronRight className="h-2.5 w-2.5 ml-auto text-primary" />
-                    )}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -78,26 +73,34 @@ const SidebarMenu = () => {
         </SidebarGroupContent>
       </SidebarGroup>
       
-      <SidebarFooter className="mt-auto">
-        <Separator className="my-1.5" />
-        <SidebarMenuItem>
-          <SidebarMenuButton 
-            asChild 
-            isActive={isActive('/profile')} 
-            tooltip={user?.email || "Profile"}
-            className={cn(
-              "transition-all duration-200",
-              isActive('/profile') && "bg-primary/10 dark:bg-primary/20"
-            )}
-          >
-            <Link to="/profile">
-              <User className={cn(
-                "h-3.5 w-3.5 transition-all duration-200",
-                isActive('/profile') ? "text-primary" : "text-muted-foreground"
-              )} />
-            </Link>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+      <SidebarFooter className="mt-auto mb-2">
+        <Separator className="my-2 opacity-50" />
+        <div className="px-2">
+          <SidebarMenuItem>
+            <SidebarMenuButton 
+              asChild 
+              isActive={isActive('/profile')} 
+              tooltip={user?.email || "Profile"}
+              className={cn(
+                "transition-all duration-200",
+                isActive('/profile') && "bg-primary/10"
+              )}
+            >
+              <Link to="/profile" className="flex items-center justify-center md:justify-start">
+                <User className={cn(
+                  "h-4 w-4 transition-all duration-200",
+                  isActive('/profile') ? "text-primary" : "text-muted-foreground"
+                )} />
+                <span className={cn(
+                  "text-sm",
+                  isActive('/profile') ? "text-primary font-medium" : "text-muted-foreground"
+                )}>
+                  Profile
+                </span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </div>
       </SidebarFooter>
     </>
   );

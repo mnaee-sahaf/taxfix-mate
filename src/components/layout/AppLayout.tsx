@@ -50,7 +50,9 @@ const AppLayout = () => {
           </Sidebar>
           
           <div className="flex-1 flex flex-col overflow-hidden">
-            <SidebarTrigger className="m-1.5 absolute z-10" />
+            <div className="absolute top-4 left-4 z-10">
+              <SidebarTrigger />
+            </div>
             <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900 pt-8">
               <Outlet />
             </main>
@@ -72,7 +74,9 @@ const AppLayout = () => {
         </Sidebar>
         
         <div className="flex-1 flex flex-col overflow-hidden">
-          <SidebarTrigger className="m-1.5 absolute z-10" />
+          <div className="absolute top-4 left-4 z-10">
+            <SidebarTrigger />
+          </div>
           <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900 pt-8">
             <Outlet />
           </main>

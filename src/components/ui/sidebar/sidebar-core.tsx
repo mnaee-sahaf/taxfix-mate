@@ -7,7 +7,7 @@ import { useSidebar } from "./sidebar-context"
 // Constants - updated to be more compact
 export const SIDEBAR_WIDTH = "14rem"
 export const SIDEBAR_WIDTH_MOBILE = "16rem"
-export const SIDEBAR_WIDTH_ICON = "2.5rem"
+export const SIDEBAR_WIDTH_ICON = "3.5rem"
 
 // Sidebar component
 export const Sidebar = React.forwardRef<
@@ -78,7 +78,7 @@ export const Sidebar = React.forwardRef<
         {/* This is what handles the sidebar gap on desktop */}
         <div
           className={cn(
-            "duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear",
+            "duration-300 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-in-out",
             "group-data-[collapsible=offcanvas]:w-0",
             "group-data-[side=right]:rotate-180",
             variant === "floating" || variant === "inset"
@@ -88,7 +88,7 @@ export const Sidebar = React.forwardRef<
         />
         <div
           className={cn(
-            "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
+            "duration-300 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-in-out md:flex",
             side === "left"
               ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
@@ -103,8 +103,8 @@ export const Sidebar = React.forwardRef<
           <div
             data-sidebar="sidebar"
             className={cn(
-              "flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow",
-              "group-data-[collapsible=icon]:bg-gradient-to-r group-data-[collapsible=icon]:from-sidebar-background group-data-[collapsible=icon]:to-sidebar-background/95 group-data-[collapsible=icon]:shadow"
+              "flex h-full w-full flex-col bg-sidebar/95 backdrop-blur-sm border-r border-border/20 shadow-md group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow-lg",
+              "group-data-[collapsible=icon]:shadow-md"
             )}
           >
             {children}
