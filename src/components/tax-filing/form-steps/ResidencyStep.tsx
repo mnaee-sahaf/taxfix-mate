@@ -24,9 +24,9 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
           <Input 
             id="residencyDays" 
             type="number" 
-            value={formData.residencyDays.toString()} 
+            value={formData.residencyDays === 0 ? '' : formData.residencyDays.toString()} 
             onChange={(e) => {
-              const days = Number(e.target.value);
+              const days = e.target.value === '' ? 0 : Number(e.target.value);
               let status = '';
               
               if (days < 120) status = 'non-resident';
@@ -38,6 +38,7 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
             }}
             min="0"
             max="366"
+            placeholder="Enter number of days"
             required
           />
           {formData.residencyDays === 0 && (

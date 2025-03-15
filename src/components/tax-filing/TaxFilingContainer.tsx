@@ -104,9 +104,8 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
   const handleNextStep = () => {
     if (validateCurrentStep()) {
       nextStep();
-    } else {
+    } else if (validationError) {
       toast({
-        title: "Please Review",
         description: validationError,
         variant: "default",
       });
