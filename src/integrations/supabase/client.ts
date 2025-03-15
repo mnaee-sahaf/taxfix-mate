@@ -5,8 +5,21 @@ import type { Database } from './types';
 
 const SUPABASE_URL = "https://riwyowmbpwkqgjkbdxkr.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpd3lvd21icHdrcWdqa2JkeGtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE5OTc5MTYsImV4cCI6MjA1NzU3MzkxNn0.sNZ2exqRF4_XR8rOUZTEBhTqcjOVxCeYe8Yno361o6c";
+const SITE_URL = "http://localhost:8080";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient<Database>(
+  SUPABASE_URL, 
+  SUPABASE_PUBLISHABLE_KEY, 
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce',
+      redirectTo: `${SITE_URL}/auth/callback`
+    }
+  }
+);

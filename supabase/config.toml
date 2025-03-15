@@ -1,1 +1,16 @@
+
 project_id = "riwyowmbpwkqgjkbdxkr"
+
+[auth.email]
+# Enable email confirmations
+enable_confirmations = true
+
+# Redirect URLs for auth flow
+site_url = "http://localhost:8080"
+confirmation_url = "http://localhost:8080/auth/confirm"
+invite_url = "http://localhost:8080/auth/invite"
+recovery_url = "http://localhost:8080/auth/reset"
+
+# Email template customization
+[auth.email.template]
+prefix = ""
