@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   SidebarProvider, 
@@ -15,6 +15,8 @@ import SidebarMenu from './SidebarMenu';
 
 const AppLayout = () => {
   const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   if (!isAuthenticated) {
     return (
