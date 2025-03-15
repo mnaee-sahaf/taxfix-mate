@@ -10,6 +10,7 @@ import Filing from '@/pages/Filing';
 import Calculator from '@/pages/Calculator';
 import Profile from '@/pages/Profile';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import PublicRoute from '@/components/auth/PublicRoute';
 import AuthCallback from '@/components/auth/AuthCallback';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -19,7 +20,11 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route element={<AppLayout />}>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={
+              <PublicRoute>
+                <Index />
+              </PublicRoute>
+            } />
             <Route path="/auth" element={<Auth />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route
