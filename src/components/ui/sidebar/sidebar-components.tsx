@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
@@ -19,10 +18,10 @@ import {
 
 import { useSidebar } from "./sidebar-context"
 
-// Constants
-const SIDEBAR_WIDTH = "16rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
-const SIDEBAR_WIDTH_ICON = "3rem"
+// Constants - updated to be more compact
+const SIDEBAR_WIDTH = "14rem"
+const SIDEBAR_WIDTH_MOBILE = "16rem"
+const SIDEBAR_WIDTH_ICON = "2.5rem"
 
 // Sidebar component
 export const Sidebar = React.forwardRef<
@@ -232,7 +231,7 @@ export const SidebarHeader = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="header"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn("flex flex-col gap-1 p-1.5", className)}
       {...props}
     />
   )
@@ -247,7 +246,7 @@ export const SidebarFooter = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn("flex flex-col gap-1 p-1.5", className)}
       {...props}
     />
   )

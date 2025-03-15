@@ -46,8 +46,8 @@ const AppLayout = () => {
         </Sidebar>
         
         <div className="flex-1 flex flex-col overflow-hidden">
-          <SidebarTrigger className="m-2 absolute z-10" />
-          <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900 pt-10">
+          <SidebarTrigger className="m-1.5 absolute z-10" />
+          <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900 pt-8">
             <Outlet />
           </main>
         </div>

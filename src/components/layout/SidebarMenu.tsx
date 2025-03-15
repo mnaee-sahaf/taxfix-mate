@@ -35,8 +35,8 @@ const SidebarMenu = () => {
 
   return (
     <>
-      <SidebarHeader className="px-2 py-2">
-        <div className="font-bold text-lg">
+      <SidebarHeader className="px-1.5 py-1.5">
+        <div className="font-bold text-base">
           <span>Tax</span>
           <span className="text-primary">Fix</span>
         </div>
@@ -53,10 +53,10 @@ const SidebarMenu = () => {
                   tooltip={item.name}
                 >
                   <Link to={item.href}>
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.name}</span>
+                    <item.icon className="h-3.5 w-3.5" />
+                    <span className="text-sm">{item.name}</span>
                     {isActive(item.href) && (
-                      <ChevronRight className="h-3 w-3 ml-auto" />
+                      <ChevronRight className="h-2.5 w-2.5 ml-auto" />
                     )}
                   </Link>
                 </SidebarMenuButton>
@@ -67,15 +67,15 @@ const SidebarMenu = () => {
       </SidebarGroup>
       
       <SidebarFooter className="mt-auto">
-        <Separator className="my-2" />
+        <Separator className="my-1.5" />
         <SidebarMenuItem>
           <SidebarMenuButton 
             asChild 
             isActive={isActive('/profile')} 
-            tooltip="Profile"
+            tooltip={user?.email || "Profile"}
           >
             <Link to="/profile">
-              <User className="h-4 w-4" />
+              <User className="h-3.5 w-3.5" />
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

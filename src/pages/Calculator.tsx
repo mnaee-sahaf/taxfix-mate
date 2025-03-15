@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { AlertCircle, Calculator as CalculatorIcon, Download } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const CalculatorTab = () => {
   const [salary, setSalary] = useState<number>(0);
@@ -260,10 +261,44 @@ const WHTab = () => (
 );
 
 const CalculatorPage = () => {
+  const { isAuthenticated } = useAuth();
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  // For authenticated users, don't show navbar and footer
+  if (isAuthenticated) {
+    return (
+      <div className="p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-8 animate-fade-down">
+            <h1 className="text-2xl font-bold mb-2">Tax Calculator</h1>
+            <p className="text-muted-foreground">
+              Estimate your tax liability with our easy-to-use calculators
+            </p>
+          </div>
+          
+          <Tabs defaultValue="income-tax" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="income-tax">Income Tax Calculator</TabsTrigger>
+              <TabsTrigger value="withholding-tax">Withholding Tax</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="income-tax">
+              <CalculatorTab />
+            </TabsContent>
+            
+            <TabsContent value="withholding-tax">
+              <WHTab />
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    );
+  }
+
+  // For non-authenticated users, show the original layout with navbar and footer
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
