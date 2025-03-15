@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, Check, Info } from 'lucide-react';
+import { Check, HelpCircle, Info } from 'lucide-react';
 import { TaxFormData } from '../types';
 import ResidencyNotes from './residency/ResidencyNotes';
 
@@ -20,7 +20,7 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="residencyDays" className="text-base">How many days did you physically reside in Pakistan during this tax year? <span className="text-red-500">*</span></Label>
+          <Label htmlFor="residencyDays" className="text-base">How many days did you physically reside in Pakistan during this tax year? <span className="required-field">*</span></Label>
           <Input 
             id="residencyDays" 
             type="number" 
@@ -41,8 +41,8 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
             required
           />
           {formData.residencyDays === 0 && (
-            <p className="text-sm text-red-500 flex items-center gap-1 mt-1">
-              <AlertCircle className="h-3 w-3" /> This field is required
+            <p className="validation-message">
+              <HelpCircle className="h-3 w-3" /> This information is required to determine your tax residency status
             </p>
           )}
           <div className="px-3 py-2 bg-secondary/40 rounded mt-2 text-sm">

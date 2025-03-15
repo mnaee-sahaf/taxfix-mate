@@ -6,6 +6,8 @@ import TaxFormStepNavigation from '@/components/tax-filing/TaxFormStepNavigation
 import StepRenderer from '@/components/tax-filing/StepRenderer';
 import { Step, TaxFormData } from '@/components/tax-filing/types';
 import { useToast } from "@/components/ui/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
 interface TaxFilingContainerProps {
   currentStep: number;
@@ -42,14 +44,14 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
     switch (currentStepId) {
       case 'identification':
         if (!formData.name || !formData.cnic || !formData.taxpayerCategory) {
-          setValidationError("Please fill in all required fields: Name, CNIC, and Taxpayer Category");
+          setValidationError("Please complete all required fields marked with an asterisk (*) before proceeding.");
           return false;
         }
         break;
         
       case 'residency':
         if (formData.residencyDays === 0 || !formData.residencyStatus) {
-          setValidationError("Please specify how many days you've resided in Pakistan");
+          setValidationError("Please specify how many days you've resided in Pakistan to determine your residency status.");
           return false;
         }
         break;
@@ -57,7 +59,7 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
       case 'income':
         const hasAnyIncome = Object.values(formData.incomeStreams).some(value => value === true);
         if (!hasAnyIncome) {
-          setValidationError("Please select at least one income source");
+          setValidationError("Please select at least one income source to proceed with your tax filing.");
           return false;
         }
         break;
@@ -65,7 +67,7 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
       case 'expenses':
         const hasAnyExpense = Object.values(formData.expenses).some(value => value === true);
         if (!hasAnyExpense) {
-          setValidationError("Please select at least one expense type");
+          setValidationError("Please select at least one expense type that applies to your situation.");
           return false;
         }
         break;
@@ -73,7 +75,7 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
       case 'deductions':
         const hasAnyDeduction = Object.values(formData.eligibleDeductions).some(value => value === true);
         if (!hasAnyDeduction) {
-          setValidationError("Please select at least one deduction type");
+          setValidationError("Please select at least one deduction type you'd like to claim.");
           return false;
         }
         break;
@@ -81,7 +83,7 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
       case 'assets':
         const hasAnyAsset = Object.values(formData.assets).some(value => value === true);
         if (!hasAnyAsset) {
-          setValidationError("Please select at least one asset type");
+          setValidationError("Please select at least one asset type that you currently own.");
           return false;
         }
         break;
@@ -89,7 +91,7 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
       case 'withholding':
         const hasAnyWithholding = Object.values(formData.withholding).some(value => value === true);
         if (!hasAnyWithholding) {
-          setValidationError("Please select at least one withholding tax type");
+          setValidationError("Please select at least one withholding tax type that applies to you.");
           return false;
         }
         break;
@@ -104,9 +106,9 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
       nextStep();
     } else {
       toast({
-        title: "Validation Error",
+        title: "Please Review",
         description: validationError,
-        variant: "destructive",
+        variant: "default",
       });
     }
   };
@@ -121,6 +123,15 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
         
         <h2 className="text-2xl font-bold mb-2">{steps[currentStep].title}</h2>
         <p className="text-muted-foreground mb-6">{steps[currentStep].description}</p>
+        
+        {validationError && (
+          <Alert className="mb-6 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+            <AlertTriangle className="h-4 w-4 text-amber-500" />
+            <AlertDescription className="text-amber-700 dark:text-amber-300">
+              {validationError}
+            </AlertDescription>
+          </Alert>
+        )}
         
         <div className="py-4">
           <StepRenderer 
