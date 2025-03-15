@@ -1,11 +1,12 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import UserProfileMenu from './UserProfileMenu';
+import UserProfileMenu from '@/components/auth/UserProfileMenu';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
-import Sidebar from '@/components/ui/sidebar';
+import { Sidebar } from '@/components/ui/sidebar';
 
 const Navbar = () => {
   const { isAuthenticated } = useAuth();
