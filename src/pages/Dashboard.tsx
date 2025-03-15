@@ -106,7 +106,7 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
       Object.values(formData.incomeStreams || {}).some(Boolean), // Income sources
       Object.values(formData.incomeAmounts || {}).some(val => val > 0), // Income amounts
       Object.values(formData.expenses || {}).some(Boolean), // Expenses
-      Object.values(formData.deductions || {}).some(Boolean), // Deductions
+      Object.values(formData.eligibleDeductions || {}).some(Boolean), // Deductions (fixed from deductions to eligibleDeductions)
       Object.values(formData.assets || {}).some(Boolean), // Assets
       Object.values(formData.withholding || {}).some(Boolean), // Withholdings
     ];

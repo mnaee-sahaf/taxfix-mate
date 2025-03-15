@@ -1,4 +1,3 @@
-
 export interface Step {
   id: string;
   title: string;
@@ -152,12 +151,16 @@ export interface TaxFormData {
   penaltyUnderstanding: boolean;
   paymentMethod: string;
   paidTax: number;
+  
+  city?: string;
+  province?: string;
 }
 
 export interface TaxData {
   calculatedTax: number;
   paidTax: number;
   balanceDue: number;
+  totalIncome: number;
 }
 
 export interface TaxFilingProps {

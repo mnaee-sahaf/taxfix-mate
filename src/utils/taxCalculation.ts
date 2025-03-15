@@ -35,5 +35,6 @@ export function calculateTax(formData: TaxFormData): TaxData {
     calculatedTax: taxLiability,
     paidTax: formData.paidTax || 0,
     balanceDue: Math.max(0, taxLiability - (formData.paidTax || 0)),
+    totalIncome: totalIncome, // Add this line to include totalIncome
   };
 }

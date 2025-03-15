@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangleIcon, CheckCircleIcon, ArrowDown, ArrowUp, DollarSign, BanknotesIcon, Landmark, WalletIcon } from 'lucide-react';
+import { AlertTriangleIcon, CheckCircleIcon, ArrowDown, ArrowUp, DollarSign, Banknote, Landmark, WalletIcon } from 'lucide-react';
 import { TaxData } from '@/components/tax-filing/types';
 
 interface TaxOverviewCardsProps {
@@ -44,7 +44,7 @@ const TaxOverviewCards = ({ taxData, formatCurrency }: TaxOverviewCardsProps) =>
     {
       title: "Balance Due",
       value: taxData.balanceDue,
-      icon: BanknotesIcon,
+      icon: Banknote, // Changed from BanknotesIcon to Banknote
       color: "text-amber-500",
       bgColor: "bg-amber-50 dark:bg-amber-900/20",
       change: 0,
