@@ -54,7 +54,7 @@ const DashboardHeader = ({ taxFilings, refreshData }: DashboardHeaderProps) => {
 
   return (
     <div className="flex items-center justify-between">
-      <h1 className="text-2xl font-bold">Tax Dashboard</h1>
+      <h1 className="text-2xl font-bold">Welcome Back!</h1>
       <div className="flex gap-3">
         <Button 
           variant="outline" 

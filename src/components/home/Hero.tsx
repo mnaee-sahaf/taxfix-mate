@@ -51,17 +51,16 @@ const Hero = () => {
       
       <div className="container mx-auto px-4 z-10 pt-10">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="inline-block mb-4 px-3 py-1 bg-primary/10 rounded-full text-primary text-sm font-medium">
-            Tax filing simplified for Pakistan
-          </div>
+          {/* <div className="inline-block mb-4 px-3 py-1  rounded-full text-primary text-sm font-medium">
+            🇵🇰 
+          </div> */}
           
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
-            File your taxes with <span className="text-primary">confidence</span>
+            File your taxes with <span className="text-primary">confidence </span>
           </h1>
           
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            TaxFix simplifies tax compliance for individuals and businesses in Pakistan, 
-            saving you time and maximizing your returns.
+            TaxFix is on a mission to simplify tax compliance for individuals and businesses in Pakistan 🇵🇰
           </p>
           <VideoTutorial />
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

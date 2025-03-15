@@ -27,7 +27,7 @@ interface DashboardContentProps {
 const DashboardContent = ({ 
   taxFilings, 
   taxData, 
-  completionProgress,
+  // completionProgress,
   incomeData 
 }: DashboardContentProps) => {
   const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#AF19FF', '#FF1919'];
@@ -37,13 +37,13 @@ const DashboardContent = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* Tax Progress Overview */}
-          <CompletionProgressCard completionProgress={completionProgress} />
+          {/* <CompletionProgressCard completionProgress={completionProgress} /> */}
           
           {/* Tax Overview Cards */}
-          {taxData && <TaxOverviewCards taxData={taxData} formatCurrency={formatCurrency} />}
+          {/* {taxData && <TaxOverviewCards taxData={taxData} formatCurrency={formatCurrency} />} */}
 
           {/* Main Tabs */}
-          <Tabs defaultValue="overview" className="bg-white dark:bg-black/20 shadow-sm rounded-lg border">
+          <Tabs defaultValue="income" className="bg-white dark:bg-black/20 shadow-sm rounded-lg border">
             <TabsList className="w-full border-b rounded-none p-0 h-auto">
               <TabsTrigger value="overview" className="rounded-none flex-1 py-3">Tax Overview</TabsTrigger>
               <TabsTrigger value="income" className="rounded-none flex-1 py-3">Income Breakdown</TabsTrigger>

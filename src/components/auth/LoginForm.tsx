@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -62,7 +61,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
   return (
     <form onSubmit={handleSignIn}>
-      <CardContent className="space-y-4 pt-6">
+      <CardContent className="space-y-4 pt-2">
         {error && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -107,9 +106,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
             'Sign In'
           )}
         </Button>
-        <Link to="/filing" className="text-sm text-center text-muted-foreground hover:text-primary w-full">
-          Continue without signing in
-        </Link>
       </CardFooter>
     </form>
   );

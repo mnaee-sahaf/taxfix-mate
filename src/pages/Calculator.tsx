@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -330,8 +329,6 @@ const CalculatorPage = () => {
           </div>
         </div>
       </main>
-      
-      <Footer />
     </div>
   );
 };

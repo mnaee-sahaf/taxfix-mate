@@ -29,8 +29,8 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'Dashboard', path: '/dashboard' },
-    { name: 'Tax Calculator', path: '/calculator' },
+    { name: 'Filing', path: '/dashboard' },
+    { name: 'Calculator', path: '/calculator' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -113,7 +113,7 @@ const Navbar = () => {
             <div className="flex flex-col gap-2 pt-2 border-t border-border">
               {isAuthenticated ? (
                 <Button variant="outline" onClick={() => navigate('/dashboard')}>
-                  Dashboard
+                  Filing
                 </Button>
               ) : (
                 <Button variant="outline" className="w-full" onClick={handleLogin}>
