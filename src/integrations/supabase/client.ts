@@ -55,11 +55,8 @@ export const supabase = createClient<Database>(
 );
 
 // Initialize the session
-supabase.auth.setSession({
-  access_token: '',
-  refresh_token: '',
-}).then(() => {
-  console.log('Auth session initialized');
+supabase.auth.getSession().then(({ data }) => {
+  console.log('Auth session initialized', data.session ? 'with session' : 'without session');
 });
   
 // Listen for auth state changes

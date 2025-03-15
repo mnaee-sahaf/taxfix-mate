@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -10,11 +11,8 @@ import Profile from '@/pages/Profile';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import AuthCallback from '@/components/auth/AuthCallback';
 import { Toaster } from '@/components/ui/toaster';
-import { useToast } from '@/components/ui/use-toast';
 
 function App() {
-  const { toast } = useToast();
-
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -30,8 +28,22 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/filing" element={<Filing />} />
-          <Route path="/calculator" element={<Calculator />} />
+          <Route
+            path="/filing"
+            element={
+              <ProtectedRoute>
+                <Filing />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calculator"
+            element={
+              <ProtectedRoute>
+                <Calculator />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile"
             element={

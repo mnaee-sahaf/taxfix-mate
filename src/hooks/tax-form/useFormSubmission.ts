@@ -25,18 +25,6 @@ export const useFormSubmission = ({
   const { toast } = useToast();
 
   const handleSubmit = async () => {
-    // If not authenticated, redirect to authentication page with a clear message
-    if (!isAuthenticated) {
-      localStorage.setItem('taxFilingProgress', JSON.stringify(formData));
-      toast({
-        title: "Authentication required",
-        description: "Please sign in to submit your tax return. Your progress has been saved.",
-        duration: 5000,
-      });
-      navigate('/auth');
-      return;
-    }
-    
     // Calculate tax data
     const taxData = calculateTax(formData);
     console.log("Calculated Values:", taxData);
