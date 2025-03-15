@@ -2,6 +2,7 @@
 import { TaxFormData } from './types';
 
 export const initialTaxFormData: TaxFormData = {
+  name: '',
   cnic: '',
   firstTimeFiler: false,
   taxpayerCategory: '',

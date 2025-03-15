@@ -6,6 +6,7 @@ export interface Step {
 }
 
 export interface TaxFormData {
+  name: string;
   cnic: string;
   firstTimeFiler: boolean;
   taxpayerCategory: string;

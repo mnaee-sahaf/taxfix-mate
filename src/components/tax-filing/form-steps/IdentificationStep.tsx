@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import IdentificationNotes from './identification/IdentificationNotes';
+import { AlertCircle } from 'lucide-react';
 
 interface IdentificationStepProps {
   formData: TaxFormData;
@@ -24,7 +25,23 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="cnic" className="text-base">Provide your 13-digit Computerized National Identity Card (CNIC) number</Label>
+          <Label htmlFor="name" className="text-base">Full Name (as per CNIC) <span className="text-red-500">*</span></Label>
+          <Input 
+            id="name" 
+            value={formData.name} 
+            onChange={(e) => handleInputChange('name', e.target.value)}
+            placeholder="Muhammad Ahmed"
+            required
+          />
+          {formData.name === '' && (
+            <p className="text-sm text-red-500 flex items-center gap-1 mt-1">
+              <AlertCircle className="h-3 w-3" /> Name is required
+            </p>
+          )}
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="cnic" className="text-base">Provide your 13-digit Computerized National Identity Card (CNIC) number <span className="text-red-500">*</span></Label>
           <p className="text-sm text-muted-foreground">Enter without hyphens. This is mandatory for FBR registration.</p>
           <Input 
             id="cnic" 
@@ -32,7 +49,13 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
             onChange={(e) => handleInputChange('cnic', e.target.value)}
             placeholder="3420112345671"
             maxLength={13}
+            required
           />
+          {formData.cnic === '' && (
+            <p className="text-sm text-red-500 flex items-center gap-1 mt-1">
+              <AlertCircle className="h-3 w-3" /> CNIC is required
+            </p>
+          )}
         </div>
         
         <div className="space-y-2 pt-4">
@@ -50,10 +73,11 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
         </div>
         
         <div className="space-y-2 pt-4">
-          <Label htmlFor="taxpayerCategory" className="text-base">Select your taxpayer category:</Label>
+          <Label htmlFor="taxpayerCategory" className="text-base">Select your taxpayer category: <span className="text-red-500">*</span></Label>
           <Select 
             value={formData.taxpayerCategory} 
             onValueChange={(value) => handleInputChange('taxpayerCategory', value)}
+            required
           >
             <SelectTrigger>
               <SelectValue placeholder="Select your taxpayer category" />
@@ -66,6 +90,11 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
               <SelectItem value="non-resident">Non-Resident Pakistani</SelectItem>
             </SelectContent>
           </Select>
+          {formData.taxpayerCategory === '' && (
+            <p className="text-sm text-red-500 flex items-center gap-1 mt-1">
+              <AlertCircle className="h-3 w-3" /> Taxpayer category is required
+            </p>
+          )}
         </div>
       </div>
 

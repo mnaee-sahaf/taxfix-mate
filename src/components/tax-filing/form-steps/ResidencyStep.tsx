@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, Info } from 'lucide-react';
+import { AlertCircle, Check, Info } from 'lucide-react';
 import { TaxFormData } from '../types';
 import ResidencyNotes from './residency/ResidencyNotes';
 
@@ -20,7 +20,7 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="residencyDays" className="text-base">How many days did you physically reside in Pakistan during this tax year?</Label>
+          <Label htmlFor="residencyDays" className="text-base">How many days did you physically reside in Pakistan during this tax year? <span className="text-red-500">*</span></Label>
           <Input 
             id="residencyDays" 
             type="number" 
@@ -38,7 +38,13 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
             }}
             min="0"
             max="366"
+            required
           />
+          {formData.residencyDays === 0 && (
+            <p className="text-sm text-red-500 flex items-center gap-1 mt-1">
+              <AlertCircle className="h-3 w-3" /> This field is required
+            </p>
+          )}
           <div className="px-3 py-2 bg-secondary/40 rounded mt-2 text-sm">
             <div className="flex items-start gap-2">
               <Info className="h-4 w-4 mt-0.5 text-primary" />
