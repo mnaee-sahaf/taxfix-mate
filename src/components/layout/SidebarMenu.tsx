@@ -51,12 +51,24 @@ const SidebarMenu = () => {
                   asChild 
                   isActive={isActive(item.href)} 
                   tooltip={item.name}
+                  className={cn(
+                    "transition-all duration-200",
+                    isActive(item.href) && "bg-primary/10 dark:bg-primary/20"
+                  )}
                 >
                   <Link to={item.href}>
-                    <item.icon className="h-3.5 w-3.5" />
-                    <span className="text-sm">{item.name}</span>
+                    <item.icon className={cn(
+                      "h-3.5 w-3.5 transition-all duration-200",
+                      isActive(item.href) ? "text-primary" : "text-muted-foreground"
+                    )} />
+                    <span className={cn(
+                      "text-sm",
+                      isActive(item.href) && "text-primary font-medium"
+                    )}>
+                      {item.name}
+                    </span>
                     {isActive(item.href) && (
-                      <ChevronRight className="h-2.5 w-2.5 ml-auto" />
+                      <ChevronRight className="h-2.5 w-2.5 ml-auto text-primary" />
                     )}
                   </Link>
                 </SidebarMenuButton>
@@ -73,9 +85,16 @@ const SidebarMenu = () => {
             asChild 
             isActive={isActive('/profile')} 
             tooltip={user?.email || "Profile"}
+            className={cn(
+              "transition-all duration-200",
+              isActive('/profile') && "bg-primary/10 dark:bg-primary/20"
+            )}
           >
             <Link to="/profile">
-              <User className="h-3.5 w-3.5" />
+              <User className={cn(
+                "h-3.5 w-3.5 transition-all duration-200",
+                isActive('/profile') ? "text-primary" : "text-muted-foreground"
+              )} />
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
