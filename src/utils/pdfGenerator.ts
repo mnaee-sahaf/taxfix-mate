@@ -52,10 +52,9 @@ export const generateTaxPDF = (formData: TaxFilingData): void => {
   doc.text(`Generated on: ${new Date().toLocaleDateString()}`, pageWidth / 2, 26, { align: "center" });
   
   // Add simple logo/watermark
-  doc.setGlobalAlpha(0.03);
-  doc.setFillColor(0, 82, 184);
+  // Instead of using setGlobalAlpha, use a very light color for the watermark
+  doc.setFillColor(235, 241, 250);  // Very light blue instead of transparent blue
   doc.circle(pageWidth / 2, pageHeight / 2, 50, 'F');
-  doc.setGlobalAlpha(1);
   
   // Reset text color
   doc.setTextColor(0, 0, 0);
