@@ -1,18 +1,29 @@
 
 // Re-export all sidebar components from this index file
 
-// Main components from sidebar-components.tsx
+// Main components from sidebar-core.tsx
 export {
   Sidebar,
-  SidebarTrigger,
-  SidebarRail,
+  SIDEBAR_WIDTH,
+  SIDEBAR_WIDTH_MOBILE,
+  SIDEBAR_WIDTH_ICON,
+} from './sidebar-core';
+
+// Trigger component
+export { SidebarTrigger } from './sidebar-trigger';
+
+// Rail component
+export { SidebarRail } from './sidebar-rail';
+
+// Section components from sidebar-sections.tsx
+export {
   SidebarInset,
   SidebarInput,
   SidebarHeader,
   SidebarFooter,
   SidebarSeparator,
   SidebarContent,
-} from './sidebar-components';
+} from './sidebar-sections';
 
 // Group components from sidebar-group.tsx
 export {
