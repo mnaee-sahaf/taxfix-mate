@@ -12,23 +12,24 @@ export const calculateTotalIncome = (data: TaxFilingData): number => {
   };
   
   return (
-    (data.incomeStreams.salary ? incomeAmounts.salaryIncome : 0) +
-    (data.incomeStreams.business ? incomeAmounts.businessIncome : 0) +
-    (data.incomeStreams.rental ? incomeAmounts.rentalIncome : 0) +
-    (data.incomeStreams.agricultural ? incomeAmounts.agriculturalIncome : 0) +
-    (data.incomeStreams.capitalGains ? incomeAmounts.capitalGainsIncome : 0) +
-    (data.incomeStreams.foreign ? incomeAmounts.foreignIncome : 0)
+    (data.incomeStreams?.salary ? incomeAmounts.salaryIncome : 0) +
+    (data.incomeStreams?.business ? incomeAmounts.businessIncome : 0) +
+    (data.incomeStreams?.rental ? incomeAmounts.rentalIncome : 0) +
+    (data.incomeStreams?.agricultural ? incomeAmounts.agriculturalIncome : 0) +
+    (data.incomeStreams?.capitalGains ? incomeAmounts.capitalGainsIncome : 0) +
+    (data.incomeStreams?.foreign ? incomeAmounts.foreignIncome : 0)
   );
 };
 
 export const calculateTotalDeductions = (data: TaxFilingData): number => {
+  // Add safe checks for all properties
   return (
-    (data.eligibleDeductions.lifeInsurance ? data.lifeInsuranceAmount : 0) +
-    (data.eligibleDeductions.pension ? data.pensionAmount : 0) +
-    (data.eligibleDeductions.donations ? data.donationAmount : 0) +
-    (data.eligibleDeductions.education ? data.educationAmount : 0) +
-    (data.eligibleDeductions.royalty ? (data.royaltyAmount || 0) : 0) +
-    (data.eligibleDeductions.zakat ? (data.zakatAmount || 0) : 0)
+    (data.eligibleDeductions?.lifeInsurance ? data.lifeInsuranceAmount || 0 : 0) +
+    (data.eligibleDeductions?.pension ? data.pensionAmount || 0 : 0) +
+    (data.eligibleDeductions?.donations ? data.donationAmount || 0 : 0) +
+    (data.eligibleDeductions?.education ? data.educationAmount || 0 : 0) +
+    (data.eligibleDeductions?.royalty ? (data.royaltyAmount || 0) : 0) +
+    (data.eligibleDeductions?.zakat ? (data.zakatAmount || 0) : 0)
   );
 };
 
@@ -49,7 +50,7 @@ export const calculateTaxLiability = (taxableIncome: number, data: TaxFilingData
     taxLiability = 810000 + (taxableIncome - 6000000) * 0.25;
   }
   
-  // Apply special tax credits
+  // Apply special tax credits with null checks
   if (data.specialTaxCredits?.firstTimeFiler) {
     taxLiability = Math.max(0, taxLiability - 50000);
   }

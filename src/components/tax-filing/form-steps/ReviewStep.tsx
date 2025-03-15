@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxFormData } from '../types';
 import ReviewNotes from './review/ReviewNotes';
+import { calculateTotalIncome, calculateTotalDeductions } from '@/utils/pdf/calculationUtils';
 
 interface ReviewStepProps {
   formData: TaxFormData;
@@ -14,6 +15,10 @@ interface ReviewStepProps {
 
 const ReviewStep = ({ formData, handleInputChange }: ReviewStepProps) => {
   const [showNotes, setShowNotes] = useState(false);
+  
+  // Calculate totals using the utility functions for consistency
+  const totalIncome = calculateTotalIncome(formData);
+  const totalDeductions = calculateTotalDeductions(formData);
 
   return (
     <div className="space-y-6">
@@ -40,26 +45,14 @@ const ReviewStep = ({ formData, handleInputChange }: ReviewStepProps) => {
           <div>
             <span className="text-sm font-medium">Total Income:</span> 
             <span className="text-sm ml-2">
-              {new Intl.NumberFormat('en-US').format(
-                (formData.incomeStreams.salary ? formData.salaryIncome : 0) + 
-                (formData.incomeStreams.business ? formData.businessIncome : 0) + 
-                (formData.incomeStreams.rental ? formData.rentalIncome : 0) + 
-                (formData.incomeStreams.agricultural ? formData.agriculturalIncome : 0) + 
-                (formData.incomeStreams.capitalGains ? formData.capitalGainsIncome : 0) + 
-                (formData.incomeStreams.foreign ? formData.foreignIncome : 0)
-              )} PKR
+              {new Intl.NumberFormat('en-US').format(totalIncome)} PKR
             </span>
           </div>
           
           <div>
             <span className="text-sm font-medium">Total Deductions:</span>
             <span className="text-sm ml-2">
-              {new Intl.NumberFormat('en-US').format(
-                (formData.eligibleDeductions.lifeInsurance ? formData.lifeInsuranceAmount : 0) + 
-                (formData.eligibleDeductions.pension ? formData.pensionAmount : 0) + 
-                (formData.eligibleDeductions.donations ? formData.donationAmount : 0) + 
-                (formData.eligibleDeductions.education ? formData.educationAmount : 0)
-              )} PKR
+              {new Intl.NumberFormat('en-US').format(totalDeductions)} PKR
             </span>
           </div>
           

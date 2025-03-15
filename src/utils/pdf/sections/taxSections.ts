@@ -1,7 +1,7 @@
 
 import { TaxFilingData } from '../pdfTypes';
 import { PdfHelperContext, addSectionHeader, addField, checkForNewPage, addBoldText } from '../pdfHelpers';
-import { formatNumber, formatPaymentMethod } from '../formatterUtils';
+import { formatNumber, formatPaymentMethod, formatFieldName } from '../formatterUtils';
 import { calculateTotalIncome, calculateTotalDeductions, calculateTaxLiability } from '../calculationUtils';
 
 export const addWithholdingSection = (context: PdfHelperContext, formData: TaxFilingData): PdfHelperContext => {

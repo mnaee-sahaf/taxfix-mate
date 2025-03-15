@@ -1,33 +1,11 @@
 
 import { TaxFormData, TaxData } from '@/components/tax-filing/types';
+import { calculateTotalIncome, calculateTotalDeductions } from './pdf/calculationUtils';
 
 export function calculateTax(formData: TaxFormData): TaxData {
-  // Use incomeAmounts object for calculations if it exists, otherwise use individual fields
-  const incomeAmounts = formData.incomeAmounts || {
-    salaryIncome: formData.salaryIncome,
-    businessIncome: formData.businessIncome,
-    rentalIncome: formData.rentalIncome,
-    agriculturalIncome: formData.agriculturalIncome,
-    capitalGainsIncome: formData.capitalGainsIncome,
-    foreignIncome: formData.foreignIncome
-  };
-  
-  const totalIncome = 
-    (formData.incomeStreams.salary ? incomeAmounts.salaryIncome : 0) + 
-    (formData.incomeStreams.business ? incomeAmounts.businessIncome : 0) + 
-    (formData.incomeStreams.rental ? incomeAmounts.rentalIncome : 0) + 
-    (formData.incomeStreams.agricultural ? incomeAmounts.agriculturalIncome : 0) + 
-    (formData.incomeStreams.capitalGains ? incomeAmounts.capitalGainsIncome : 0) + 
-    (formData.incomeStreams.foreign ? incomeAmounts.foreignIncome : 0);
-  
-  const totalDeductions = 
-    (formData.eligibleDeductions.lifeInsurance ? formData.lifeInsuranceAmount : 0) + 
-    (formData.eligibleDeductions.pension ? formData.pensionAmount : 0) + 
-    (formData.eligibleDeductions.donations ? formData.donationAmount : 0) + 
-    (formData.eligibleDeductions.education ? formData.educationAmount : 0) +
-    (formData.eligibleDeductions.royalty ? (formData.royaltyAmount || 0) : 0) +
-    (formData.eligibleDeductions.zakat ? (formData.zakatAmount || 0) : 0);
-  
+  // Use the same calculation functions as in the PDF generation
+  const totalIncome = calculateTotalIncome(formData);
+  const totalDeductions = calculateTotalDeductions(formData);
   const taxableIncome = Math.max(0, totalIncome - totalDeductions);
   
   let taxLiability = 0;
@@ -45,11 +23,11 @@ export function calculateTax(formData: TaxFormData): TaxData {
     taxLiability = 810000 + (taxableIncome - 6000000) * 0.25;
   }
   
-  if (formData.specialTaxCredits.firstTimeFiler) {
+  if (formData.specialTaxCredits?.firstTimeFiler) {
     taxLiability = Math.max(0, taxLiability - 50000);
   }
   
-  if (formData.specialTaxCredits.itSector) {
+  if (formData.specialTaxCredits?.itSector) {
     taxLiability = taxLiability * 0.85; // 15% reduced rate
   }
   
