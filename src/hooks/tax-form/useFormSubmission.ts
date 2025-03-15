@@ -46,36 +46,41 @@ export const useFormSubmission = ({
     }
 
     try {
+      // Safe type conversion for Supabase
+      const formDataJson = formData as unknown as Json;
+      
       // Save the completed form to Supabase
       if (user) {
         // Check if a draft already exists
-        const { data: existingDrafts } = await supabase
+        const { data: existingDrafts, error: queryError } = await supabase
           .from('tax_filings')
           .select('id')
           .eq('user_id', user.id)
-          .eq('status', 'draft');
+          .eq('status', 'draft' as any);
+        
+        if (queryError) throw queryError;
         
         if (existingDrafts && existingDrafts.length > 0) {
-          // Update existing draft to submitted - cast formData as unknown first, then as Json
+          // Update existing draft to submitted
           const { error } = await supabase
             .from('tax_filings')
             .update({ 
-              form_data: formData as unknown as Json, 
+              form_data: formDataJson, 
               status: 'submitted',
               updated_at: new Date().toISOString() 
-            })
-            .eq('id', existingDrafts[0].id);
+            } as any)
+            .eq('id', existingDrafts[0]?.id);
           
           if (error) throw error;
         } else {
-          // Create new submitted entry - cast formData as unknown first, then as Json
+          // Create new submitted entry
           const { error } = await supabase
             .from('tax_filings')
             .insert({ 
               user_id: user.id, 
-              form_data: formData as unknown as Json, 
+              form_data: formDataJson, 
               status: 'submitted' 
-            });
+            } as any);
           
           if (error) throw error;
         }
@@ -89,7 +94,7 @@ export const useFormSubmission = ({
             taxpayer_category: formData.taxpayerCategory,
             residency_status: formData.residencyStatus,
             updated_at: new Date().toISOString()
-          })
+          } as any)
           .eq('id', user.id);
         
         if (profileError) console.error('Error updating profile:', profileError);

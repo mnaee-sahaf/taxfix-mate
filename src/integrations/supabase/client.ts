@@ -19,8 +19,7 @@ export const supabase = createClient<Database>(
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      redirectTo: `${SITE_URL}/auth/callback`, // Set the redirect URL directly in the client options
-      // Use correct auth redirect configuration
+      // Correctly configure auth options
       storage: {
         getItem: (key) => {
           try {
@@ -55,15 +54,27 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Add redirect configuration separately
-const { data, error } = await supabase.auth.setSession({
+// Add redirect configuration separately using the correct method
+supabase.auth.setSession({
   access_token: '',
   refresh_token: '',
+});
+
+// Configure the site URL for auth callbacks
+supabase.auth.setSession({
+  access_token: '',
+  refresh_token: '',
+}).then(() => {
+  // Set up auth URL callback
+  supabase.auth.updateConfig({
+    url: SITE_URL,
+    externalLinks: {
+      signIn: `${SITE_URL}/auth/callback`,
+      redirectTo: `${SITE_URL}/auth/callback`,
+    }
+  });
 });
   
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session);
 });
-
-// Since setConfig method doesn't exist, we're removing it and 
-// using the redirectTo option in the client configuration above

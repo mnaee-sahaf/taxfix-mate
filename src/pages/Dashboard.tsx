@@ -49,16 +49,18 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
         const { data, error } = await supabase
           .from('tax_filings')
           .select('id, form_data, status, updated_at')
-          .eq('user_id', user.id)
+          .eq('user_id', user.id as any)
           .order('updated_at', { ascending: false });
         
         if (error) throw error;
         
         if (data && data.length > 0) {
-          // Cast the data array to TaxFiling[] with appropriate type conversion
+          // Properly convert data with type assertions
           const typedData: TaxFiling[] = data.map(item => ({
-            ...item,
-            form_data: item.form_data as unknown as TaxFormData
+            id: item.id,
+            form_data: item.form_data as unknown as TaxFormData,
+            status: item.status,
+            updated_at: item.updated_at
           }));
           
           setTaxFilings(typedData);

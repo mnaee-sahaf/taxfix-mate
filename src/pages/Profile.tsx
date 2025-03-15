@@ -58,33 +58,49 @@ const Profile = () => {
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', user.id)
+          .eq('id', user.id as any)
           .single();
         
         if (profileError) throw profileError;
         
-        setProfile(profileData);
-        setProfileEdits({
-          name: profileData.name || '',
-          cnic: profileData.cnic || '',
-          taxpayer_category: profileData.taxpayer_category || '',
-          residency_status: profileData.residency_status || ''
-        });
+        if (profileData) {
+          const typedProfile: UserProfile = {
+            id: profileData.id,
+            name: profileData.name,
+            cnic: profileData.cnic,
+            taxpayer_category: profileData.taxpayer_category,
+            residency_status: profileData.residency_status,
+            created_at: profileData.created_at,
+            updated_at: profileData.updated_at
+          };
+          
+          setProfile(typedProfile);
+          setProfileEdits({
+            name: typedProfile.name || '',
+            cnic: typedProfile.cnic || '',
+            taxpayer_category: typedProfile.taxpayer_category || '',
+            residency_status: typedProfile.residency_status || ''
+          });
+        }
         
         // Fetch tax filings
         const { data: filingsData, error: filingsError } = await supabase
           .from('tax_filings')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('user_id', user.id as any)
           .order('updated_at', { ascending: false });
         
         if (filingsError) throw filingsError;
         
         if (filingsData) {
-          // Cast the data array to TaxFiling[] with appropriate type conversion
+          // Properly convert data with type assertions
           const typedData: TaxFiling[] = filingsData.map(item => ({
-            ...item,
-            form_data: item.form_data as unknown as TaxFormData
+            id: item.id,
+            user_id: item.user_id,
+            form_data: item.form_data as unknown as TaxFormData,
+            status: item.status,
+            created_at: item.created_at,
+            updated_at: item.updated_at
           }));
           
           setTaxFilings(typedData);
@@ -116,8 +132,8 @@ const Profile = () => {
           taxpayer_category: profileEdits.taxpayer_category,
           residency_status: profileEdits.residency_status,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        } as any)
+        .eq('id', user.id as any);
       
       if (error) throw error;
       

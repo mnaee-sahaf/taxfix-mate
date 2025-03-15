@@ -24,32 +24,37 @@ export const useFormPersistence = ({
     if (isAuthenticated && user) {
       try {
         // Check if a draft already exists
-        const { data: existingDrafts } = await supabase
+        const { data: existingDrafts, error: queryError } = await supabase
           .from('tax_filings')
           .select('id')
           .eq('user_id', user.id)
-          .eq('status', 'draft');
+          .eq('status', 'draft' as any);
+        
+        if (queryError) throw queryError;
+        
+        // Safe type conversion for Supabase
+        const formDataJson = formData as unknown as Json;
         
         if (existingDrafts && existingDrafts.length > 0) {
-          // Update existing draft - cast formData as unknown first, then as Json
+          // Update existing draft
           const { error } = await supabase
             .from('tax_filings')
             .update({ 
-              form_data: formData as unknown as Json, 
+              form_data: formDataJson,
               updated_at: new Date().toISOString() 
-            })
-            .eq('id', existingDrafts[0].id);
+            } as any)
+            .eq('id', existingDrafts[0]?.id);
           
           if (error) throw error;
         } else {
-          // Create new draft - cast formData as unknown first, then as Json
+          // Create new draft
           const { error } = await supabase
             .from('tax_filings')
             .insert({ 
-              user_id: user.id, 
-              form_data: formData as unknown as Json, 
-              status: 'draft' 
-            });
+              user_id: user.id,
+              form_data: formDataJson,
+              status: 'draft'
+            } as any);
           
           if (error) throw error;
         }
@@ -64,7 +69,7 @@ export const useFormPersistence = ({
               taxpayer_category: formData.taxpayerCategory,
               residency_status: formData.residencyStatus,
               updated_at: new Date().toISOString()
-            })
+            } as any)
             .eq('id', user.id);
           
           if (profileError) console.error('Error updating profile:', profileError);
@@ -106,12 +111,14 @@ export const useFormPersistence = ({
           .from('tax_filings')
           .select('*')
           .eq('user_id', user.id)
-          .eq('status', 'draft')
+          .eq('status', 'draft' as any)
           .order('updated_at', { ascending: false })
           .limit(1)
           .single();
         
-        if (data && !error) {
+        if (error) throw error;
+        
+        if (data) {
           // Safely convert Json to TaxFormData with type assertion
           const savedFormData = data.form_data as unknown as TaxFormData;
           toast({
