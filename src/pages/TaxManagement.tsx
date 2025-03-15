@@ -8,7 +8,8 @@ const TaxManagement: React.FC = () => {
     const [taxData, setTaxData] = useState<TaxData>({
         calculatedTax: 0,
         paidTax: 0,
-        balanceDue: 0
+        balanceDue: 0,
+        totalIncome: 0  // Added totalIncome property to match TaxData interface
     });
 
     const updateTaxData = (data: TaxData) => {
