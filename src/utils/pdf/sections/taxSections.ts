@@ -1,6 +1,6 @@
 
 import { TaxFilingData } from '../pdfTypes';
-import { PdfHelperContext, addSectionHeader, addField, checkForNewPage, addBoldText } from '../pdfHelpers';
+import { PdfHelperContext, addSectionHeader, addField, checkForNewPage, addBoldText, addFieldWithCode } from '../pdfHelpers';
 import { formatNumber, formatPaymentMethod, formatFieldName } from '../formatterUtils';
 import { calculateTotalIncome, calculateTotalDeductions, calculateTaxLiability } from '../calculationUtils';
 

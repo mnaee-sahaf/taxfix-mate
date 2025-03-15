@@ -1,27 +1,45 @@
 
 import { TaxFilingData } from '../pdfTypes';
-import { PdfHelperContext, addSectionHeader, addField, checkForNewPage, addBoldText } from '../pdfHelpers';
+import { PdfHelperContext, addSectionHeader, addField, checkForNewPage, addBoldText, addFieldWithCode } from '../pdfHelpers';
 import { formatNumber, formatFieldName } from '../formatterUtils';
 import { calculateTotalDeductions } from '../calculationUtils';
 
 export const addExpensesSection = (context: PdfHelperContext, formData: TaxFilingData): PdfHelperContext => {
   // Ensure we have enough space for this section
   let updatedContext = checkForNewPage(context, 60);
-  updatedContext = addSectionHeader(updatedContext, "5. Expenses");
+  updatedContext = addSectionHeader(context, "5. Expenses");
   const { doc } = updatedContext;
+  
+  // Expense codes mapping
+  const expenseCodes = {
+    rent: '7051',
+    electricity: '7058',
+    gas: '7060',
+    telephone: '7061',
+    medical: '7070',
+    educational: '7071',
+    travel: '7056',
+    other: '7087'
+  };
   
   if (Object.values(formData.expenses || {}).some(Boolean)) {
     const activeExpenses = Object.entries(formData.expenses || {})
       .filter(([_, value]) => value)
-      .map(([key, _]) => formatFieldName(key));
+      .map(([key, _]) => ({ name: key, displayName: formatFieldName(key) }));
       
     doc.text("Selected Expenses:", 20, updatedContext.yPos);
     updatedContext = { ...updatedContext, yPos: updatedContext.yPos + 6 };
     
     activeExpenses.forEach(expense => {
-      const amount = formData.expenseAmounts?.[expense.toLowerCase() as keyof typeof formData.expenseAmounts] || 0;
-      doc.text(`• ${expense}: PKR ${formatNumber(amount)}`, 30, updatedContext.yPos);
-      updatedContext = { ...updatedContext, yPos: updatedContext.yPos + 5 };
+      const amount = formData.expenseAmounts?.[expense.name.toLowerCase() as keyof typeof formData.expenseAmounts] || 0;
+      const code = expenseCodes[expense.name.toLowerCase() as keyof typeof expenseCodes] || '';
+      
+      if (code) {
+        updatedContext = addFieldWithCode(updatedContext, expense.displayName, `PKR ${formatNumber(amount)}`, code, 30);
+      } else {
+        doc.text(`• ${expense.displayName}: PKR ${formatNumber(amount)}`, 30, updatedContext.yPos);
+        updatedContext = { ...updatedContext, yPos: updatedContext.yPos + 5 };
+      }
     });
     updatedContext = { ...updatedContext, yPos: updatedContext.yPos + 5 };
   } else {
@@ -35,12 +53,27 @@ export const addExpensesSection = (context: PdfHelperContext, formData: TaxFilin
 export const addDeductionsSection = (context: PdfHelperContext, formData: TaxFilingData): PdfHelperContext => {
   let updatedContext = addSectionHeader(context, "6. Deductions");
   
+  // Deduction codes mapping
+  const deductionCodes = {
+    lifeInsurance: '',
+    pension: '5007',
+    donations: '',
+    education: '',
+    royalty: '5002',
+    zakat: ''
+  };
+  
   if (formData.eligibleDeductions.lifeInsurance) {
     updatedContext = addField(updatedContext, "Life Insurance", `PKR ${formatNumber(formData.lifeInsuranceAmount)}`);
   }
   
   if (formData.eligibleDeductions.pension) {
-    updatedContext = addField(updatedContext, "Pension Contribution", `PKR ${formatNumber(formData.pensionAmount)}`);
+    updatedContext = addFieldWithCode(
+      updatedContext, 
+      "Pension Contribution", 
+      `PKR ${formatNumber(formData.pensionAmount)}`,
+      deductionCodes.pension
+    );
   }
   
   if (formData.eligibleDeductions.donations) {
@@ -52,7 +85,12 @@ export const addDeductionsSection = (context: PdfHelperContext, formData: TaxFil
   }
   
   if (formData.eligibleDeductions.royalty) {
-    updatedContext = addField(updatedContext, "Royalty Payments", `PKR ${formatNumber(formData.royaltyAmount || 0)}`);
+    updatedContext = addFieldWithCode(
+      updatedContext, 
+      "Royalty Payments", 
+      `PKR ${formatNumber(formData.royaltyAmount || 0)}`,
+      deductionCodes.royalty
+    );
   }
   
   if (formData.eligibleDeductions.zakat) {
