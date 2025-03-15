@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { ArrowRightIcon, FileTextIcon, AlertTriangleIcon, CheckCircleIcon } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
 import { TaxData, TaxFormData } from '@/components/tax-filing/types';
 import { calculateTax } from '@/utils/taxCalculation';
 
@@ -304,7 +304,7 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
                                   value && (
                                     <p key={key}>
                                       <span className="text-muted-foreground capitalize">{key}:</span> {
-                                        formatCurrency(taxFilings[0].form_data.incomeAmounts?.[key as keyof typeof taxFilings[0].form_data.incomeAmounts] as number || 0)
+                                        formatCurrency(Number(taxFilings[0].form_data.incomeAmounts?.[key as keyof typeof taxFilings[0].form_data.incomeAmounts] || 0))
                                       }
                                     </p>
                                   )
@@ -344,7 +344,7 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
                               <CartesianGrid strokeDasharray="3 3" />
                               <XAxis dataKey="name" />
                               <YAxis />
-                              <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                              <RechartsTooltip formatter={(value) => formatCurrency(Number(value))} />
                               <Bar dataKey="value">
                                 {getIncomeData().map((entry, index) => (
                                   <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
