@@ -300,15 +300,13 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
                             <div>
                               <h3 className="font-semibold mb-2">Income Sources</h3>
                               <div className="space-y-1 text-sm">
-                                {Object.entries(taxFilings[0].form_data.incomeStreams).map(([key, value]) => (
+                                {Object.entries(taxFilings[0].form_data.incomeStreams).map(([key, value]) => 
                                   value && (
                                     <p key={key}>
-                                      <span className="text-muted-foreground capitalize">{key}:</span> {
-                                        formatCurrency(Number(taxFilings[0].form_data.incomeAmounts?.[key as keyof typeof taxFilings[0].form_data.incomeAmounts] || 0))
-                                      }
+                                      <span className="text-muted-foreground capitalize">{key}:</span> {formatCurrency(Number(taxFilings[0].form_data.incomeAmounts?.[key as keyof typeof taxFilings[0].form_data.incomeAmounts] || 0))}
                                     </p>
                                   )
-                                ))}
+                                )}
                                 {!Object.values(taxFilings[0].form_data.incomeStreams).some(Boolean) && (
                                   <p>No income sources specified</p>
                                 )}
