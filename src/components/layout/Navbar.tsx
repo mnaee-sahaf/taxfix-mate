@@ -31,17 +31,12 @@ const Navbar = () => {
     { name: 'Home', path: '/' },
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Tax Calculator', path: '/calculator' },
-    { name: 'Profile', path: '/profile' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   const handleLogin = () => {
     navigate('/auth');
-  };
-
-  const handleSignUp = () => {
-    navigate('/filing');
   };
 
   return (
@@ -82,14 +77,9 @@ const Navbar = () => {
           {isAuthenticated ? (
             <UserProfileMenu />
           ) : (
-            <>
-              <Button variant="outline" className="rounded-full" onClick={handleLogin}>
-                Login
-              </Button>
-              <Button className="rounded-full button-shine" onClick={handleSignUp}>
-                Sign Up
-              </Button>
-            </>
+            <Button variant="outline" className="rounded-full" onClick={handleLogin}>
+              Login
+            </Button>
           )}
         </div>
 
@@ -122,18 +112,13 @@ const Navbar = () => {
             ))}
             <div className="flex flex-col gap-2 pt-2 border-t border-border">
               {isAuthenticated ? (
-                <Button variant="outline" onClick={() => navigate('/profile')}>
-                  My Profile
+                <Button variant="outline" onClick={() => navigate('/dashboard')}>
+                  Dashboard
                 </Button>
               ) : (
-                <>
-                  <Button variant="outline" className="w-full" onClick={handleLogin}>
-                    Login
-                  </Button>
-                  <Button className="w-full" onClick={handleSignUp}>
-                    Sign Up
-                  </Button>
-                </>
+                <Button variant="outline" className="w-full" onClick={handleLogin}>
+                  Login
+                </Button>
               )}
             </div>
           </div>
