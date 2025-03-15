@@ -1,7 +1,8 @@
 
 import React, { useEffect } from 'react';
-import Navbar from '@/components/layout/Navbar';
+import { useAuth } from '@/contexts/AuthContext';
 import Footer from '@/components/layout/Footer';
+import Navbar from '@/components/layout/Navbar';
 import TaxFiling from './TaxFiling';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +13,7 @@ import { generateTaxPDF } from '@/utils/pdfGenerator';
 const Filing = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Check if the user is trying to edit a submitted return
@@ -51,10 +53,13 @@ const Filing = () => {
     });
   };
 
+  // Determine if navbar should be shown (only for non-authenticated users)
+  const showNavbar = !isAuthenticated;
+
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <div className="container max-w-4xl mx-auto px-4 py-4 md:py-8 mt-16">
+      {showNavbar && <Navbar />}
+      <div className={`container max-w-4xl mx-auto px-4 py-4 md:py-8 ${!showNavbar ? 'mt-0' : 'mt-16'}`}>
         <div className="mb-6 flex items-center">
           <Button 
             variant="ghost" 
@@ -69,7 +74,7 @@ const Filing = () => {
           <TaxFiling updateTaxData={updateTaxData} />
         </div>
       </div>
-      <Footer />
+      {showNavbar && <Footer />}
     </div>
   );
 };

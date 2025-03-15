@@ -2,9 +2,16 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import Sidebar from './Sidebar';
+import { 
+  SidebarProvider, 
+  Sidebar, 
+  SidebarContent,
+  SidebarTrigger,
+  SidebarRail
+} from '@/components/ui/sidebar';
 import Footer from './Footer';
 import Navbar from './Navbar';
+import SidebarMenu from './SidebarMenu';
 
 const AppLayout = () => {
   const { isAuthenticated } = useAuth();
@@ -22,19 +29,23 @@ const AppLayout = () => {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-64 hidden md:block">
-        <Sidebar />
-      </aside>
-      
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
-          <Outlet />
-        </main>
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex h-screen w-full overflow-hidden">
+        <Sidebar variant="inset" collapsible="icon">
+          <SidebarContent>
+            <SidebarMenu />
+          </SidebarContent>
+          <SidebarRail />
+        </Sidebar>
+        
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <SidebarTrigger className="m-2 absolute z-10" />
+          <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900 pt-10">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 

@@ -27,7 +27,7 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <div className="grid gap-6">
         <DashboardHeader 
           taxFilings={taxFilings} 
