@@ -1,4 +1,3 @@
-
 import jsPDF from 'jspdf';
 import { TaxFilingData } from './pdf/pdfTypes';
 import { 
@@ -13,7 +12,7 @@ import {
   addTaxCreditsSection,
   addTaxCalculationSection,
   addDisclaimerSection
-} from './pdf/pdfSections';
+} from './pdf/sections';
 
 export const generateTaxPDF = (formData: TaxFilingData): void => {
   // Initialize PDF document
