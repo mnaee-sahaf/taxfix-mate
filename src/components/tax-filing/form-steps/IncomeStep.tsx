@@ -58,12 +58,10 @@ const IncomeStep = ({ formData, handleInputChange, handleNestedChange }: IncomeS
         formData={formData} 
         handleIncomeToggle={handleIncomeToggle} 
       />
-      
       <IncomeAmountInputs 
         formData={formData} 
         handleIncomeAmountChange={handleIncomeAmountChange}
       />
-      
       <IncomeTabSection />
     </div>
   );
