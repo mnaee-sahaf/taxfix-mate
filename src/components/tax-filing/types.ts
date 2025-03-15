@@ -84,6 +84,24 @@ export interface TaxFormData {
     contractPayments: boolean;
   };
   
+  withholding: {
+    salary: boolean;
+    bankTransactions: boolean;
+    utilities: boolean;
+    mobilePhone: boolean;
+    vehicleTax: boolean;
+    otherTaxes: boolean;
+  };
+  
+  withholdingAmounts: {
+    salary: number;
+    bankTransactions: number;
+    utilities: number;
+    mobilePhone: number;
+    vehicleTax: number;
+    otherTaxes: number;
+  };
+  
   expenses: {
     gas: boolean;
     electricity: boolean;

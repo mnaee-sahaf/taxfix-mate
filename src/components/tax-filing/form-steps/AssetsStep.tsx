@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxFormData } from '../types';
 import AssetToggles from './assets/AssetToggles';
@@ -15,42 +15,7 @@ interface AssetsStepProps {
 const AssetsStep = ({ formData, handleInputChange, handleNestedChange }: AssetsStepProps) => {
   const [showNotes, setShowNotes] = useState(false);
 
-  // Initialize assets and assetValues if they don't exist
-  if (!formData.assets) {
-    const defaultAssets = {
-      agriculturalProperty: false,
-      residentialProperty: false,
-      stocksBonds: false,
-      car: false,
-      motorbike: false,
-      cash: false,
-      gold: false,
-      other: false,
-      assetsOutsidePakistan: false
-    };
-    
-    Object.entries(defaultAssets).forEach(([key, value]) => {
-      handleNestedChange('assets', key, value);
-    });
-  }
-
-  if (!formData.assetValues) {
-    const defaultAssetValues = {
-      agriculturalProperty: 0,
-      residentialProperty: 0,
-      stocksBonds: 0,
-      car: 0,
-      motorbike: 0,
-      cash: 0,
-      gold: 0,
-      other: 0,
-      assetsOutsidePakistan: 0
-    };
-    
-    Object.entries(defaultAssetValues).forEach(([key, value]) => {
-      handleNestedChange('assetValues', key, value);
-    });
-  }
+  // No need to initialize here now that it's in initialFormData
 
   const handleAssetToggle = (field: keyof typeof formData.assets) => (checked: boolean) => {
     handleNestedChange('assets', field, checked);

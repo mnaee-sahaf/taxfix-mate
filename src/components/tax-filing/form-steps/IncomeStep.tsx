@@ -12,37 +12,7 @@ interface IncomeStepProps {
 
 const IncomeStep = ({ formData, handleInputChange, handleNestedChange }: IncomeStepProps) => {
   
-  // Initialize incomeStreams if it doesn't exist
-  if (!formData.incomeStreams) {
-    const defaultIncomeStreams = {
-      salary: false,
-      business: false,
-      rental: false,
-      agricultural: false,
-      capitalGains: false,
-      foreign: false
-    };
-    
-    Object.entries(defaultIncomeStreams).forEach(([key, value]) => {
-      handleNestedChange('incomeStreams', key, value);
-    });
-  }
-
-  // Initialize income amounts if they don't exist
-  if (!formData.incomeAmounts) {
-    const defaultIncomeAmounts = {
-      salaryIncome: 0,
-      businessIncome: 0,
-      rentalIncome: 0,
-      agriculturalIncome: 0,
-      capitalGainsIncome: 0,
-      foreignIncome: 0
-    };
-    
-    Object.entries(defaultIncomeAmounts).forEach(([key, value]) => {
-      handleNestedChange('incomeAmounts', key, value);
-    });
-  }
+  // No need to initialize here now that it's in initialFormData
 
   const handleIncomeToggle = (field: keyof typeof formData.incomeStreams) => (checked: boolean) => {
     handleNestedChange('incomeStreams', field, checked);

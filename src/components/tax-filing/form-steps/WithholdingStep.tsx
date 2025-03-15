@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxFormData } from '../types';
 import WithholdingNotes from './withholding/WithholdingNotes';
@@ -14,44 +13,18 @@ interface WithholdingStepProps {
 
 const WithholdingStep = ({ formData, handleInputChange, handleNestedChange }: WithholdingStepProps) => {
   const [showNotes, setShowNotes] = useState(false);
-
-  // Initialize withholding and withholdingAmounts if they don't exist
-  if (!formData.withholding) {
-    const defaultWithholding = {
-      salary: false,
-      bankTransactions: false,
-      utilities: false,
-      mobilePhone: false,
-      vehicleTax: false,
-      otherTaxes: false
-    };
-    
-    Object.entries(defaultWithholding).forEach(([key, value]) => {
-      handleNestedChange('withholding', key, value);
-    });
-  }
-
-  if (!formData.withholdingAmounts) {
-    const defaultWithholdingAmounts = {
-      salary: 0,
-      bankTransactions: 0,
-      utilities: 0,
-      mobilePhone: 0,
-      vehicleTax: 0,
-      otherTaxes: 0
-    };
-    
-    Object.entries(defaultWithholdingAmounts).forEach(([key, value]) => {
-      handleNestedChange('withholdingAmounts', key, value);
-    });
-  }
+  
+  useEffect(() => {
+    // We don't need this anymore since we're initializing in initialFormData
+    // But we'll keep the function for any future needs
+  }, []);
 
   const handleWithholdingToggle = (field: keyof typeof formData.withholding) => (checked: boolean) => {
-    handleNestedChange('withholding', field, checked);
+    handleNestedChange('withholding', field as string, checked);
   };
 
   const handleWithholdingAmountChange = (field: keyof typeof formData.withholdingAmounts) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleNestedChange('withholdingAmounts', field, Number(e.target.value));
+    handleNestedChange('withholdingAmounts', field as string, Number(e.target.value));
   };
 
   return (

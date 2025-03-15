@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxFormData } from '../types';
 import ExpenseToggles from './expenses/ExpenseToggles';
@@ -15,42 +15,7 @@ interface ExpensesStepProps {
 const ExpensesStep = ({ formData, handleInputChange, handleNestedChange }: ExpensesStepProps) => {
   const [showNotes, setShowNotes] = useState(false);
 
-  // Initialize expenses and expenseAmounts if they don't exist
-  if (!formData.expenses) {
-    // Instead of using handleInputChange for an object, initialize each field individually
-    const defaultExpenses = {
-      gas: false,
-      electricity: false,
-      water: false,
-      telephone: false,
-      medical: false,
-      educational: false,
-      travel: false,
-      other: false
-    };
-    
-    Object.entries(defaultExpenses).forEach(([key, value]) => {
-      handleNestedChange('expenses', key, value);
-    });
-  }
-
-  if (!formData.expenseAmounts) {
-    // Instead of using handleInputChange for an object, initialize each field individually
-    const defaultExpenseAmounts = {
-      gas: 0,
-      electricity: 0,
-      water: 0,
-      telephone: 0,
-      medical: 0,
-      educational: 0,
-      travel: 0,
-      other: 0
-    };
-    
-    Object.entries(defaultExpenseAmounts).forEach(([key, value]) => {
-      handleNestedChange('expenseAmounts', key, value);
-    });
-  }
+  // No need to initialize here now that it's in initialFormData
 
   const handleExpenseToggle = (field: keyof typeof formData.expenses) => (checked: boolean) => {
     handleNestedChange('expenses', field, checked);

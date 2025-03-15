@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxFormData } from '../types';
 import DeductionNotes from './deductions/DeductionNotes';
@@ -18,6 +18,8 @@ const DeductionsStep = ({
   handleNestedChange 
 }: DeductionsStepProps) => {
   const [activeTab, setActiveTab] = useState('deductions-form');
+  
+  // No need to initialize here now that it's in initialFormData
   
   const handleDeductionToggle = (field: keyof TaxFormData['eligibleDeductions']) => (checked: boolean) => {
     if (handleNestedChange) {

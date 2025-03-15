@@ -2,51 +2,50 @@
 import { TaxFormData } from './types';
 
 export const initialTaxFormData: TaxFormData = {
-  cnic: '3420112345671',
+  cnic: '',
   firstTimeFiler: false,
-  taxpayerCategory: 'salaried-high',
+  taxpayerCategory: '',
   
-  residencyDays: 200,
+  residencyDays: 0,
   governmentEmployee: false,
-  residencyStatus: 'resident',
+  residencyStatus: '',
   
   incomeStreams: {
-    salary: true,
+    salary: false,
     business: false,
-    rental: true,
+    rental: false,
     agricultural: false,
-    capitalGains: true,
+    capitalGains: false,
     foreign: false
   },
-  employerWithholdingTax: true,
+  employerWithholdingTax: false,
   taxExemptAllowances: {
-    conveyance: true,
-    medical: true,
-    houseRent: true
+    conveyance: false,
+    medical: false,
+    houseRent: false
   },
   
-  salaryIncome: 1200000,
+  salaryIncome: 0,
   businessIncome: 0,
-  rentalIncome: 350000,
+  rentalIncome: 0,
   agriculturalIncome: 0,
-  capitalGainsIncome: 150000,
+  capitalGainsIncome: 0,
   foreignIncome: 0,
   
-  // Added incomeAmounts object to match the updated interface
   incomeAmounts: {
-    salaryIncome: 1200000,
+    salaryIncome: 0,
     businessIncome: 0,
-    rentalIncome: 350000,
+    rentalIncome: 0,
     agriculturalIncome: 0,
-    capitalGainsIncome: 150000,
+    capitalGainsIncome: 0,
     foreignIncome: 0
   },
   
   eligibleDeductions: {
-    lifeInsurance: true,
-    pension: true,
-    donations: true,
-    education: true,
+    lifeInsurance: false,
+    pension: false,
+    donations: false,
+    education: false,
     royalty: false,
     zakat: false
   },
@@ -56,31 +55,43 @@ export const initialTaxFormData: TaxFormData = {
     exportIndustry: false
   },
   
-  lifeInsuranceAmount: 50000,
-  pensionAmount: 120000,
-  donationAmount: 80000,
-  educationAmount: 150000,
+  lifeInsuranceAmount: 0,
+  pensionAmount: 0,
+  donationAmount: 0,
+  educationAmount: 0,
   royaltyAmount: 0,
   zakatAmount: 0,
   
-  bankAccounts: [
-    {
-      accountNumber: 'PK36SCBL0000001123456702',
-      bankName: 'Standard Chartered Bank',
-      currentBalance: 450000
-    }
-  ],
+  bankAccounts: [],
   immovableProperty: {
-    residential: true,
+    residential: false,
     commercial: false,
     agricultural: false
   },
   
   withholdingTaxes: {
-    mobileBills: true,
-    vehicleRegistration: true,
+    mobileBills: false,
+    vehicleRegistration: false,
     electricityBills: false,
     contractPayments: false
+  },
+  
+  withholding: {
+    salary: false,
+    bankTransactions: false,
+    utilities: false,
+    mobilePhone: false,
+    vehicleTax: false,
+    otherTaxes: false
+  },
+  
+  withholdingAmounts: {
+    salary: 0,
+    bankTransactions: 0,
+    utilities: 0,
+    mobilePhone: 0,
+    vehicleTax: 0,
+    otherTaxes: 0
   },
   
   expenses: {
@@ -130,6 +141,6 @@ export const initialTaxFormData: TaxFormData = {
   },
   
   penaltyUnderstanding: false,
-  paymentMethod: 'bank-transfer',
+  paymentMethod: '',
   paidTax: 0
 };
