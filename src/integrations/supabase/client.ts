@@ -19,7 +19,52 @@ export const supabase = createClient<Database>(
       persistSession: true,
       detectSessionInUrl: true,
       flowType: 'pkce',
-      redirectTo: `${SITE_URL}/auth/callback`
-    }
+      // Use correct auth redirect configuration
+      storage: {
+        getItem: (key) => {
+          try {
+            const value = localStorage.getItem(key);
+            return value ? JSON.parse(value) : null;
+          } catch (error) {
+            console.error('Error getting item from localStorage:', error);
+            return null;
+          }
+        },
+        setItem: (key, value) => {
+          try {
+            localStorage.setItem(key, JSON.stringify(value));
+          } catch (error) {
+            console.error('Error setting item in localStorage:', error);
+          }
+        },
+        removeItem: (key) => {
+          try {
+            localStorage.removeItem(key);
+          } catch (error) {
+            console.error('Error removing item from localStorage:', error);
+          }
+        }
+      }
+    },
+    global: {
+      headers: {
+        'x-application-name': 'taxfix',
+      },
+    },
   }
 );
+
+// Add redirect configuration separately
+const { data, error } = await supabase.auth.setSession({
+  access_token: '',
+  refresh_token: '',
+})
+  
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event, session);
+});
+
+// Configure auth redirect
+supabase.auth.setConfig({
+  redirect_to: `${SITE_URL}/auth/callback`,
+});

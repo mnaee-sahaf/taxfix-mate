@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/components/ui/use-toast';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
@@ -18,13 +18,17 @@ const Auth = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get the return URL from location state or default to dashboard
+  const from = location.state?.from?.pathname || '/dashboard';
 
   useEffect(() => {
     // Check if user is already logged in
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        navigate('/dashboard');
+        navigate(from);
       }
     };
     
@@ -33,8 +37,9 @@ const Auth = () => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state changed:', event);
         if (session && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
-          navigate('/dashboard');
+          navigate(from);
         }
       }
     );
@@ -42,7 +47,7 @@ const Auth = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, from]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,11 +58,19 @@ const Auth = () => {
       return;
     }
     
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+    
     try {
       setLoading(true);
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
       });
       
       if (error) throw error;
@@ -66,7 +79,12 @@ const Auth = () => {
         title: "Sign up successful!",
         description: "Please check your email for a confirmation link.",
       });
+      
+      // Clear form
+      setEmail('');
+      setPassword('');
     } catch (error: any) {
+      console.error('Signup error:', error);
       setError(error.message || 'An error occurred during sign up');
     } finally {
       setLoading(false);
@@ -92,7 +110,12 @@ const Auth = () => {
       if (error) throw error;
       
       // Navigation will happen in the onAuthStateChange listener
+      toast({
+        title: "Sign in successful!",
+        description: "Welcome back!",
+      });
     } catch (error: any) {
+      console.error('Signin error:', error);
       setError(error.message || 'Invalid login credentials');
     } finally {
       setLoading(false);
@@ -133,6 +156,7 @@ const Auth = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com" 
                       required 
+                      disabled={loading}
                     />
                   </div>
                   
@@ -144,13 +168,21 @@ const Auth = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required 
+                      disabled={loading}
                     />
                   </div>
                 </CardContent>
                 
                 <CardFooter className="flex flex-col gap-4">
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Signing in...' : 'Sign In'}
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing in...
+                      </>
+                    ) : (
+                      'Sign In'
+                    )}
                   </Button>
                   <Link to="/filing" className="text-sm text-center text-muted-foreground hover:text-primary w-full">
                     Continue without signing in
@@ -178,6 +210,7 @@ const Auth = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com" 
                       required 
+                      disabled={loading}
                     />
                   </div>
                   
@@ -190,6 +223,7 @@ const Auth = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Create a password" 
                       required 
+                      disabled={loading}
                     />
                     <p className="text-xs text-muted-foreground">
                       Password must be at least 6 characters long
@@ -199,7 +233,14 @@ const Auth = () => {
                 
                 <CardFooter className="flex flex-col gap-4">
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Creating account...' : 'Create Account'}
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating account...
+                      </>
+                    ) : (
+                      'Create Account'
+                    )}
                   </Button>
                   <Link to="/filing" className="text-sm text-center text-muted-foreground hover:text-primary w-full">
                     Continue without signing up
