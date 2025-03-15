@@ -66,13 +66,12 @@ supabase.auth.setSession({
   refresh_token: '',
 }).then(() => {
   // Set up auth URL callback
-  supabase.auth.updateConfig({
-    url: SITE_URL,
-    externalLinks: {
-      signIn: `${SITE_URL}/auth/callback`,
-      redirectTo: `${SITE_URL}/auth/callback`,
-    }
-  });
+  // The updateConfig method doesn't exist on SupabaseAuthClient
+  // Instead, we'll configure redirects during sign-in operations
+  console.log('Auth session initialized');
+  
+  // We don't need to configure global redirects here
+  // Instead, we'll set redirects directly when calling auth methods
 });
   
 supabase.auth.onAuthStateChange((event, session) => {
