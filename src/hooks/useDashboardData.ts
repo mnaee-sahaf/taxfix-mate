@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { TaxData, TaxFormData } from '@/components/tax-filing/types';
@@ -19,6 +19,7 @@ interface UseDashboardDataReturn {
   loading: boolean;
   completionProgress: number;
   incomeData: Array<{ name: string; value: number }>;
+  refreshData: () => Promise<void>;
 }
 
 export const useDashboardData = (propsTaxData?: TaxData): UseDashboardDataReturn => {
@@ -30,56 +31,61 @@ export const useDashboardData = (propsTaxData?: TaxData): UseDashboardDataReturn
   
   const incomeData = useIncomeData(taxFilings);
 
+  const fetchTaxFilings = useCallback(async () => {
+    if (!isAuthenticated || !user) return;
+    
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('tax_filings')
+        .select('id, form_data, status, updated_at')
+        .eq('user_id', user.id as any)
+        .order('updated_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        // Properly convert data with type assertions
+        const typedData: TaxFiling[] = data.map(item => ({
+          id: item.id,
+          form_data: item.form_data as unknown as TaxFormData,
+          status: item.status,
+          updated_at: item.updated_at
+        }));
+        
+        setTaxFilings(typedData);
+        
+        // If we don't have tax data from props, calculate it from the most recent submitted filing
+        if (!propsTaxData) {
+          const submittedFiling = typedData.find(filing => filing.status === 'submitted');
+          if (submittedFiling) {
+            const calculatedTax = calculateTax(submittedFiling.form_data);
+            setTaxData(calculatedTax);
+            
+            // Calculate completion progress based on filled sections
+            calculateCompletionProgress(submittedFiling.form_data);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching tax filings:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, isAuthenticated, propsTaxData]);
+
+  // Function to refresh data that can be called from components
+  const refreshData = useCallback(async () => {
+    await fetchTaxFilings();
+  }, [fetchTaxFilings]);
+
   useEffect(() => {
     if (propsTaxData) {
       setTaxData(propsTaxData);
     }
     
-    const fetchTaxFilings = async () => {
-      if (!isAuthenticated || !user) return;
-      
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('tax_filings')
-          .select('id, form_data, status, updated_at')
-          .eq('user_id', user.id as any)
-          .order('updated_at', { ascending: false });
-        
-        if (error) throw error;
-        
-        if (data && data.length > 0) {
-          // Properly convert data with type assertions
-          const typedData: TaxFiling[] = data.map(item => ({
-            id: item.id,
-            form_data: item.form_data as unknown as TaxFormData,
-            status: item.status,
-            updated_at: item.updated_at
-          }));
-          
-          setTaxFilings(typedData);
-          
-          // If we don't have tax data from props, calculate it from the most recent submitted filing
-          if (!propsTaxData) {
-            const submittedFiling = typedData.find(filing => filing.status === 'submitted');
-            if (submittedFiling) {
-              const calculatedTax = calculateTax(submittedFiling.form_data);
-              setTaxData(calculatedTax);
-              
-              // Calculate completion progress based on filled sections
-              calculateCompletionProgress(submittedFiling.form_data);
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching tax filings:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
     fetchTaxFilings();
-  }, [user, isAuthenticated, propsTaxData]);
+  }, [user, isAuthenticated, propsTaxData, fetchTaxFilings]);
 
   const calculateCompletionProgress = (formData: TaxFormData) => {
     if (!formData) return;
@@ -99,5 +105,12 @@ export const useDashboardData = (propsTaxData?: TaxData): UseDashboardDataReturn
     setCompletionProgress((completedSections / sections.length) * 100);
   };
 
-  return { taxFilings, taxData, loading, completionProgress, incomeData };
+  return { 
+    taxFilings, 
+    taxData, 
+    loading, 
+    completionProgress, 
+    incomeData,
+    refreshData 
+  };
 };

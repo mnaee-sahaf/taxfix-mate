@@ -18,7 +18,8 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
     taxData, 
     loading, 
     completionProgress,
-    incomeData
+    incomeData,
+    refreshData
   } = useDashboardData(propsTaxData);
 
   if (loading) {
@@ -28,7 +29,10 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
   return (
     <div className="p-6">
       <div className="grid gap-6">
-        <DashboardHeader taxFilings={taxFilings} />
+        <DashboardHeader 
+          taxFilings={taxFilings} 
+          refreshData={refreshData}
+        />
 
         {taxFilings.length === 0 ? (
           <EmptyDashboard />

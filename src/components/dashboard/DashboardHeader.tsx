@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, FileText } from 'lucide-react';
+import { Download, FileText, RefreshCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { generateTaxPDF } from '@/utils/pdfGenerator';
 import { TaxFormData } from '@/components/tax-filing/types';
+import { toast } from 'sonner';
 
 interface DashboardHeaderProps {
   taxFilings: Array<{
@@ -13,9 +14,10 @@ interface DashboardHeaderProps {
     status: string;
     updated_at: string;
   }>;
+  refreshData: () => Promise<void>;
 }
 
-const DashboardHeader = ({ taxFilings }: DashboardHeaderProps) => {
+const DashboardHeader = ({ taxFilings, refreshData }: DashboardHeaderProps) => {
   const navigate = useNavigate();
 
   const handleNewTaxFiling = () => {
@@ -31,10 +33,28 @@ const DashboardHeader = ({ taxFilings }: DashboardHeaderProps) => {
     }
   };
 
+  const handleRefresh = async () => {
+    try {
+      await refreshData();
+      toast.success('Tax filings data refreshed');
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+      toast.error('Failed to refresh data');
+    }
+  };
+
   return (
     <div className="flex items-center justify-between">
       <h1 className="text-2xl font-bold">Tax Dashboard</h1>
       <div className="flex gap-3">
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={handleRefresh} 
+          title="Refresh data"
+        >
+          <RefreshCcw className="h-4 w-4" />
+        </Button>
         {taxFilings.length > 0 && taxFilings.some(filing => filing.status === 'submitted') && (
           <Button variant="outline" onClick={handleDownloadPDF} className="flex items-center gap-2">
             <Download className="h-4 w-4" />
