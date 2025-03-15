@@ -54,26 +54,15 @@ export const supabase = createClient<Database>(
   }
 );
 
-// Add redirect configuration separately using the correct method
-supabase.auth.setSession({
-  access_token: '',
-  refresh_token: '',
-});
-
-// Configure the site URL for auth callbacks
+// Initialize the session
 supabase.auth.setSession({
   access_token: '',
   refresh_token: '',
 }).then(() => {
-  // Set up auth URL callback
-  // The updateConfig method doesn't exist on SupabaseAuthClient
-  // Instead, we'll configure redirects during sign-in operations
   console.log('Auth session initialized');
-  
-  // We don't need to configure global redirects here
-  // Instead, we'll set redirects directly when calling auth methods
 });
   
+// Listen for auth state changes
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, session);
 });

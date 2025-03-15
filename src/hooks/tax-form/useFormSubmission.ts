@@ -25,20 +25,20 @@ export const useFormSubmission = ({
   const { toast } = useToast();
 
   const handleSubmit = async () => {
-    // If not authenticated, redirect to authentication page
+    // If not authenticated, redirect to authentication page with a clear message
     if (!isAuthenticated) {
       localStorage.setItem('taxFilingProgress', JSON.stringify(formData));
       toast({
         title: "Authentication required",
-        description: "Please sign in to submit your tax return.",
+        description: "Please sign in to submit your tax return. Your progress has been saved.",
         duration: 5000,
       });
       navigate('/auth');
       return;
     }
     
+    // Calculate tax data
     const taxData = calculateTax(formData);
-    
     console.log("Calculated Values:", taxData);
 
     if (updateTaxData) {
@@ -46,6 +46,13 @@ export const useFormSubmission = ({
     }
 
     try {
+      // Show processing toast
+      toast({
+        title: "Processing your submission",
+        description: "Please wait while we save your tax filing...",
+        duration: 3000,
+      });
+      
       // Safe type conversion for Supabase
       const formDataJson = formData as unknown as Json;
       
@@ -66,7 +73,7 @@ export const useFormSubmission = ({
             .from('tax_filings')
             .update({ 
               form_data: formDataJson, 
-              status: 'submitted',
+              status: 'submitted' as any,
               updated_at: new Date().toISOString() 
             } as any)
             .eq('id', existingDrafts[0]?.id);
@@ -79,7 +86,7 @@ export const useFormSubmission = ({
             .insert({ 
               user_id: user.id, 
               form_data: formDataJson, 
-              status: 'submitted' 
+              status: 'submitted' as any 
             } as any);
           
           if (error) throw error;
@@ -103,30 +110,37 @@ export const useFormSubmission = ({
       // Generate PDF
       generateTaxPDF(formData);
       console.log("PDF generated successfully");
+      
+      // Clean up localStorage
+      localStorage.removeItem('taxFilingProgress');
+      
+      // Show success animation and message
+      triggerSuccessfulSubmission();
+      
+      toast({
+        title: "Success!",
+        description: "Your tax return has been submitted and a PDF report has been downloaded.",
+        duration: 5000,
+      });
+      
+      // Use a slightly longer delay before redirecting to give the user time to see the success message
+      setTimeout(() => {
+        navigate('/dashboard', { 
+          state: { 
+            submissionSuccess: true,
+            taxData: taxData
+          } 
+        });
+      }, 3000);
     } catch (error) {
       console.error("Error during submission:", error);
       toast({
         title: "Error submitting return",
         description: "There was an error submitting your tax return. Please try again.",
-        duration: 5000,
+        variant: "destructive",
+        duration: 7000,
       });
-      return;
     }
-    
-    // Clean up localStorage
-    localStorage.removeItem('taxFilingProgress');
-    
-    triggerSuccessfulSubmission();
-    
-    toast({
-      title: "Tax return submitted!",
-      description: "Your tax return has been successfully submitted to FBR and a PDF report has been downloaded.",
-      duration: 5000,
-    });
-    
-    setTimeout(() => {
-      navigate('/dashboard');
-    }, 2000);
   };
 
   return { handleSubmit };
