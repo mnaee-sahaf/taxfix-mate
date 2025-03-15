@@ -6,6 +6,7 @@ import { triggerSuccessfulSubmission } from '@/utils/animations';
 import { TaxFormData, TaxData } from '@/components/tax-filing/types';
 import { calculateTax } from '@/utils/taxCalculation';
 import { supabase } from '@/integrations/supabase/client';
+import { Json } from '@/integrations/supabase/types';
 
 interface UseFormSubmissionProps {
   formData: TaxFormData;
@@ -55,11 +56,11 @@ export const useFormSubmission = ({
           .eq('status', 'draft');
         
         if (existingDrafts && existingDrafts.length > 0) {
-          // Update existing draft to submitted
+          // Update existing draft to submitted - cast formData as unknown first, then as Json
           const { error } = await supabase
             .from('tax_filings')
             .update({ 
-              form_data: formData, 
+              form_data: formData as unknown as Json, 
               status: 'submitted',
               updated_at: new Date().toISOString() 
             })
@@ -67,12 +68,12 @@ export const useFormSubmission = ({
           
           if (error) throw error;
         } else {
-          // Create new submitted entry
+          // Create new submitted entry - cast formData as unknown first, then as Json
           const { error } = await supabase
             .from('tax_filings')
             .insert({ 
               user_id: user.id, 
-              form_data: formData, 
+              form_data: formData as unknown as Json, 
               status: 'submitted' 
             });
           

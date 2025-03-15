@@ -2,6 +2,7 @@
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { TaxFormData } from '@/components/tax-filing/types';
+import { Json } from '@/integrations/supabase/types';
 
 interface UseFormPersistenceProps {
   formData: TaxFormData;
@@ -30,18 +31,25 @@ export const useFormPersistence = ({
           .eq('status', 'draft');
         
         if (existingDrafts && existingDrafts.length > 0) {
-          // Update existing draft
+          // Update existing draft - cast formData as unknown first, then as Json
           const { error } = await supabase
             .from('tax_filings')
-            .update({ form_data: formData, updated_at: new Date().toISOString() })
+            .update({ 
+              form_data: formData as unknown as Json, 
+              updated_at: new Date().toISOString() 
+            })
             .eq('id', existingDrafts[0].id);
           
           if (error) throw error;
         } else {
-          // Create new draft
+          // Create new draft - cast formData as unknown first, then as Json
           const { error } = await supabase
             .from('tax_filings')
-            .insert({ user_id: user.id, form_data: formData, status: 'draft' });
+            .insert({ 
+              user_id: user.id, 
+              form_data: formData as unknown as Json, 
+              status: 'draft' 
+            });
           
           if (error) throw error;
         }
@@ -104,7 +112,8 @@ export const useFormPersistence = ({
           .single();
         
         if (data && !error) {
-          const savedFormData = data.form_data as TaxFormData;
+          // Safely convert Json to TaxFormData with type assertion
+          const savedFormData = data.form_data as unknown as TaxFormData;
           toast({
             title: "Draft loaded",
             description: "Your previous tax filing draft has been loaded.",

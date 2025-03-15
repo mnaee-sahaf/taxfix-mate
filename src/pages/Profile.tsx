@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -81,7 +80,15 @@ const Profile = () => {
         
         if (filingsError) throw filingsError;
         
-        setTaxFilings(filingsData || []);
+        if (filingsData) {
+          // Cast the data array to TaxFiling[] with appropriate type conversion
+          const typedData: TaxFiling[] = filingsData.map(item => ({
+            ...item,
+            form_data: item.form_data as unknown as TaxFormData
+          }));
+          
+          setTaxFilings(typedData);
+        }
       } catch (error) {
         console.error('Error fetching user data:', error);
         toast({

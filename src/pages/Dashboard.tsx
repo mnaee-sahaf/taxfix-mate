@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -56,11 +55,17 @@ const Dashboard = ({ taxData: propsTaxData }: { taxData?: TaxData }) => {
         if (error) throw error;
         
         if (data && data.length > 0) {
-          setTaxFilings(data);
+          // Cast the data array to TaxFiling[] with appropriate type conversion
+          const typedData: TaxFiling[] = data.map(item => ({
+            ...item,
+            form_data: item.form_data as unknown as TaxFormData
+          }));
+          
+          setTaxFilings(typedData);
           
           // If we don't have tax data from props, calculate it from the most recent submitted filing
           if (!propsTaxData) {
-            const submittedFiling = data.find(filing => filing.status === 'submitted');
+            const submittedFiling = typedData.find(filing => filing.status === 'submitted');
             if (submittedFiling) {
               const calculatedTax = calculateTax(submittedFiling.form_data);
               setTaxData(calculatedTax);
