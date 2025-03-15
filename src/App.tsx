@@ -36,14 +36,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/calculator"
-            element={
-              <ProtectedRoute>
-                <Calculator />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/calculator" element={<Calculator />} />
           <Route
             path="/profile"
             element={
