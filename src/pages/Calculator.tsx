@@ -314,8 +314,16 @@ const CalculatorPage = () => {
             
             <Tabs defaultValue="income-tax" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="income-tax">Income Tax Calculator</TabsTrigger>
-                <TabsTrigger value="withholding-tax">Withholding Tax</TabsTrigger>
+                <TabsTrigger 
+                value="income-tax"
+                className="py-2 rounded-md transition-colors duration-300 data-[state=active]:bg-green-100 data-[state=active]:text-black"
+                >
+                  Income Tax Calculator</TabsTrigger>
+                <TabsTrigger 
+                value="withholding-tax"
+                className="py-2 rounded-md transition-colors duration-300 data-[state=active]:bg-green-100 data-[state=active]:text-black"
+                >
+                  Withholding Tax</TabsTrigger>
               </TabsList>
               
               <TabsContent value="income-tax">
