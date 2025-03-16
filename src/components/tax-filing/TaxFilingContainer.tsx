@@ -12,7 +12,7 @@ import { AlertTriangle } from "lucide-react";
 interface TaxFilingContainerProps {
   currentStep: number;
   steps: Step[];
-  formData: TaxFormData;
+  formData: any;
   savedProgress: boolean;
   handleInputChange: (name: string, value: string | number | boolean) => void;
   handleNestedChange: (category: string, field: string, value: boolean | string | number) => void;
@@ -20,6 +20,7 @@ interface TaxFilingContainerProps {
   nextStep: () => void;
   saveProgress: () => void;
   handleSubmit: () => void;
+  stepRenderer?: React.ReactNode;
 }
 
 const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
@@ -32,7 +33,8 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
   prevStep,
   nextStep,
   saveProgress,
-  handleSubmit
+  handleSubmit,
+  stepRenderer
 }) => {
   const { toast } = useToast();
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -50,7 +52,7 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
         break;
         
       case 'residency':
-        if (formData.residencyDays === 0 || !formData.residencyStatus) {
+        if ((formData.residencyDays === 0 || formData.residencyDays === undefined) || !formData.residencyStatus) {
           setValidationError("Please specify how many days you've resided in Pakistan to determine your residency status.");
           return false;
         }
@@ -65,7 +67,7 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
         break;
         
       case 'expenses':
-        const hasAnyExpense = Object.values(formData.expenses).some(value => value === true);
+        const hasAnyExpense = Object.values(formData.expenses || {}).some(value => value === true);
         if (!hasAnyExpense) {
           setValidationError("Please select at least one expense type that applies to your situation.");
           return false;
@@ -73,26 +75,32 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
         break;
         
       case 'deductions':
-        const hasAnyDeduction = Object.values(formData.eligibleDeductions).some(value => value === true);
-        if (!hasAnyDeduction) {
-          setValidationError("Please select at least one deduction type you'd like to claim.");
-          return false;
+        if (formData.eligibleDeductions) {
+          const hasAnyDeduction = Object.values(formData.eligibleDeductions).some(value => value === true);
+          if (!hasAnyDeduction) {
+            setValidationError("Please select at least one deduction type you'd like to claim.");
+            return false;
+          }
         }
         break;
         
       case 'assets':
-        const hasAnyAsset = Object.values(formData.assets).some(value => value === true);
-        if (!hasAnyAsset) {
-          setValidationError("Please select at least one asset type that you currently own.");
-          return false;
+        if (formData.assets) {
+          const hasAnyAsset = Object.values(formData.assets).some(value => value === true);
+          if (!hasAnyAsset) {
+            setValidationError("Please select at least one asset type that you currently own.");
+            return false;
+          }
         }
         break;
         
       case 'withholding':
-        const hasAnyWithholding = Object.values(formData.withholding).some(value => value === true);
-        if (!hasAnyWithholding) {
-          setValidationError("Please select at least one withholding tax type that applies to you.");
-          return false;
+        if (formData.withholding) {
+          const hasAnyWithholding = Object.values(formData.withholding).some(value => value === true);
+          if (!hasAnyWithholding) {
+            setValidationError("Please select at least one withholding tax type that applies to you.");
+            return false;
+          }
         }
         break;
     }
@@ -132,12 +140,14 @@ const TaxFilingContainer: React.FC<TaxFilingContainerProps> = ({
         )}
         
         <div className="py-4">
-          <StepRenderer 
-            stepId={steps[currentStep].id}
-            formData={formData}
-            handleInputChange={handleInputChange}
-            handleNestedChange={handleNestedChange}
-          />
+          {stepRenderer || (
+            <StepRenderer 
+              stepId={steps[currentStep].id}
+              formData={formData}
+              handleInputChange={handleInputChange}
+              handleNestedChange={handleNestedChange}
+            />
+          )}
         </div>
         
         <TaxFormStepNavigation 

@@ -1,11 +1,12 @@
 
 import React from 'react';
-import { useTaxForm } from '@/hooks/useTaxForm';
+import { useTaxFormFree } from '@/hooks/useTaxFormFree';
 import { FREE_TAX_FILING_STEPS } from '@/components/tax-filing/constants';
 import TaxFilingContainer from '@/components/tax-filing/TaxFilingContainer';
 import { TaxFilingProps } from '@/components/tax-filing/types';
+import StepRendererForFreeForm from '@/components/tax-filing/StepRendererForFreeForm';
 
-const TaxFiling: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
+const TaxFilingFree: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
   const {
     currentStep,
     formData,
@@ -16,7 +17,7 @@ const TaxFiling: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
     prevStep,
     saveProgress,
     handleSubmit
-  } = useTaxForm({ updateTaxData });
+  } = useTaxFormFree({ updateTaxData });
   
   return (
     <TaxFilingContainer
@@ -30,8 +31,16 @@ const TaxFiling: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
       nextStep={nextStep}
       saveProgress={saveProgress}
       handleSubmit={handleSubmit}
+      stepRenderer={
+        <StepRendererForFreeForm
+          stepId={FREE_TAX_FILING_STEPS[currentStep].id}
+          formData={formData}
+          handleInputChange={handleInputChange}
+          handleNestedChange={handleNestedChange}
+        />
+      }
     />
   );
 };
 
-export default TaxFiling;
+export default TaxFilingFree;

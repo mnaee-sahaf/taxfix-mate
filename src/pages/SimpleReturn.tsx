@@ -2,20 +2,20 @@
 import { useEffect } from 'react';
 import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
-import TaxFiling from './TaxFiling';
+import TaxFilingFree from './TaxFilingFree';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { generateTaxPDF } from '@/utils/pdfGenerator';
 
-const SimpleFiling = () => {
+const SimpleReturn = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     // Check if the user is trying to edit a submitted return
-    const savedProgress = localStorage.getItem('taxFilingProgress');
+    const savedProgress = localStorage.getItem('freeTaxFilingProgress');
     if (savedProgress) {
       try {
         const formData = JSON.parse(savedProgress);
@@ -30,8 +30,8 @@ const SimpleFiling = () => {
           // Show the PDF
           generateTaxPDF(formData);
           
-          // Redirect to dashboard
-          navigate('/dashboard');
+          // Redirect to home page
+          navigate('/');
         }
       } catch (error) {
         console.error("Error parsing tax filing data:", error);
@@ -54,7 +54,7 @@ const SimpleFiling = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar/>
-      <div className={`container max-w-4xl mx-auto px-4 py-4 md:py-8 'mt-0' : 'mt-16'`}>
+      <div className="container max-w-4xl mx-auto px-4 py-4 md:py-8 mt-0">
         <div className="mb-6 flex items-center">
           <Button 
             variant="ghost" 
@@ -62,11 +62,11 @@ const SimpleFiling = () => {
             onClick={handleGoBack}
           >
             <ArrowLeft size={16} />
-            Back to Home
+            Back to Filing Types
           </Button>
         </div>
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border p-6 md:p-8">
-          <TaxFiling updateTaxData={updateTaxData} />
+          <TaxFilingFree updateTaxData={updateTaxData} />
         </div>
       </div>
       <Footer />
@@ -74,4 +74,4 @@ const SimpleFiling = () => {
   );
 };
 
-export default SimpleFiling;
+export default SimpleReturn;
