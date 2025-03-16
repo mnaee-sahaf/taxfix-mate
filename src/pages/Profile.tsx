@@ -207,7 +207,6 @@ const Profile = () => {
   
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
       <main className="flex-grow container max-w-4xl mx-auto px-4 py-8 md:py-16 mt-16">
         <div className="grid gap-6">
           <div className="flex items-center justify-between">
