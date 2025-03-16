@@ -156,6 +156,69 @@ export interface TaxFormData {
   province?: string;
 }
 
+export interface FreeTaxFormData {
+  name: string;
+  cnic: string;
+  firstTimeFiler: boolean;
+  taxpayerCategory: string;
+
+  incomeStreams: {
+    salary: boolean;
+    business: boolean;
+    rental: boolean;
+    agricultural: boolean;
+    capitalGains: boolean;
+    foreign: boolean;
+  };
+
+  salaryIncome: number;
+  businessIncome: number;
+  rentalIncome: number;
+  agriculturalIncome: number;
+  capitalGainsIncome: number;
+  foreignIncome: number;
+  
+  incomeAmounts: {
+    salaryIncome: number;
+    businessIncome: number;
+    rentalIncome: number;
+    agriculturalIncome: number;
+    capitalGainsIncome: number;
+    foreignIncome: number;
+  };
+  
+  expenses: {
+    gas: boolean;
+    electricity: boolean;
+    water: boolean;
+    telephone: boolean;
+    medical: boolean;
+    educational: boolean;
+    travel: boolean;
+    other: boolean;
+  };
+  
+  expenseAmounts: {
+    gas: number;
+    electricity: number;
+    water: number;
+    telephone: number;
+    medical: number;
+    educational: number;
+    travel: number;
+    other: number;
+  };
+  
+  
+  penaltyUnderstanding: boolean;
+  paymentMethod: string;
+  paidTax: number;
+  
+  city?: string;
+  province?: string;
+}
+
+
 export interface TaxData {
   calculatedTax: number;
   paidTax: number;

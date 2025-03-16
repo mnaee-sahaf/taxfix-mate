@@ -12,6 +12,8 @@ import Profile from '@/pages/Profile';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import AuthCallback from '@/components/auth/AuthCallback';
 import { Toaster } from '@/components/ui/toaster';
+import TaxFilingTypePage from './pages/TaxFilingType';
+import SimpleFiling from './pages/SimpleReturn';
 
 function App() {
   return (
@@ -20,7 +22,9 @@ function App() {
         <Routes>
           <Route element={<AppLayout />}>
             <Route path="/" element={<Index />} />
+            <Route path="/simple-return" element={<SimpleFiling />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/taxfilingtypes" element={<TaxFilingTypePage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route
               path="/dashboard"

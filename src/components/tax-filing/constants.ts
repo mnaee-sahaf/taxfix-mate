@@ -43,3 +43,26 @@ export const TAX_FILING_STEPS: Step[] = [
     description: 'Review your information before submission',
   },
 ];
+
+export const FREE_TAX_FILING_STEPS: Step[] = [
+  {
+    id: 'identification',
+    title: 'User Identification',
+    description: 'Verify your identity and taxpayer category',
+  },
+  {
+    id: 'income',
+    title: 'Income Sources',
+    description: 'Enter all your income streams',
+  },
+  {
+    id: 'expenses',
+    title: 'Expenses',
+    description: 'Enter all your expenses',
+  },
+  {
+    id: 'review',
+    title: 'Review & Submit',
+    description: 'Review your information before submission',
+  },
+];

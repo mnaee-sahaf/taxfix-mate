@@ -29,7 +29,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'Filing', path: '/dashboard' },
+    { name: 'File', path: '/taxfilingtypes' },
     { name: 'Calculator', path: '/calculator' },
   ];
 
@@ -112,8 +112,8 @@ const Navbar = () => {
             ))}
             <div className="flex flex-col gap-2 pt-2 border-t border-border">
               {isAuthenticated ? (
-                <Button variant="outline" onClick={() => navigate('/dashboard')}>
-                  Filing
+                <Button variant="outline" onClick={() => navigate('/taxfilingtypes')}>
+                  File
                 </Button>
               ) : (
                 <Button variant="outline" className="w-full" onClick={handleLogin}>
