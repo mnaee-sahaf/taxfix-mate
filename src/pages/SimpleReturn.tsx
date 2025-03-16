@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { generateTaxPDF } from '@/utils/pdfGenerator';
 
-const SimpleReturn = () => {
+const SimpleReturn: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -52,8 +52,7 @@ const SimpleReturn = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar/>
+    <div className="min-h-screen flex flex-col mt-12 mb-12">
       <div className="container max-w-4xl mx-auto px-4 py-4 md:py-8 mt-0">
         <div className="mb-6 flex items-center">
           <Button 
@@ -69,7 +68,6 @@ const SimpleReturn = () => {
           <TaxFilingFree updateTaxData={updateTaxData} />
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

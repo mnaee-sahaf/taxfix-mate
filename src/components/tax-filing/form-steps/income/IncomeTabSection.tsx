@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import IncomeNotes from './IncomeNotes';
+
 
 const IncomeTabSection = () => {
   const [showNotes, setShowNotes] = useState(false);
@@ -20,7 +20,6 @@ const IncomeTabSection = () => {
       </TabsContent>
       
       <TabsContent value="income-notes">
-        <IncomeNotes />
       </TabsContent>
     </Tabs>
   );

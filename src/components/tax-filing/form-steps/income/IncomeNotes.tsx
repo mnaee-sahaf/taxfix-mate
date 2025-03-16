@@ -3,7 +3,7 @@ import React from 'react';
 
 const IncomeNotes = () => {
   return (
-    <div className="space-y-4 pt-4">
+    <div className="space-y-4 pb-6">
       <div className="p-4 bg-blue-50 dark:bg-blue-950/50 rounded-lg">
         <h3 className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-2">Income Reporting Guidelines</h3>
         <ul className="list-disc pl-5 space-y-1 text-sm text-blue-700 dark:text-blue-400">

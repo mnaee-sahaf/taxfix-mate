@@ -3,6 +3,8 @@ import { TaxFormData } from '../types';
 import IncomeToggleSection from './income/IncomeToggleSection';
 import IncomeAmountInputs from './income/IncomeAmountInputs';
 import IncomeTabSection from './income/IncomeTabSection';
+import IncomeNotes from './income/IncomeNotes';
+
 
 interface IncomeStepProps {
   formData: TaxFormData;
@@ -23,7 +25,8 @@ const IncomeStep = ({ formData, handleInputChange, handleNestedChange }: IncomeS
   };
   
   return (
-    <div className="space-y-6">
+    <div className="spae-y-2 pb-6">
+      <IncomeNotes />
       <IncomeToggleSection 
         formData={formData} 
         handleIncomeToggle={handleIncomeToggle} 
@@ -32,7 +35,7 @@ const IncomeStep = ({ formData, handleInputChange, handleNestedChange }: IncomeS
         formData={formData} 
         handleIncomeAmountChange={handleIncomeAmountChange}
       />
-      <IncomeTabSection />
+      {/* <IncomeTabSection /> */}
     </div>
   );
 };

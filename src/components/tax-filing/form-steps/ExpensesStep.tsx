@@ -26,29 +26,18 @@ const ExpensesStep = ({ formData, handleInputChange, handleNestedChange }: Expen
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-6">
+      <ExpenseNotes />
       <ExpenseToggles 
         formData={formData} 
         handleExpenseToggle={handleExpenseToggle} 
       />
-      
-      <Tabs defaultValue="expense-values" className="w-full pt-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="expense-values">Expense Values</TabsTrigger>
-          <TabsTrigger value="expense-notes" onClick={() => setShowNotes(true)}>Additional Notes</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="expense-values">
-          <ExpenseValues 
+
+      <ExpenseValues 
             formData={formData} 
             handleExpenseAmountChange={handleExpenseAmountChange} 
           />
-        </TabsContent>
-        
-        <TabsContent value="expense-notes">
-          <ExpenseNotes />
-        </TabsContent>
-      </Tabs>
+  
     </div>
   );
 };

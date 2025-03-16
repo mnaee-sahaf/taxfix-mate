@@ -27,28 +27,15 @@ const AssetsStep = ({ formData, handleInputChange, handleNestedChange }: AssetsS
 
   return (
     <div className="space-y-6">
+     <AssetNotes />
       <AssetToggles 
         formData={formData} 
         handleAssetToggle={handleAssetToggle} 
       />
-      
-      <Tabs defaultValue="asset-values" className="w-full pt-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="asset-values">Asset Values</TabsTrigger>
-          <TabsTrigger value="asset-notes" onClick={() => setShowNotes(true)}>Additional Notes</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="asset-values">
-          <AssetValues 
+        <AssetValues 
             formData={formData} 
             handleAssetAmountChange={handleAssetAmountChange} 
-          />
-        </TabsContent>
-        
-        <TabsContent value="asset-notes">
-          <AssetNotes />
-        </TabsContent>
-      </Tabs>
+        />
     </div>
   );
 };

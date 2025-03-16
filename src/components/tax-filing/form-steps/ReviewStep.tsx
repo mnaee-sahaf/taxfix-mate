@@ -21,7 +21,9 @@ const ReviewStep = ({ formData, handleInputChange }: ReviewStepProps) => {
   const totalDeductions = calculateTotalDeductions(formData);
 
   return (
+    
     <div className="space-y-6">
+     <ReviewNotes />
       <div className="bg-secondary/30 p-4 rounded-lg">
         <h3 className="text-lg font-medium mb-2">Review Your Information</h3>
         <p className="text-sm text-muted-foreground mb-4">Please review the information you've provided before final submission.</p>
@@ -93,23 +95,6 @@ const ReviewStep = ({ formData, handleInputChange }: ReviewStepProps) => {
           </SelectContent>
         </Select>
       </div>
-
-      <Tabs defaultValue="review-form" className="w-full pt-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="review-form">Review Summary</TabsTrigger>
-          <TabsTrigger value="review-notes" onClick={() => setShowNotes(true)}>Additional Notes</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="review-form">
-          <div className="p-4 bg-secondary/30 rounded-lg">
-            <p className="text-sm">Please carefully review all information before final submission.</p>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="review-notes">
-          <ReviewNotes />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };

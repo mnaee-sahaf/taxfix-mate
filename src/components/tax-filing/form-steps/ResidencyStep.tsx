@@ -18,7 +18,8 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
   const [showNotes, setShowNotes] = useState(false);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-6">
+      <ResidencyNotes />
       <div className="space-y-4">
         <div className="space-y-2">
           <div className="flex items-center gap-1">
@@ -106,23 +107,6 @@ const ResidencyStep = ({ formData, handleInputChange }: ResidencyStepProps) => {
           )}
         </div>
       </div>
-
-      <Tabs defaultValue="residency-form" className="w-full pt-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="residency-form">Residency Details</TabsTrigger>
-          <TabsTrigger value="residency-notes" onClick={() => setShowNotes(true)}>Additional Notes</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="residency-form">
-          <div className="p-4 bg-secondary/30 rounded-lg">
-            <p className="text-sm">Your residency status determines how your income will be taxed in Pakistan.</p>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="residency-notes">
-          <ResidencyNotes />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };

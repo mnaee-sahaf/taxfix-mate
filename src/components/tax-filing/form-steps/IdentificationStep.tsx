@@ -19,11 +19,8 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
   const [activeTab, setActiveTab] = useState('identification-form');
 
   return (
-    <div className="space-y-6">
-      <div className="px-4 py-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-        <p className="text-sm">Provide accurate identification details to ensure proper tax filing.</p>
-      </div>
-
+    <div className="space-y-6 mb-6">
+      <IdentificationNotes />
       <div className="space-y-4">
         <div className="space-y-2">
           <div className="flex items-center gap-1">
@@ -73,7 +70,7 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
           />
         </div>
         
-        <div className="space-y-2 pt-4">
+        {/* <div className="space-y-2 pt-4">
           <Label className="text-base">Is this your first time filing taxes through digital channels?</Label>
           <div className="flex items-center space-x-2 mt-2">
             <Switch 
@@ -86,7 +83,7 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
             </Label>
           </div>
         </div>
-        
+         */}
         <div className="space-y-2 pt-4">
           <div className="flex items-center gap-1">
             <Label htmlFor="taxpayerCategory" className="text-base">Select your taxpayer category:</Label>
@@ -119,27 +116,9 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
           </Select>
         </div>
       </div>
-
-      <Tabs 
-        value={activeTab} 
-        onValueChange={setActiveTab} 
-        className="w-full pt-4"
-      >
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="identification-form">Identification Details</TabsTrigger>
-          <TabsTrigger value="identification-notes">Additional Notes</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="identification-form">
-          <div className="p-4 bg-secondary/30 rounded-lg mt-4">
-            <p className="text-sm">Please ensure all identification details match your official records.</p>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="identification-notes">
-          <IdentificationNotes />
-        </TabsContent>
-      </Tabs>
+      {/* <div className="px-4 py-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+        <p className="text-sm">Please ensure all identification details match your NADRA official records</p>
+      </div> */}
     </div>
   );
 };
