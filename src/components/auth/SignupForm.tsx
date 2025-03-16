@@ -32,12 +32,14 @@ const SignupForm: React.FC<SignupFormProps> = ({
   setError,
   onSuccess
 }) => {
+  const [fullName, setFullName] = useState('');
+  
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     
-    if (!email || !password) {
-      setError('Please enter both email and password');
+    if (!fullName || !email || !password) {
+      setError('Please enter your name, email, and password');
       return;
     }
     
@@ -52,6 +54,9 @@ const SignupForm: React.FC<SignupFormProps> = ({
         email,
         password,
         options: {
+          data: {
+            full_name: fullName
+          },
           emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       });
@@ -61,6 +66,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
       onSuccess();
       
       // Clear form
+      setFullName('');
       setEmail('');
       setPassword('');
     } catch (error: any) {
@@ -80,6 +86,19 @@ const SignupForm: React.FC<SignupFormProps> = ({
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+        
+        <div className="space-y-2">
+          <Label htmlFor="signup-name">Full Legal Name</Label>
+          <Input 
+            id="signup-name" 
+            type="text" 
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="John Doe" 
+            required 
+            disabled={loading}
+          />
+        </div>
         
         <div className="space-y-2">
           <Label htmlFor="signup-email">Email</Label>

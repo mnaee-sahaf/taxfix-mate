@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { generateTaxPDF } from '@/utils/pdfGenerator';
 import { TaxFormData } from '@/components/tax-filing/types';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface DashboardHeaderProps {
   taxFilings: Array<{
@@ -19,6 +20,10 @@ interface DashboardHeaderProps {
 
 const DashboardHeader = ({ taxFilings, refreshData }: DashboardHeaderProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  // Get the user's name from metadata
+  const userName = user?.user_metadata?.full_name || 'Back';
 
   const handleNewTaxFiling = () => {
     // Clear any existing tax filing data in localStorage
@@ -54,7 +59,7 @@ const DashboardHeader = ({ taxFilings, refreshData }: DashboardHeaderProps) => {
 
   return (
     <div className="flex items-center justify-between">
-      <h1 className="text-2xl font-bold">Welcome Back!</h1>
+      <h1 className="text-2xl font-bold">Welcome, {userName}!</h1>
       <div className="flex gap-3">
         <Button 
           variant="outline" 
