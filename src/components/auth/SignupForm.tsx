@@ -94,7 +94,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
             type="text" 
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            placeholder="John Doe" 
+            placeholder="Ahmed Khan" 
             required 
             disabled={loading}
           />
@@ -120,7 +120,7 @@ const SignupForm: React.FC<SignupFormProps> = ({
             type="password" 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Create a password" 
+            placeholder="password" 
             required 
             disabled={loading}
           />

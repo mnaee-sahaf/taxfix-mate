@@ -29,13 +29,13 @@ const AuthContainer: React.FC = () => {
 
   return (
     <div className="w-full max-w-md p-4">
-      <Card className="w-full">
+      <Card className="w-full max-w-md p-6 shadow-lg rounded-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">TaxFix</CardTitle>
-          <CardDescription>Sign in to save and submit your tax returns</CardDescription>
+          <CardDescription>Your Digital Tax Agent For 🇵🇰</CardDescription>
         </CardHeader>
         
-        <Tabs defaultValue="signin" className="w-full">
+        <Tabs defaultValue="signin" className="">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signin">Sign In</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
