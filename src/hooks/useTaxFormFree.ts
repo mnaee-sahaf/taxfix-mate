@@ -2,12 +2,14 @@
 import { useState, useEffect } from 'react';
 import { FreeTaxFormData } from '@/components/tax-filing/types';
 import { initialFreeTaxFormData } from '@/components/tax-filing/initialFreeFormData';
+import { useToast } from '@/components/ui/use-toast';
 
 interface UseTaxFormFreeProps {
   updateTaxData?: (data: any) => void;
 }
 
 export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FreeTaxFormData>(initialFreeTaxFormData);
   const [savedProgress, setSavedProgress] = useState(true);
@@ -54,7 +56,6 @@ export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
     localStorage.setItem('freeTaxFilingProgress', JSON.stringify(formData));
     setSavedProgress(true);
     
-    // Show confirmation toast
     toast({
       title: "Progress saved",
       description: "Your tax filing progress has been saved."
@@ -102,14 +103,81 @@ export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
       updateTaxData(taxData);
     }
 
-    // Generate PDF
+    // Generate PDF with complete data structure for the PDF generator
     import('@/utils/pdfGenerator').then(({ generateTaxPDF }) => {
-      generateTaxPDF({
+      // Create a complete TaxFilingData object with defaults for missing properties
+      const pdfData = {
+        // Basic information from FreeTaxFormData
         ...formData,
-        residencyStatus: 'Resident', // Default for free version
-        residencyDays: 365, // Default for free version
-        governmentEmployee: false // Default for free version
-      });
+        
+        // Add default values for required fields in TaxFilingData
+        residencyStatus: 'Resident',
+        residencyDays: 365,
+        governmentEmployee: false,
+        
+        // Add empty objects for missing nested properties
+        eligibleDeductions: {
+          lifeInsurance: false,
+          pension: false,
+          donations: false,
+          education: false,
+          royalty: false,
+          zakat: false
+        },
+        specialTaxCredits: {
+          firstTimeFiler: false,
+          itSector: false,
+          exportIndustry: false
+        },
+        withholding: {
+          salary: false,
+          bankTransactions: false,
+          utilities: false,
+          mobilePhone: false,
+          vehicleTax: false,
+          otherTaxes: false
+        },
+        withholdingAmounts: {
+          salary: 0,
+          bankTransactions: 0,
+          utilities: 0,
+          mobilePhone: 0,
+          vehicleTax: 0,
+          otherTaxes: 0
+        },
+        assets: {
+          agriculturalProperty: false,
+          residentialProperty: false,
+          stocksBonds: false,
+          car: false,
+          motorbike: false,
+          cash: false,
+          gold: false,
+          other: false,
+          assetsOutsidePakistan: false
+        },
+        assetValues: {
+          agriculturalProperty: 0,
+          residentialProperty: 0,
+          stocksBonds: 0,
+          car: 0,
+          motorbike: 0,
+          cash: 0,
+          gold: 0,
+          other: 0,
+          assetsOutsidePakistan: 0
+        },
+        
+        // Add numeric values with defaults
+        lifeInsuranceAmount: 0,
+        pensionAmount: 0,
+        donationAmount: 0,
+        educationAmount: 0,
+        royaltyAmount: 0,
+        zakatAmount: 0,
+      };
+      
+      generateTaxPDF(pdfData);
     });
     
     return taxData;
@@ -139,10 +207,4 @@ export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
     saveProgress,
     handleSubmit
   };
-};
-
-// Helper for toast
-const toast = (params: { title?: string; description: string }) => {
-  console.log(`${params.title}: ${params.description}`);
-  // This is a placeholder that will be replaced by actual toast in the component
 };
