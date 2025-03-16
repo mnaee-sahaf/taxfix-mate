@@ -93,9 +93,19 @@ const SimpleTab = () => {
             </div>
             
             <Tabs defaultValue="advanced-return" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="simple-return">Simple Return</TabsTrigger>
-                <TabsTrigger value="advanced-return">Advanced Return</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-8 bg-gray-100 p-1 rounded-lg">
+                <TabsTrigger 
+                value="simple-return" 
+                className="py-2 rounded-md transition-colors duration-300 data-[state=active]:bg-green-200 data-[state=active]:text-black"
+
+                >
+                  Simple Return</TabsTrigger>
+                <TabsTrigger 
+                value="advanced-return"  
+                className="py-2 rounded-md transition-colors duration-300 data-[state=active]:bg-green-200 data-[state=active]:text-black"
+
+                >
+                  Advanced Return</TabsTrigger>
               </TabsList>
               
               <TabsContent value="simple-return">
