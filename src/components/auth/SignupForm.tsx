@@ -50,19 +50,41 @@ const SignupForm: React.FC<SignupFormProps> = ({
     
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName
-          },
-          emailRedirectTo: `${window.location.origin}/auth/callback`
-        }
+
+      // to supbase
+//       const { error } = await supabase.auth.signUp({
+//         email,
+//         password,
+//         options: {
+//           data: {
+//             full_name: fullName
+//           },
+//           emailRedirectTo: `${window.location.origin}/auth/callback`
+//         }
+//       });
+
+//       if (error) throw error;
+
+      // Send the sign-up data to FastAPI backend
+      const response = await fetch('http://localhost:8000/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          full_name: fullName,
+          email,
+          password,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to create account. Please try again.');
+      }
       
-      if (error) throw error;
-      
+
+      const data = await response.json();
+      console.log(data);
       onSuccess();
       
       // Clear form

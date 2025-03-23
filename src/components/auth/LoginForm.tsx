@@ -42,12 +42,31 @@ const LoginForm: React.FC<LoginFormProps> = ({
     
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+//       const { error } = await supabase.auth.signInWithPassword({
+//         email,
+//         password,
+//       });
+//
+//       if (error) throw error;
+
+       // Perform the sign-in request to FastAPI
+      const response = await fetch('http://localhost:8000/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Ensures cookies are sent with the request
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
-      
-      if (error) throw error;
+
+      console.log(response)
+
+      if (!response.ok) {
+        throw new Error('Invalid login credentials');
+      }
       
       // Navigation will happen in the onAuthStateChange listener
       onSuccess();
