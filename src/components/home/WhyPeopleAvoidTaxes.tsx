@@ -1,31 +1,23 @@
-import {
-  FileText,
-  Upload,
-  Calculator,
-  CreditCard,
-  Sparkles,
-  Shield,
-} from "lucide-react";
 import { useScrollReveal, staggeredFadeAnimation } from "@/utils/animations";
 
 const reasons = [
   {
-    text: "I don't trust where my tax money goes.",
+    text: "I don't trust where my tax money goes",
   },
   {
-    text: "I don’t know how to file.",
+    text: "I don’t know how to file",
   },
   {
-    text: "I don’t think I earn enough to file.",
+    text: "I don’t think I earn enough to file",
   },
   {
-    text: "I’ve been scammed by a tax consultant before.",
+    text: "I’ve been scammed by a tax consultant before",
   },
   {
-    text: "I’m scared I’ll be tracked if I pay once.",
+    text: "I’m scared I’ll be tracked if I pay once",
   },
   {
-    text: "I don’t know what documents I need.",
+    text: "I don’t know what documents I need",
   },
 ];
 
@@ -90,7 +82,7 @@ const WhyPeopleAvoidTaxes = () => {
                 <div
                   className={`relative max-w-[80%] px-4 py-3 rounded-2xl flex items-start gap-2 ${
                     isLeft
-                      ? "bg-muted text-muted-foreground rounded-bl-none"
+                      ? "bg-muted text-muted-foreground rounded-bl-none border border-grey"
                       : "bg-green-500 text-white rounded-br-none"
                   }`}
                 >
