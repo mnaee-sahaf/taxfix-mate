@@ -4,6 +4,7 @@ import Hero from '@/components/home/Hero';
 import CTASection from '@/components/home/CTASection';
 import WhyPeopleAvoidTaxes from '@/components/home/WhyPeopleAvoidTaxes';
 import WhyPeopleShouldFileTaxes from '@/components/home/WhyPeopleShouldFileTaxes';
+import MailingListSignup from '@/components/home/MailingListSignup';
 
 const Index = () => {
   useEffect(() => {
@@ -16,6 +17,7 @@ const Index = () => {
         <Hero />
         <WhyPeopleAvoidTaxes />
         <WhyPeopleShouldFileTaxes />
+        <MailingListSignup />
         <CTASection />
       </main>
     </div>
