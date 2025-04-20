@@ -29,7 +29,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'File', path: '/taxfilingtypes' },
+    { name: 'File Tax', path: '/taxfilingtypes' },
     { name: 'Calculator', path: '/calculator' },
   ];
 
