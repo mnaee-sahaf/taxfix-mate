@@ -1,11 +1,8 @@
-
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { VideoTutorial } from './videoTutorial';
-
-
 
 const Hero = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -45,56 +42,61 @@ const Hero = () => {
   return (
     <div 
       ref={heroRef}
-      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20"
+      className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16 sm:pt-20"
     >
       <div className="hero-bg absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/30 transition-transform duration-500 ease-out transform z-0" />
       
-      <div className="container mx-auto px-4 z-10 pt-10">
+      <div className="container mx-auto px-4 z-10 pt-6 sm:pt-10">
         <div className="max-w-3xl mx-auto text-center">
-          {/* <div className="inline-block mb-4 px-3 py-1  rounded-full text-primary text-sm font-medium">
-            🇵🇰 
-          </div> */}
-          
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 tracking-tight">
             File your taxes with <span className="text-primary">confidence </span>
           </h1>
           
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto">
             TaxFix is on a mission to simplify tax compliance for individuals and businesses in Pakistan 🇵🇰
           </p>
+
           <VideoTutorial />
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="rounded-full group button-shine" onClick={() => navigate('/dashboard')}>
+
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+            <Button 
+              size="lg" 
+              className="rounded-full group button-shine w-full sm:w-auto" 
+              onClick={() => navigate('/dashboard')}
+            >
               <span>Get Started</span>
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button size="lg" variant="outline" className="rounded-full">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="rounded-full w-full sm:w-auto"
+            >
               Learn More
             </Button>
           </div>
           
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary">98%</div>
-              <div className="text-sm text-muted-foreground">Accuracy Rate</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary">98%</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Accuracy Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary">2K+</div>
-              <div className="text-sm text-muted-foreground">Returns Filed</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary">2K+</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Returns Filed</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary">50+</div>
-              <div className="text-sm text-muted-foreground">5-Star Reviews</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary">50+</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">5-Star Reviews</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-primary">₨1M</div>
-              <div className="text-sm text-muted-foreground">Refunds Issued</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary">₨1M</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Refunds Issued</div>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Decorative elements */}
       <div className="absolute top-1/3 -left-20 w-72 h-72 bg-primary/10 rounded-full filter blur-3xl" />
       <div className="absolute bottom-1/3 -right-20 w-80 h-80 bg-primary/10 rounded-full filter blur-3xl" />
     </div>
