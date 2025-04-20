@@ -51,6 +51,13 @@ const WhyPeopleShouldFileTaxes = () => {
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Section Header */}
         <div className="text-center mb-12">
+        <div
+            ref={sectionReveal.ref}
+            className={`inline-block px-4 py-1 mb-4 text-sm font-medium rounded-full bg-primary/10 text-primary ${
+              sectionReveal.revealed ? "animate-fade-up" : "opacity-0"
+            }`}
+          >
+          </div>
           <h1
             className={`text-3xl md:text-4xl font-bold mb-4 ${
               sectionReveal.revealed ? "animate-fade-up" : "opacity-0"
