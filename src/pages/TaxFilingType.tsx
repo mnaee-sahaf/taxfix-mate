@@ -92,7 +92,7 @@ const SimpleTab = () => {
               </p>
             </div>
             
-            <Tabs defaultValue="advanced-return" className="w-full">
+            <Tabs defaultValue="simple-return" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8 bg-gray-100 p-1 rounded-lg">
                 <TabsTrigger 
                 value="simple-return" 

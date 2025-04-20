@@ -39,7 +39,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
       setError('Please enter both email and password');
       return;
     }
-    
+    //play with code here for auth
     try {
       setLoading(true);
       const { error } = await supabase.auth.signInWithPassword({
