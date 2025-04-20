@@ -31,7 +31,7 @@ const reasons = [
   },
   {
     icon: <Shield size={24} />,
-    text: "Soemone could be using your taxID to commit fraud",
+    text: "Soemone could be using your taxID to co",
   },
 ];
 
