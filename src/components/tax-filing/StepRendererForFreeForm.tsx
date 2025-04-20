@@ -5,6 +5,7 @@ import IdentificationStep from './form-steps/IdentificationStep';
 import IncomeStep from './form-steps/IncomeStep';
 import ExpensesStep from './form-steps/ExpensesStep';
 import ReviewStep from './form-steps/ReviewStep';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface StepRendererForFreeFormProps {
   stepId: string;
@@ -19,6 +20,8 @@ const StepRendererForFreeForm: React.FC<StepRendererForFreeFormProps> = ({
   handleInputChange, 
   handleNestedChange 
 }) => {
+  const isMobile = useIsMobile();
+
   // Create adapted form data for components expecting TaxFormData
   const adaptedFormData = {
     ...formData,
@@ -106,30 +109,38 @@ const StepRendererForFreeForm: React.FC<StepRendererForFreeFormProps> = ({
   // Map of step IDs to their corresponding components with required props
   const stepComponents: Record<string, React.ReactNode> = {
     'identification': (
-      <IdentificationStep 
-        formData={adaptedFormData}
-        handleInputChange={handleInputChange} 
-      />
+      <div className="space-y-3 sm:space-y-4">
+        <IdentificationStep 
+          formData={adaptedFormData}
+          handleInputChange={handleInputChange} 
+        />
+      </div>
     ),
     'income': (
-      <IncomeStep 
-        formData={adaptedFormData}
-        handleInputChange={handleInputChange} 
-        handleNestedChange={handleNestedChange} 
-      />
+      <div className="space-y-3 sm:space-y-4">
+        <IncomeStep 
+          formData={adaptedFormData}
+          handleInputChange={handleInputChange} 
+          handleNestedChange={handleNestedChange} 
+        />
+      </div>
     ),
     'expenses': (
-      <ExpensesStep 
-        formData={adaptedFormData}
-        handleInputChange={handleInputChange} 
-        handleNestedChange={handleNestedChange} 
-      />
+      <div className="space-y-3 sm:space-y-4">
+        <ExpensesStep 
+          formData={adaptedFormData}
+          handleInputChange={handleInputChange} 
+          handleNestedChange={handleNestedChange} 
+        />
+      </div>
     ),
     'review': (
-      <ReviewStep 
-        formData={adaptedFormData}
-        handleInputChange={handleInputChange} 
-      />
+      <div className="space-y-3 sm:space-y-4">
+        <ReviewStep 
+          formData={adaptedFormData}
+          handleInputChange={handleInputChange} 
+        />
+      </div>
     ),
   };
 

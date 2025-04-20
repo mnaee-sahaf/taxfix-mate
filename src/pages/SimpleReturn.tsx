@@ -1,6 +1,5 @@
 
 import { useEffect } from 'react';
-import Footer from '@/components/layout/Footer';
 import Navbar from '@/components/layout/Navbar';
 import TaxFilingFree from './TaxFilingFree';
 import { useToast } from '@/components/ui/use-toast';
@@ -8,10 +7,12 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { generateTaxPDF } from '@/utils/pdfGenerator';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const SimpleReturn: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Check if the user is trying to edit a submitted return
@@ -52,19 +53,20 @@ const SimpleReturn: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col mt-12 mb-12">
-      <div className="container max-w-4xl mx-auto px-4 py-4 md:py-8 mt-0">
-        <div className="mb-6 flex items-center">
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="container max-w-4xl mx-auto px-4 py-4 md:py-8 mt-16 sm:mt-20 mb-6 sm:mb-12">
+        <div className="mb-4 sm:mb-6 flex items-center">
           <Button 
             variant="ghost" 
-            className="gap-2 text-muted-foreground" 
+            className="gap-1 sm:gap-2 text-muted-foreground text-sm sm:text-base p-2 sm:p-4" 
             onClick={handleGoBack}
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={isMobile ? 14 : 16} />
             Back to Filing Types
           </Button>
         </div>
-        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border p-6 md:p-8">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border p-3 sm:p-6 md:p-8">
           <TaxFilingFree updateTaxData={updateTaxData} />
         </div>
       </div>

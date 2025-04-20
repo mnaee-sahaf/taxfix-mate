@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Save, Home } from 'lucide-react';
 import { Step } from './types';
 import { useNavigate } from 'react-router-dom';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TaxFormStepNavigationProps {
   currentStep: number;
@@ -27,6 +28,7 @@ const TaxFormStepNavigation: React.FC<TaxFormStepNavigationProps> = ({
 }) => {
   const isLastStep = currentStep === steps.length - 1;
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   
   const handleSaveAndExit = () => {
     saveProgress();
@@ -34,22 +36,25 @@ const TaxFormStepNavigation: React.FC<TaxFormStepNavigationProps> = ({
   };
 
   return (
-    <div className="flex justify-between border-t px-6 pt-6 space-x-4">
+    <div className="flex flex-col sm:flex-row justify-between border-t px-3 sm:px-6 pt-4 sm:pt-6 gap-3 sm:gap-4">
       <Button
         variant="outline"
         onClick={prevStep}
         disabled={currentStep === 0}
+        className="text-sm sm:text-base w-full sm:w-auto"
+        size={isMobile ? "sm" : "default"}
       >
-        <ArrowLeft className="mr-2 h-4 w-4" />
+        <ArrowLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
         Previous
       </Button>
       
       <Button
-        className='pd-2'
         variant="outline"
         onClick={handleSaveAndExit}
+        className="text-sm sm:text-base w-full sm:w-auto"
+        size={isMobile ? "sm" : "default"}
       >
-        <Home className="mr-2 h-4 w-4" />
+        <Home className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
         Save & Exit
       </Button>
       
@@ -57,13 +62,19 @@ const TaxFormStepNavigation: React.FC<TaxFormStepNavigationProps> = ({
         <Button 
           onClick={handleSubmit}
           disabled={!penaltyUnderstanding}
+          className="text-sm sm:text-base w-full sm:w-auto"
+          size={isMobile ? "sm" : "default"}
         >
           Submit Return
         </Button>
       ) : (
-        <Button onClick={nextStep}>
+        <Button 
+          onClick={nextStep}
+          className="text-sm sm:text-base w-full sm:w-auto"
+          size={isMobile ? "sm" : "default"}
+        >
           Next
-          <ArrowRight className="ml-2 h-4 w-4" />
+          <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
         </Button>
       )}
     </div>
