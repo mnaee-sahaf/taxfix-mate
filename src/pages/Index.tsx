@@ -1,8 +1,9 @@
 
 import { useEffect } from 'react';
 import Hero from '@/components/home/Hero';
-import Features from '@/components/home/Features';
 import CTASection from '@/components/home/CTASection';
+import WhyPeopleAvoidTaxes from '@/components/home/WhyPeopleAvoidTaxes';
+import WhyPeopleShouldFileTaxes from '@/components/home/WhyPeopleShouldFileTaxes';
 
 const Index = () => {
   useEffect(() => {
@@ -13,7 +14,8 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <main className="flex-grow">
         <Hero />
-        <Features />
+        <WhyPeopleAvoidTaxes />
+        <WhyPeopleShouldFileTaxes />
         <CTASection />
       </main>
     </div>

@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { VideoTutorial } from './videoTutorial';
+import TaxFilingFree from '@/pages/TaxFilingFree';
+import ThreeStepProcess from './ThreeStepProcess';
 
 const Hero = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -49,48 +51,37 @@ const Hero = () => {
       <div className="container mx-auto px-4 z-10 pt-6 sm:pt-10">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 tracking-tight">
-            File your taxes with <span className="text-primary">confidence </span>
+            Tax Filing In Pakistan is <span className="text-primary">broken</span>
           </h1>
           
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto">
-            TaxFix is on a mission to simplify tax compliance for individuals and businesses in Pakistan 🇵🇰
+            We radically simplify the filing experience for you and your business by giving you the information you would pay a consultant to get 🇵🇰
           </p>
+
 
           <VideoTutorial />
 
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <Button 
-              size="lg" 
-              className="rounded-full group button-shine w-full sm:w-auto" 
-              onClick={() => navigate('/dashboard')}
-            >
-              <span>Get Started</span>
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="rounded-full w-full sm:w-auto"
-            >
-              Learn More
-            </Button>
+          <ThreeStepProcess />  
+
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-8">
+          {/* <TaxFilingFree /> */}
           </div>
           
           <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">98%</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary">100%</div>
               <div className="text-xs sm:text-sm text-muted-foreground">Accuracy Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">2K+</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary">1.1K+</div>
               <div className="text-xs sm:text-sm text-muted-foreground">Returns Filed</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">50+</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary">23+</div>
               <div className="text-xs sm:text-sm text-muted-foreground">5-Star Reviews</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">₨1M</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary">₨0.3M</div>
               <div className="text-xs sm:text-sm text-muted-foreground">Refunds Issued</div>
             </div>
           </div>
