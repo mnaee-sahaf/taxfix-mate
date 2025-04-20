@@ -10,27 +10,21 @@ import { useScrollReveal, staggeredFadeAnimation } from "@/utils/animations";
 
 const reasons = [
   {
-    icon: <FileText size={24} />,
     text: "I don't trust where my tax money goes.",
   },
   {
-    icon: <Upload size={24} />,
     text: "I don’t know how to file.",
   },
   {
-    icon: <Calculator size={24} />,
     text: "I don’t think I earn enough to file.",
   },
   {
-    icon: <CreditCard size={24} />,
     text: "I’ve been scammed by a tax consultant before.",
   },
   {
-    icon: <Sparkles size={24} />,
     text: "I’m scared I’ll be tracked if I pay once.",
   },
   {
-    icon: <Shield size={24} />,
     text: "I don’t know what documents I need.",
   },
 ];
@@ -48,9 +42,9 @@ const WhyPeopleAvoidTaxes = () => {
 
   return (
     <section className="bg-secondary/30 backdrop-blur-sm py-24">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-4xl">
         {/* Section Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <div
             ref={sectionReveal.ref}
             className={`inline-block px-4 py-1 mb-4 text-sm font-medium rounded-full bg-primary/10 text-primary ${
@@ -77,25 +71,31 @@ const WhyPeopleAvoidTaxes = () => {
           </p>
         </div>
 
-        {/* Reasons Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Chat Bubbles */}
+        <div className="flex flex-col gap-4 max-w-2xl mx-auto">
           {reasons.map((reason, index) => {
-            const { icon, text } = reason;
+            const { text } = reason;
             const { ref, revealed } = revealArray[index];
+            const isLeft = index % 2 === 0;
 
             return (
               <div
                 key={index}
                 ref={ref}
-                className={`rounded-xl p-6 glass-panel card-hover transition-all duration-500 ${
+                className={`flex ${isLeft ? "justify-start" : "justify-end"} transition-all duration-500 ${
                   revealed ? "animate-fade-up" : "opacity-0"
                 }`}
                 style={revealed ? staggeredFadeAnimation(index) : undefined}
               >
-                <div className="bg-primary/10 text-primary p-3 rounded-lg w-12 h-12 flex items-center justify-center mb-4">
-                  {icon}
+                <div
+                  className={`relative max-w-[80%] px-4 py-3 rounded-2xl flex items-start gap-2 ${
+                    isLeft
+                      ? "bg-muted text-muted-foreground rounded-bl-none"
+                      : "bg-green-500 text-white rounded-br-none"
+                  }`}
+                >
+                  <p className="text-sm">{text}</p>
                 </div>
-                <p className="text-base text-muted-foreground">{text}</p>
               </div>
             );
           })}

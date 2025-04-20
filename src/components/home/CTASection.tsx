@@ -26,7 +26,7 @@ const CTASection = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/dashboard">
+            <Link to="/simple-return">
               <Button size="lg" className="rounded-full group button-shine">
                 <span>Get Started</span>
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
