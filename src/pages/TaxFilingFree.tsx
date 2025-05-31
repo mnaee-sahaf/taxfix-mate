@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTaxFormFree } from '@/hooks/useTaxFormFree';
 import { FREE_TAX_FILING_STEPS } from '@/components/tax-filing/constants';
 import TaxFilingContainer from '@/components/tax-filing/TaxFilingContainer';
@@ -7,6 +7,8 @@ import { TaxFilingProps } from '@/components/tax-filing/types';
 import StepRendererForFreeForm from '@/components/tax-filing/StepRendererForFreeForm';
 
 const TaxFilingFree: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
+  const [stepValidation, setStepValidation] = useState<boolean>(true);
+  
   const {
     currentStep,
     formData,
@@ -18,6 +20,10 @@ const TaxFilingFree: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
     saveProgress,
     handleSubmit
   } = useTaxFormFree({ updateTaxData });
+
+  const handleValidationChange = (isValid: boolean) => {
+    setStepValidation(isValid);
+  };
   
   return (
     <TaxFilingContainer
@@ -37,6 +43,7 @@ const TaxFilingFree: React.FC<TaxFilingProps> = ({ updateTaxData }) => {
           formData={formData}
           handleInputChange={handleInputChange}
           handleNestedChange={handleNestedChange}
+          onValidationChange={handleValidationChange}
         />
       }
     />

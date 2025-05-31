@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FreeTaxFormData } from './types';
 import IdentificationStep from './form-steps/IdentificationStep';
 import IncomeStep from './form-steps/IncomeStep';
@@ -12,13 +12,15 @@ interface StepRendererForFreeFormProps {
   formData: FreeTaxFormData;
   handleInputChange: (name: string, value: string | number | boolean) => void;
   handleNestedChange: (category: string, field: string, value: boolean | string | number) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
 const StepRendererForFreeForm: React.FC<StepRendererForFreeFormProps> = ({ 
   stepId, 
   formData, 
   handleInputChange, 
-  handleNestedChange 
+  handleNestedChange,
+  onValidationChange
 }) => {
   const isMobile = useIsMobile();
 
@@ -121,7 +123,8 @@ const StepRendererForFreeForm: React.FC<StepRendererForFreeFormProps> = ({
         <IncomeStep 
           formData={adaptedFormData}
           handleInputChange={handleInputChange} 
-          handleNestedChange={handleNestedChange} 
+          handleNestedChange={handleNestedChange}
+          onValidationChange={onValidationChange}
         />
       </div>
     ),

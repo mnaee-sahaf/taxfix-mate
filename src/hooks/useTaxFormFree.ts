@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { FreeTaxFormData } from '@/components/tax-filing/types';
 import { initialFreeTaxFormData } from '@/components/tax-filing/initialFreeFormData';
@@ -20,10 +21,25 @@ export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
   }, [currentStep]);
 
   const handleInputChange = (name: string, value: string | number | boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [name]: value
+      };
+      
+      // Sync income amounts when individual income fields change
+      if (name.includes('Income')) {
+        const incomeType = name as keyof typeof prev.incomeAmounts;
+        if (incomeType in prev.incomeAmounts) {
+          newData.incomeAmounts = {
+            ...prev.incomeAmounts,
+            [incomeType]: typeof value === 'number' ? value : 0
+          };
+        }
+      }
+      
+      return newData;
+    });
     setSavedProgress(false);
   };
   
@@ -45,7 +61,19 @@ export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
       case 'identification':
         return !!formData.name && !!formData.cnic && !!formData.taxpayerCategory;
       case 'income':
-        return Object.values(formData.incomeStreams).some(value => value === true);
+        const hasSelectedIncome = Object.values(formData.incomeStreams).some(value => value === true);
+        if (!hasSelectedIncome) return false;
+        
+        // Check if at least one selected income has an amount > 0
+        const hasValidAmounts = Object.entries(formData.incomeStreams)
+          .filter(([_, selected]) => selected)
+          .some(([incomeType, _]) => {
+            const amountField = `${incomeType}Income` as keyof FreeTaxFormData;
+            const amount = formData[amountField] as number || 0;
+            return amount > 0;
+          });
+        
+        return hasValidAmounts;
       case 'expenses':
         return Object.values(formData.expenses).some(value => value === true);
       case 'review':
@@ -88,14 +116,22 @@ export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
   };
 
   const handleSubmit = () => {
-    // Calculate tax
-    const totalIncome = Object.values(formData.incomeAmounts).reduce((sum, val) => sum + Number(val), 0);
+    // Calculate total income from both sources for compatibility
+    const incomeFromAmounts = Object.values(formData.incomeAmounts).reduce((sum, val) => sum + Number(val), 0);
+    const incomeFromFields = (formData.salaryIncome || 0) + 
+                            (formData.businessIncome || 0) + 
+                            (formData.rentalIncome || 0) + 
+                            (formData.agriculturalIncome || 0) + 
+                            (formData.capitalGainsIncome || 0) + 
+                            (formData.foreignIncome || 0);
+    
+    const totalIncome = Math.max(incomeFromAmounts, incomeFromFields);
     const totalExpenses = Object.values(formData.expenseAmounts).reduce((sum, val) => sum + Number(val), 0);
     
     const taxableIncome = Math.max(0, totalIncome - totalExpenses);
     let calculatedTax = 0;
     
-    // Very simple tax calculation for the free version
+    // Apply Pakistan tax brackets for tax year 2024-25
     if (taxableIncome <= 600000) {
       calculatedTax = 0;
     } else if (taxableIncome <= 1200000) {
@@ -115,8 +151,8 @@ export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
       calculatedTax,
       totalIncome,
       totalDeductions: totalExpenses,
-      balanceDue: Math.max(0, calculatedTax - formData.paidTax),
-      paidTax: formData.paidTax
+      balanceDue: Math.max(0, calculatedTax - (formData.paidTax || 0)),
+      paidTax: formData.paidTax || 0
     };
     
     // Mark form as submitted in local storage
@@ -150,7 +186,7 @@ export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
           zakat: false
         },
         specialTaxCredits: {
-          firstTimeFiler: false,
+          firstTimeFiler: formData.firstTimeFiler || false,
           itSector: false,
           exportIndustry: false
         },
@@ -214,7 +250,10 @@ export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
     if (savedFormData) {
       try {
         const parsedData = JSON.parse(savedFormData);
-        setFormData(parsedData);
+        // Don't load if it's already submitted to avoid editing submitted returns
+        if (!parsedData.isSubmitted) {
+          setFormData(parsedData);
+        }
       } catch (error) {
         console.error("Error parsing saved tax filing data:", error);
       }
