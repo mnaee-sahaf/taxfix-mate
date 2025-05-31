@@ -213,3 +213,4 @@ A trigger on `auth.users` inserts a new row into `profiles` when a user signs up
 ## Conclusion
 
 This documentation provides a high-level overview of the TaxFix application architecture and implementation details. For more specific information, refer to the code and comments in the respective files.
+
