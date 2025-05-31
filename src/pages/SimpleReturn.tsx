@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import TaxFilingFree from './TaxFilingFree';
 import { useToast } from '@/components/ui/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { generateTaxPDF } from '@/utils/pdfGenerator';
@@ -12,33 +12,40 @@ import { useIsMobile } from '@/hooks/use-mobile';
 const SimpleReturn: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    // Check if the user is trying to edit a submitted return
-    const savedProgress = localStorage.getItem('freeTaxFilingProgress');
-    if (savedProgress) {
-      try {
-        const formData = JSON.parse(savedProgress);
-        if (formData.isSubmitted) {
-          // This is a submitted return, redirect to dashboard and show PDF
-          toast({
-            title: "Submitted Tax Return",
-            description: "You cannot edit a submitted tax return. Viewing the PDF instead.",
-            variant: "destructive",
-          });
-          
-          // Show the PDF
-          generateTaxPDF(formData);
-          
-          // Redirect to home page
-          navigate('/');
+    // Only check for submitted returns if there's a specific flag in the URL or state
+    // indicating the user is trying to view a submitted return
+    const urlParams = new URLSearchParams(location.search);
+    const viewSubmitted = urlParams.get('view') === 'submitted';
+    
+    if (viewSubmitted) {
+      const savedProgress = localStorage.getItem('freeTaxFilingProgress');
+      if (savedProgress) {
+        try {
+          const formData = JSON.parse(savedProgress);
+          if (formData.isSubmitted) {
+            toast({
+              title: "Submitted Tax Return",
+              description: "Viewing your submitted tax return PDF.",
+            });
+            
+            // Show the PDF
+            generateTaxPDF(formData);
+            
+            // Redirect to home page after showing PDF
+            setTimeout(() => {
+              navigate('/');
+            }, 1000);
+          }
+        } catch (error) {
+          console.error("Error parsing tax filing data:", error);
         }
-      } catch (error) {
-        console.error("Error parsing tax filing data:", error);
       }
     }
-  }, [navigate, toast]);
+  }, [navigate, toast, location.search]);
 
   const handleGoBack = () => {
     navigate('/taxfilingtypes');
