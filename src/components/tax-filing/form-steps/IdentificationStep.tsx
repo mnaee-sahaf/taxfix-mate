@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,7 +17,7 @@ import { useLogger } from '@/hooks/useLogger';
 interface IdentificationStepProps {
   formData: TaxFormData;
   handleInputChange: (name: string, value: string | number | boolean) => void;
-  onValidationChange: (isValid: boolean) => void;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
 const IdentificationStep = ({ formData, handleInputChange, onValidationChange }: IdentificationStepProps) => {
@@ -35,7 +36,7 @@ const IdentificationStep = ({ formData, handleInputChange, onValidationChange }:
 
     // Validate CNIC
     const result = validateField(value, cnicSchema, 'cnic');
-    onValidationChange(result.isValid);
+    onValidationChange?.(result.isValid);
     
     handleInputChange('cnic', value);
   };

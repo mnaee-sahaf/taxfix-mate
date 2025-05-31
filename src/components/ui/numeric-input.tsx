@@ -1,8 +1,9 @@
+
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { useLogger } from '@/hooks/useLogger';
 
-interface NumericInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface NumericInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   value: string | number;
   onChange: (value: string) => void;
   onValidationChange?: (isValid: boolean) => void;
