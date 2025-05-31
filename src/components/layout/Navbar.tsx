@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { MenuIcon, X } from 'lucide-react';
+import { MenuIcon, X, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import UserProfileMenu from '../auth/UserProfileMenu';
 
@@ -37,6 +37,10 @@ const Navbar = () => {
 
   const handleLogin = () => {
     navigate('/auth');
+  };
+
+  const handleBookExpert = () => {
+    navigate('/book-expert');
   };
 
   return (
@@ -73,13 +77,23 @@ const Navbar = () => {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-3">
           {isAuthenticated ? (
             <UserProfileMenu />
           ) : (
-            <Button variant="outline" className="rounded-full text-sm" onClick={handleLogin}>
-              Login
-            </Button>
+            <>
+              <Button 
+                variant="secondary" 
+                className="rounded-full text-sm flex items-center gap-2" 
+                onClick={handleBookExpert}
+              >
+                <User className="h-4 w-4" />
+                Book Expert
+              </Button>
+              <Button variant="outline" className="rounded-full text-sm" onClick={handleLogin}>
+                Login
+              </Button>
+            </>
           )}
         </div>
 
@@ -117,9 +131,15 @@ const Navbar = () => {
                     File
                   </Button>
                 ) : (
-                  <Button variant="outline" className="w-full text-sm" onClick={handleLogin}>
-                    Login
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    <Button variant="secondary" className="w-full text-sm flex items-center gap-2" onClick={handleBookExpert}>
+                      <User className="h-4 w-4" />
+                      Book Expert
+                    </Button>
+                    <Button variant="outline" className="w-full text-sm" onClick={handleLogin}>
+                      Login
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
