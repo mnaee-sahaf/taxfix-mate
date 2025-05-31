@@ -1,3 +1,4 @@
+
 import jsPDF from 'jspdf';
 import { TaxFilingData } from './pdf/pdfTypes';
 import {
@@ -35,7 +36,14 @@ const THEME = {
   }
 };
 
-const formatDate = (date: Date): string => date.toISOString().split('T')[0];
+const formatDate = (date: Date): string => {
+  try {
+    return date.toISOString().split('T')[0];
+  } catch (error) {
+    console.warn('Error formatting date:', error);
+    return new Date().toISOString().split('T')[0];
+  }
+};
 
 interface PdfContext {
   doc: jsPDF;
@@ -55,37 +63,67 @@ const checkForNewPage = (context: PdfContext, marginBottom = 20): PdfContext => 
 };
 
 const addMiniHeader = (doc: jsPDF, pageWidth: number) => {
-  doc.setFillColor(...THEME.COLORS.HEADER_BG);
-  doc.rect(0, 0, pageWidth, 15, 'F');
-  doc.setFontSize(THEME.FONT.SIZE_SUBTITLE);
-  doc.setTextColor(...THEME.COLORS.TEXT_BLUE);
-  doc.text("Tax Return Summary (continued)", pageWidth / 2, 10, { align: "center" });
+  try {
+    doc.setFillColor(...THEME.COLORS.HEADER_BG);
+    doc.rect(0, 0, pageWidth, 15, 'F');
+    doc.setFontSize(THEME.FONT.SIZE_SUBTITLE);
+    doc.setTextColor(...THEME.COLORS.TEXT_BLUE);
+    doc.text("Tax Return Summary (continued)", pageWidth / 2, 10, { align: "center" });
+  } catch (error) {
+    console.warn('Error adding mini header:', error);
+  }
 };
 
 const addFooterToAllPages = (doc: jsPDF, totalPages: number, pageWidth: number, pageHeight: number) => {
-  for (let i = 1; i <= totalPages; i++) {
-    doc.setPage(i);
-    doc.setFillColor(...THEME.COLORS.PRIMARY);
-    doc.rect(0, pageHeight - 10, pageWidth, 10, 'F');
+  try {
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFillColor(...THEME.COLORS.PRIMARY);
+      doc.rect(0, pageHeight - 10, pageWidth, 10, 'F');
 
-    doc.setFontSize(THEME.FONT.SIZE_FOOTER);
-    doc.setTextColor(...THEME.COLORS.TEXT_WHITE);
-    doc.text(`Page ${i} of ${totalPages}`, pageWidth - 20, pageHeight - 4);
-    doc.text("Use The FBR Tax Filing System To Submit The Data Against The Codes Mentioned", 20, pageHeight - 4);
+      doc.setFontSize(THEME.FONT.SIZE_FOOTER);
+      doc.setTextColor(...THEME.COLORS.TEXT_WHITE);
+      doc.text(`Page ${i} of ${totalPages}`, pageWidth - 20, pageHeight - 4);
+      doc.text("Use The FBR Tax Filing System To Submit The Data Against The Codes Mentioned", 20, pageHeight - 4);
+    }
+  } catch (error) {
+    console.warn('Error adding footers:', error);
   }
 };
 
 const addWatermark = (doc: jsPDF, pageWidth: number, pageHeight: number) => {
-  doc.setFontSize(THEME.FONT.SIZE_WATERMARK);
-  doc.setTextColor(...THEME.COLORS.WATERMARK);
-  doc.text("CONFIDENTIAL", pageWidth / 2, pageHeight / 2, {
-    align: "center",
-    angle: 45,
-  });
+  try {
+    doc.setFontSize(THEME.FONT.SIZE_WATERMARK);
+    doc.setTextColor(...THEME.COLORS.WATERMARK);
+    doc.text("CONFIDENTIAL", pageWidth / 2, pageHeight / 2, {
+      align: "center",
+      angle: 45,
+    });
+  } catch (error) {
+    console.warn('Error adding watermark:', error);
+  }
+};
+
+const validateFormData = (formData: TaxFilingData): boolean => {
+  if (!formData) {
+    console.error('Form data is required');
+    return false;
+  }
+  
+  if (!formData.name || !formData.cnic) {
+    console.error('Name and CNIC are required fields');
+    return false;
+  }
+  
+  return true;
 };
 
 export const generateTaxPDF = (formData: TaxFilingData, generatedDate = new Date()): void => {
   try {
+    if (!validateFormData(formData)) {
+      throw new Error('Invalid form data provided');
+    }
+
     const doc = new jsPDF();
     doc.setFont(THEME.FONT.PRIMARY, 'normal');
 
@@ -93,53 +131,71 @@ export const generateTaxPDF = (formData: TaxFilingData, generatedDate = new Date
     const pageHeight = doc.internal.pageSize.getHeight();
     const initialYPos = 30;
 
+    // Set background
     doc.setFillColor(...THEME.COLORS.BACKGROUND);
     doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
     let pdfContext: PdfContext = { doc, pageWidth, pageHeight, yPos: initialYPos };
 
-    // Header
-    doc.setFillColor(...THEME.COLORS.PRIMARY);
-    doc.rect(0, 0, pageWidth, 15, 'F');
-    doc.setFontSize(THEME.FONT.SIZE_HEADER);
-    doc.setTextColor(...THEME.COLORS.TEXT_WHITE);
-    doc.text("Tax Return Summary", pageWidth / 2, 10, { align: "center" });
+    // Add main header
+    try {
+      doc.setFillColor(...THEME.COLORS.PRIMARY);
+      doc.rect(0, 0, pageWidth, 15, 'F');
+      doc.setFontSize(THEME.FONT.SIZE_HEADER);
+      doc.setTextColor(...THEME.COLORS.TEXT_WHITE);
+      doc.text("Tax Return Summary", pageWidth / 2, 10, { align: "center" });
 
-    // Subtitle
-    doc.setFillColor(...THEME.COLORS.HEADER_BG);
-    doc.rect(0, 15, pageWidth, 18, 'F');
-    doc.setFontSize(THEME.FONT.SIZE_SUBTITLE);
-    doc.setTextColor(...THEME.COLORS.TEXT_BLUE);
-    doc.text(`Generated on: ${formatDate(generatedDate)}`, pageWidth / 2, 26, { align: "center" });
+      // Add subtitle
+      doc.setFillColor(...THEME.COLORS.HEADER_BG);
+      doc.rect(0, 15, pageWidth, 18, 'F');
+      doc.setFontSize(THEME.FONT.SIZE_SUBTITLE);
+      doc.setTextColor(...THEME.COLORS.TEXT_BLUE);
+      doc.text(`Generated on: ${formatDate(generatedDate)}`, pageWidth / 2, 26, { align: "center" });
 
-    // Reset text color for content
-    doc.setTextColor(...THEME.COLORS.TEXT_BLACK);
+      // Reset text color for content
+      doc.setTextColor(...THEME.COLORS.TEXT_BLACK);
+    } catch (error) {
+      console.warn('Error adding header:', error);
+    }
 
+    // Define sections with error handling for each
     const sections = [
-      addPersonalSection,
-      addResidencySection,
-      addIncomeSourcesSection,
-      addIncomeAmountsSection,
-      addExpensesSection,
-      addDeductionsSection,
-      addAssetsSection,
-      addWithholdingSection,
-      addTaxCreditsSection,
-      addTaxCalculationSection
+      { func: addPersonalSection, name: 'Personal Information' },
+      { func: addResidencySection, name: 'Residency Status' },
+      { func: addIncomeSourcesSection, name: 'Income Sources' },
+      { func: addIncomeAmountsSection, name: 'Income Amounts' },
+      { func: addExpensesSection, name: 'Expenses' },
+      { func: addDeductionsSection, name: 'Deductions' },
+      { func: addAssetsSection, name: 'Assets' },
+      { func: addWithholdingSection, name: 'Withholding' },
+      { func: addTaxCreditsSection, name: 'Tax Credits' },
+      { func: addTaxCalculationSection, name: 'Tax Calculation' }
     ];
 
+    // Process each section with individual error handling
     for (const section of sections) {
       try {
         pdfContext = checkForNewPage(pdfContext);
-        pdfContext = section(pdfContext, formData);
-      } catch (e) {
-        console.warn(`Section failed to render: ${section.name}`, e);
+        pdfContext = section.func(pdfContext, formData);
+      } catch (error) {
+        console.warn(`Section "${section.name}" failed to render:`, error);
+        // Add error message to PDF instead of failing completely
+        pdfContext.doc.setTextColor(255, 0, 0);
+        pdfContext.doc.text(`Error rendering ${section.name} section`, 20, pdfContext.yPos);
+        pdfContext = { ...pdfContext, yPos: pdfContext.yPos + 10 };
+        pdfContext.doc.setTextColor(...THEME.COLORS.TEXT_BLACK);
       }
     }
 
-    pdfContext = checkForNewPage(pdfContext);
-    pdfContext = addDisclaimerSection(pdfContext);
+    // Add disclaimer section
+    try {
+      pdfContext = checkForNewPage(pdfContext);
+      pdfContext = addDisclaimerSection(pdfContext);
+    } catch (error) {
+      console.warn('Error adding disclaimer:', error);
+    }
 
+    // Add watermarks and footers
     const totalPages = doc.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);
@@ -147,12 +203,24 @@ export const generateTaxPDF = (formData: TaxFilingData, generatedDate = new Date
     }
 
     addFooterToAllPages(doc, totalPages, pageWidth, pageHeight);
-    doc.save(`tax-return-summary-${generatedDate.getFullYear()}.pdf`);
+
+    // Generate filename with current year
+    const filename = `tax-return-summary-${generatedDate.getFullYear()}.pdf`;
+    doc.save(filename);
+
+    console.log(`PDF generated successfully: ${filename}`);
 
   } catch (error) {
     console.error('PDF generation failed:', error);
-    throw new Error('Failed to generate tax PDF');
+    
+    // Show user-friendly error
+    if (typeof window !== 'undefined' && window.alert) {
+      window.alert('Failed to generate PDF. Please check your form data and try again.');
+    }
+    
+    throw new Error(`Failed to generate tax PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 
+// Re-export types for convenience
 export type { TaxFilingData } from './pdf/pdfTypes';
