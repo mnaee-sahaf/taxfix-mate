@@ -8,10 +8,10 @@ export interface PdfHelperContext {
   yPos: number;
   pageHeight: number;
   margins: {
-    left: number;
-    right: number;
-    top: number;
-    bottom: number;
+    LEFT: number;
+    RIGHT: number;
+    TOP: number;
+    BOTTOM: number;
   };
 }
 
@@ -27,25 +27,25 @@ export const addSectionHeader = (
     // Ensure we have space for the header
     if (yPos > context.pageHeight - 60) {
       doc.addPage();
-      yPos = margins.top;
+      yPos = margins.TOP;
     }
     
     // Add section header background
-    const headerWidth = pageWidth - (margins.left + margins.right);
+    const headerWidth = pageWidth - (margins.LEFT + margins.RIGHT);
     doc.setFillColor(240, 247, 255);
-    doc.rect(margins.left, yPos - 4, headerWidth, 14, 'F');
+    doc.rect(margins.LEFT, yPos - 4, headerWidth, 14, 'F');
     
     // Add title text
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(0, 82, 184);
-    doc.text(title, margins.left + 5, yPos + 6);
+    doc.text(title, margins.LEFT + 5, yPos + 6);
     
     // Add underline
     yPos += 10;
     doc.setDrawColor(0, 102, 204);
     doc.setLineWidth(0.3);
-    doc.line(margins.left, yPos, pageWidth - margins.right, yPos);
+    doc.line(margins.LEFT, yPos, pageWidth - margins.RIGHT, yPos);
     
     // Reset formatting
     yPos += 8;
@@ -72,9 +72,9 @@ export const addField = (
   
   try {
     // Check if we need a new page
-    if (yPos > pageHeight - margins.bottom - 15) {
+    if (yPos > pageHeight - margins.BOTTOM - 15) {
       doc.addPage();
-      yPos = margins.top;
+      yPos = margins.TOP;
     }
     
     const displayValue = typeof value === 'boolean' 
@@ -83,12 +83,12 @@ export const addField = (
     
     // Calculate text width to prevent overflow
     const labelWidth = 55;
-    const valueStartX = margins.left + labelWidth + 5;
-    const maxValueWidth = context.pageWidth - valueStartX - margins.right;
+    const valueStartX = margins.LEFT + labelWidth + 5;
+    const maxValueWidth = context.pageWidth - valueStartX - margins.RIGHT;
     
     // Add label
     doc.setFont('helvetica', 'bold');
-    doc.text(label + ':', margins.left, yPos);
+    doc.text(label + ':', margins.LEFT, yPos);
     
     // Add value with text wrapping if necessary
     doc.setFont('helvetica', 'normal');
@@ -118,9 +118,9 @@ export const addFieldWithCode = (
   
   try {
     // Check if we need a new page
-    if (yPos > pageHeight - margins.bottom - 15) {
+    if (yPos > pageHeight - margins.BOTTOM - 15) {
       doc.addPage();
-      yPos = margins.top;
+      yPos = margins.TOP;
     }
     
     const displayValue = typeof value === 'boolean' 
@@ -128,22 +128,22 @@ export const addFieldWithCode = (
       : (value?.toString() || 'N/A');
     
     // Draw background row
-    const rowWidth = context.pageWidth - (margins.left + margins.right);
+    const rowWidth = context.pageWidth - (margins.LEFT + margins.RIGHT);
     doc.setFillColor(250, 250, 250);
-    doc.rect(margins.left, yPos - 3, rowWidth, 10, 'F');
+    doc.rect(margins.LEFT, yPos - 3, rowWidth, 10, 'F');
     
     // Calculate column widths
     const labelWidth = 50;
     const valueWidth = 60;
-    const codeStartX = margins.left + labelWidth + valueWidth + 10;
+    const codeStartX = margins.LEFT + labelWidth + valueWidth + 10;
     
     // Add label
     doc.setFont('helvetica', 'bold');
-    doc.text(label + ':', margins.left + 2, yPos + 2);
+    doc.text(label + ':', margins.LEFT + 2, yPos + 2);
     
     // Add value
     doc.setFont('helvetica', 'normal');
-    doc.text(displayValue, margins.left + labelWidth + 5, yPos + 2);
+    doc.text(displayValue, margins.LEFT + labelWidth + 5, yPos + 2);
     
     // Add code in brackets
     if (code) {
@@ -171,9 +171,9 @@ export const checkForNewPage = (
 ): PdfHelperContext => {
   const { doc, pageHeight, margins, yPos } = context;
   
-  if (yPos > pageHeight - margins.bottom - requiredSpace) {
+  if (yPos > pageHeight - margins.BOTTOM - requiredSpace) {
     doc.addPage();
-    return { ...context, yPos: margins.top };
+    return { ...context, yPos: margins.TOP };
   }
   
   return context;
@@ -190,11 +190,11 @@ export const addBoldText = (
     // Add highlighted background
     const textWidth = doc.getTextWidth(text);
     doc.setFillColor(240, 247, 255);
-    doc.rect(margins.left - 1, currentYPos - 3, textWidth + 2, 8, 'F');
+    doc.rect(margins.LEFT - 1, currentYPos - 3, textWidth + 2, 8, 'F');
     
     // Add bold text
     doc.setFont('helvetica', 'bold');
-    doc.text(text, margins.left, currentYPos);
+    doc.text(text, margins.LEFT, currentYPos);
     doc.setFont('helvetica', 'normal');
   } catch (error) {
     console.warn('Error adding bold text:', error, { text });

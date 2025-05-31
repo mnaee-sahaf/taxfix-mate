@@ -7,7 +7,7 @@ import { calculateTotalDeductions } from '../calculationUtils';
 export const addExpensesSection = (context: PdfHelperContext, formData: TaxFilingData): PdfHelperContext => {
   // Ensure we have enough space for this section
   let updatedContext = checkForNewPage(context, 60);
-  updatedContext = addSectionHeader(context, "5. Expenses");
+  updatedContext = addSectionHeader(updatedContext, "5. Expenses");
   const { doc } = updatedContext;
   
   // Expense codes mapping
@@ -27,7 +27,7 @@ export const addExpensesSection = (context: PdfHelperContext, formData: TaxFilin
       .filter(([_, value]) => value)
       .map(([key, _]) => ({ name: key, displayName: formatFieldName(key) }));
       
-    doc.text("Selected Expenses:", 20, updatedContext.yPos);
+    doc.text("Selected Expenses:", updatedContext.margins.LEFT, updatedContext.yPos);
     updatedContext = { ...updatedContext, yPos: updatedContext.yPos + 6 };
     
     activeExpenses.forEach(expense => {
@@ -35,15 +35,15 @@ export const addExpensesSection = (context: PdfHelperContext, formData: TaxFilin
       const code = expenseCodes[expense.name.toLowerCase() as keyof typeof expenseCodes] || '';
       
       if (code) {
-        updatedContext = addFieldWithCode(updatedContext, expense.displayName, `PKR ${formatNumber(amount)}`, code, 30);
+        updatedContext = addFieldWithCode(updatedContext, expense.displayName, `PKR ${formatNumber(amount)}`, code);
       } else {
-        doc.text(`• ${expense.displayName}: PKR ${formatNumber(amount)}`, 30, updatedContext.yPos);
+        doc.text(`• ${expense.displayName}: PKR ${formatNumber(amount)}`, updatedContext.margins.LEFT + 10, updatedContext.yPos);
         updatedContext = { ...updatedContext, yPos: updatedContext.yPos + 5 };
       }
     });
     updatedContext = { ...updatedContext, yPos: updatedContext.yPos + 5 };
   } else {
-    doc.text("No expenses selected", 20, updatedContext.yPos);
+    doc.text("No expenses selected", updatedContext.margins.LEFT, updatedContext.yPos);
     updatedContext = { ...updatedContext, yPos: updatedContext.yPos + 10 };
   }
   

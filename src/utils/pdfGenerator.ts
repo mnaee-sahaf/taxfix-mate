@@ -197,6 +197,34 @@ export const generateTaxPDF = (formData: TaxFilingData, generatedDate = new Date
       margins: PAGE_CONFIG.MARGINS
     };
 
+    // Helper function to convert PdfContext to PdfHelperContext
+    const convertToHelperContext = (context: PdfContext): PdfHelperContext => ({
+      doc: context.doc,
+      pageWidth: context.pageWidth,
+      pageHeight: context.pageHeight,
+      yPos: context.yPos,
+      margins: {
+        LEFT: context.margins.LEFT,
+        RIGHT: context.margins.RIGHT,
+        TOP: context.margins.TOP,
+        BOTTOM: context.margins.BOTTOM
+      }
+    });
+
+    // Helper function to convert PdfHelperContext back to PdfContext
+    const convertFromHelperContext = (context: PdfHelperContext): PdfContext => ({
+      doc: context.doc,
+      pageWidth: context.pageWidth,
+      pageHeight: context.pageHeight,
+      yPos: context.yPos,
+      margins: {
+        LEFT: context.margins.LEFT,
+        RIGHT: context.margins.RIGHT,
+        TOP: context.margins.TOP,
+        BOTTOM: context.margins.BOTTOM
+      }
+    });
+
     // Define sections with error handling
     const sections = [
       { func: addPersonalSection, name: 'Personal Information' },
@@ -221,7 +249,9 @@ export const generateTaxPDF = (formData: TaxFilingData, generatedDate = new Date
           pdfContext.yPos = 25;
         }
         
-        pdfContext = section.func(pdfContext, formData);
+        const helperContext = convertToHelperContext(pdfContext);
+        const updatedHelperContext = section.func(helperContext, formData);
+        pdfContext = convertFromHelperContext(updatedHelperContext);
       } catch (error) {
         console.warn(`Section "${section.name}" failed to render:`, error);
         // Add error indicator in PDF
@@ -239,7 +269,9 @@ export const generateTaxPDF = (formData: TaxFilingData, generatedDate = new Date
         addMiniHeader(doc, pageWidth);
         pdfContext.yPos = 25;
       }
-      pdfContext = addDisclaimerSection(pdfContext);
+      const helperContext = convertToHelperContext(pdfContext);
+      const updatedHelperContext = addDisclaimerSection(helperContext);
+      pdfContext = convertFromHelperContext(updatedHelperContext);
     } catch (error) {
       console.warn('Error adding disclaimer:', error);
     }
