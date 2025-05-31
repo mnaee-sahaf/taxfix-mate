@@ -23,14 +23,16 @@ export const calculateTotalIncome = (data: TaxFilingData): number => {
       foreign: false
     };
     
-    return (
-      (incomeStreams.salary ? (incomeAmounts.salaryIncome || data.salaryIncome || 0) : 0) +
-      (incomeStreams.business ? (incomeAmounts.businessIncome || data.businessIncome || 0) : 0) +
-      (incomeStreams.rental ? (incomeAmounts.rentalIncome || data.rentalIncome || 0) : 0) +
-      (incomeStreams.agricultural ? (incomeAmounts.agriculturalIncome || data.agriculturalIncome || 0) : 0) +
-      (incomeStreams.capitalGains ? (incomeAmounts.capitalGainsIncome || data.capitalGainsIncome || 0) : 0) +
-      (incomeStreams.foreign ? (incomeAmounts.foreignIncome || data.foreignIncome || 0) : 0)
-    );
+    const salaryIncome = incomeStreams.salary ? (incomeAmounts.salaryIncome || data.salaryIncome || 0) : 0;
+    const businessIncome = incomeStreams.business ? (incomeAmounts.businessIncome || data.businessIncome || 0) : 0;
+    const rentalIncome = incomeStreams.rental ? (incomeAmounts.rentalIncome || data.rentalIncome || 0) : 0;
+    const agriculturalIncome = incomeStreams.agricultural ? (incomeAmounts.agriculturalIncome || data.agriculturalIncome || 0) : 0;
+    const capitalGainsIncome = incomeStreams.capitalGains ? (incomeAmounts.capitalGainsIncome || data.capitalGainsIncome || 0) : 0;
+    const foreignIncome = incomeStreams.foreign ? (incomeAmounts.foreignIncome || data.foreignIncome || 0) : 0;
+    
+    const total = salaryIncome + businessIncome + rentalIncome + agriculturalIncome + capitalGainsIncome + foreignIncome;
+    
+    return Math.max(0, total); // Ensure non-negative
   } catch (error) {
     console.warn('Error calculating total income:', error);
     return 0;
@@ -41,14 +43,16 @@ export const calculateTotalDeductions = (data: TaxFilingData): number => {
   try {
     if (!data || !data.eligibleDeductions) return 0;
     
-    return (
-      (data.eligibleDeductions.lifeInsurance ? (data.lifeInsuranceAmount || 0) : 0) +
-      (data.eligibleDeductions.pension ? (data.pensionAmount || 0) : 0) +
-      (data.eligibleDeductions.donations ? (data.donationAmount || 0) : 0) +
-      (data.eligibleDeductions.education ? (data.educationAmount || 0) : 0) +
-      (data.eligibleDeductions.royalty ? (data.royaltyAmount || 0) : 0) +
-      (data.eligibleDeductions.zakat ? (data.zakatAmount || 0) : 0)
-    );
+    const lifeInsurance = data.eligibleDeductions.lifeInsurance ? (data.lifeInsuranceAmount || 0) : 0;
+    const pension = data.eligibleDeductions.pension ? (data.pensionAmount || 0) : 0;
+    const donations = data.eligibleDeductions.donations ? (data.donationAmount || 0) : 0;
+    const education = data.eligibleDeductions.education ? (data.educationAmount || 0) : 0;
+    const royalty = data.eligibleDeductions.royalty ? (data.royaltyAmount || 0) : 0;
+    const zakat = data.eligibleDeductions.zakat ? (data.zakatAmount || 0) : 0;
+    
+    const total = lifeInsurance + pension + donations + education + royalty + zakat;
+    
+    return Math.max(0, total); // Ensure non-negative
   } catch (error) {
     console.warn('Error calculating total deductions:', error);
     return 0;
@@ -85,7 +89,7 @@ export const calculateTaxLiability = (taxableIncome: number, data: TaxFilingData
       taxLiability = taxLiability * 0.85; // 15% reduced rate
     }
     
-    return Math.max(0, taxLiability);
+    return Math.max(0, Math.round(taxLiability)); // Round to nearest rupee and ensure non-negative
   } catch (error) {
     console.warn('Error calculating tax liability:', error);
     return 0;
@@ -96,9 +100,12 @@ export const calculateTotalWithholding = (data: TaxFilingData): number => {
   try {
     if (!data?.withholdingAmounts) return 0;
     
-    return Object.values(data.withholdingAmounts).reduce((sum, amount) => {
-      return sum + (typeof amount === 'number' ? amount : 0);
+    const total = Object.values(data.withholdingAmounts).reduce((sum, amount) => {
+      const numericAmount = typeof amount === 'number' ? amount : 0;
+      return sum + Math.max(0, numericAmount); // Ensure each amount is non-negative
     }, 0);
+    
+    return Math.max(0, total); // Ensure total is non-negative
   } catch (error) {
     console.warn('Error calculating total withholding:', error);
     return 0;
