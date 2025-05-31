@@ -5,8 +5,23 @@ export const calculateTotalIncome = (data: TaxFilingData): number => {
   try {
     if (!data) return 0;
     
-    const incomeAmounts = data.incomeAmounts || {};
-    const incomeStreams = data.incomeStreams || {};
+    const incomeAmounts = data.incomeAmounts || {
+      salaryIncome: 0,
+      businessIncome: 0,
+      rentalIncome: 0,
+      agriculturalIncome: 0,
+      capitalGainsIncome: 0,
+      foreignIncome: 0
+    };
+    
+    const incomeStreams = data.incomeStreams || {
+      salary: false,
+      business: false,
+      rental: false,
+      agricultural: false,
+      capitalGains: false,
+      foreign: false
+    };
     
     return (
       (incomeStreams.salary ? (incomeAmounts.salaryIncome || data.salaryIncome || 0) : 0) +
