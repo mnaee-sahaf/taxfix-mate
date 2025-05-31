@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, FileText, RefreshCcw } from 'lucide-react';
+import { Download, FileText, RefreshCcw, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { generateTaxPDF } from '@/utils/pdfGenerator';
 import { TaxFormData } from '@/components/tax-filing/types';
@@ -29,6 +29,10 @@ const DashboardHeader = ({ taxFilings, refreshData }: DashboardHeaderProps) => {
     // Clear any existing tax filing data in localStorage
     localStorage.removeItem('taxFilingProgress');
     navigate('/filing');
+  };
+
+  const handleBookExpert = () => {
+    navigate('/book-expert');
   };
 
   const handleDownloadPDF = () => {
@@ -68,6 +72,14 @@ const DashboardHeader = ({ taxFilings, refreshData }: DashboardHeaderProps) => {
           title="Refresh dashboard data"
         >
           <RefreshCcw className="h-4 w-4" />
+        </Button>
+        <Button 
+          variant="secondary" 
+          onClick={handleBookExpert} 
+          className="flex items-center gap-2"
+        >
+          <User className="h-4 w-4" />
+          Book an Expert
         </Button>
         {taxFilings.length > 0 && taxFilings.some(filing => filing.status === 'submitted') && (
           <Button variant="outline" onClick={handleDownloadPDF} className="flex items-center gap-2">

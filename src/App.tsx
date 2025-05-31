@@ -9,6 +9,7 @@ import Dashboard from '@/pages/Dashboard';
 import Filing from '@/pages/Filing';
 import Calculator from '@/pages/Calculator';
 import Profile from '@/pages/Profile';
+import BookExpert from '@/pages/BookExpert';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import AuthCallback from '@/components/auth/AuthCallback';
 import { Toaster } from '@/components/ui/toaster';
@@ -26,6 +27,7 @@ function App() {
             <Route path="/auth" element={<Auth />} />
             <Route path="/taxfilingtypes" element={<TaxFilingTypePage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/book-expert" element={<BookExpert />} />
             <Route
               path="/dashboard"
               element={
