@@ -1,6 +1,7 @@
 
 import jsPDF from 'jspdf';
 import { TaxFilingData } from './pdf/pdfTypes';
+import { PdfHelperContext } from './pdf/pdfHelpers';
 import {
   addPersonalSection,
   addResidencySection,
