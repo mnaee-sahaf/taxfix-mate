@@ -7,67 +7,97 @@ export interface PdfHelperContext {
   pageWidth: number;
   yPos: number;
   pageHeight: number;
+  margins: {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+  };
 }
 
-// Helper to add section header
+// Helper to add section header with better spacing
 export const addSectionHeader = (
   context: PdfHelperContext, 
   title: string
 ): PdfHelperContext => {
-  const { doc, pageWidth, yPos: currentYPos } = context;
+  const { doc, pageWidth, yPos: currentYPos, margins } = context;
   let yPos = currentYPos;
   
   try {
-    // Add a gradient background for the section header
-    const oldFillColor = doc.getFillColor();
-    doc.setFillColor(240, 247, 255);
-    doc.rect(15, yPos - 6, pageWidth - 30, 16, 'F');
-    doc.setFillColor(oldFillColor);
+    // Ensure we have space for the header
+    if (yPos > context.pageHeight - 60) {
+      doc.addPage();
+      yPos = margins.top;
+    }
     
-    doc.setFontSize(16);
+    // Add section header background
+    const headerWidth = pageWidth - (margins.left + margins.right);
+    doc.setFillColor(240, 247, 255);
+    doc.rect(margins.left, yPos - 4, headerWidth, 14, 'F');
+    
+    // Add title text
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
     doc.setTextColor(0, 82, 184);
-    doc.text(title, 20, yPos);
-    yPos += 8;
+    doc.text(title, margins.left + 5, yPos + 6);
+    
+    // Add underline
+    yPos += 10;
     doc.setDrawColor(0, 102, 204);
-    doc.setLineWidth(0.5);
-    doc.line(20, yPos, pageWidth - 20, yPos);
+    doc.setLineWidth(0.3);
+    doc.line(margins.left, yPos, pageWidth - margins.right, yPos);
+    
+    // Reset formatting
     yPos += 8;
     doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
     doc.setTextColor(0, 0, 0);
     doc.setLineWidth(0.1);
   } catch (error) {
     console.warn('Error adding section header:', error);
-    yPos += 16; // Fallback spacing
+    yPos += 18; // Fallback spacing
   }
   
   return { ...context, yPos };
 };
 
-// Helper to add field
+// Helper to add field with proper text wrapping
 export const addField = (
   context: PdfHelperContext, 
   label: string, 
   value: string | number | boolean
 ): PdfHelperContext => {
-  const { doc, pageHeight, yPos: currentYPos } = context;
+  const { doc, pageHeight, margins, yPos: currentYPos } = context;
   let yPos = currentYPos;
   
   try {
+    // Check if we need a new page
+    if (yPos > pageHeight - margins.bottom - 15) {
+      doc.addPage();
+      yPos = margins.top;
+    }
+    
     const displayValue = typeof value === 'boolean' 
       ? (value ? 'Yes' : 'No') 
       : (value?.toString() || 'N/A');
     
-    doc.setFont(undefined, 'bold');
-    doc.text(`${label}:`, 20, yPos);
-    doc.setFont(undefined, 'normal');
-    doc.text(displayValue, 80, yPos);
-    yPos += 6;
+    // Calculate text width to prevent overflow
+    const labelWidth = 55;
+    const valueStartX = margins.left + labelWidth + 5;
+    const maxValueWidth = context.pageWidth - valueStartX - margins.right;
     
-    // Add a new page if we're near the bottom
-    if (yPos > pageHeight - 20) {
-      doc.addPage();
-      yPos = 20;
-    }
+    // Add label
+    doc.setFont('helvetica', 'bold');
+    doc.text(label + ':', margins.left, yPos);
+    
+    // Add value with text wrapping if necessary
+    doc.setFont('helvetica', 'normal');
+    const lines = doc.splitTextToSize(displayValue, maxValueWidth);
+    doc.text(lines, valueStartX, yPos);
+    
+    // Adjust yPos based on number of lines
+    yPos += Math.max(6, lines.length * 5);
+    
   } catch (error) {
     console.warn('Error adding field:', error, { label, value });
     yPos += 6; // Fallback spacing
@@ -76,94 +106,99 @@ export const addField = (
   return { ...context, yPos };
 };
 
-// Helper to add field with code
+// Helper to add field with code reference
 export const addFieldWithCode = (
   context: PdfHelperContext, 
   label: string, 
   value: string | number | boolean,
-  code: string,
-  indent: number = 20
+  code: string
 ): PdfHelperContext => {
-  const { doc, pageHeight, yPos: currentYPos } = context;
+  const { doc, pageHeight, margins, yPos: currentYPos } = context;
   let yPos = currentYPos;
   
   try {
+    // Check if we need a new page
+    if (yPos > pageHeight - margins.bottom - 15) {
+      doc.addPage();
+      yPos = margins.top;
+    }
+    
     const displayValue = typeof value === 'boolean' 
       ? (value ? 'Yes' : 'No') 
       : (value?.toString() || 'N/A');
     
-    // Draw a light background for the row
-    const oldFillColor = doc.getFillColor();
+    // Draw background row
+    const rowWidth = context.pageWidth - (margins.left + margins.right);
     doc.setFillColor(250, 250, 250);
-    doc.rect(indent - 3, yPos - 4, context.pageWidth - (indent * 2) + 6, 8, 'F');
-    doc.setFillColor(oldFillColor);
+    doc.rect(margins.left, yPos - 3, rowWidth, 10, 'F');
     
-    doc.setFont(undefined, 'bold');
-    doc.text(`${label}:`, indent, yPos);
-    doc.setFont(undefined, 'normal');
-    doc.text(displayValue, indent + 60, yPos);
+    // Calculate column widths
+    const labelWidth = 50;
+    const valueWidth = 60;
+    const codeStartX = margins.left + labelWidth + valueWidth + 10;
     
-    // Add code in brackets with a different color
+    // Add label
+    doc.setFont('helvetica', 'bold');
+    doc.text(label + ':', margins.left + 2, yPos + 2);
+    
+    // Add value
+    doc.setFont('helvetica', 'normal');
+    doc.text(displayValue, margins.left + labelWidth + 5, yPos + 2);
+    
+    // Add code in brackets
     if (code) {
       doc.setTextColor(100, 100, 100);
-      doc.text(`[Code: ${code}]`, indent + 150, yPos);
+      doc.setFontSize(9);
+      doc.text(`[${code}]`, codeStartX, yPos + 2);
       doc.setTextColor(0, 0, 0);
+      doc.setFontSize(10);
     }
     
-    yPos += 6;
+    yPos += 8;
     
-    // Add a new page if we're near the bottom
-    if (yPos > pageHeight - 20) {
-      doc.addPage();
-      yPos = 20;
-    }
   } catch (error) {
     console.warn('Error adding field with code:', error, { label, value, code });
-    yPos += 6; // Fallback spacing
+    yPos += 8; // Fallback spacing
   }
   
   return { ...context, yPos };
 };
 
-// Helper to check if we need a new page and add one if needed
+// Helper to check for new page with proper margins
 export const checkForNewPage = (
   context: PdfHelperContext, 
-  requiredSpace: number = 60
+  requiredSpace: number = 40
 ): PdfHelperContext => {
-  const { doc, pageHeight, yPos } = context;
+  const { doc, pageHeight, margins, yPos } = context;
   
-  if (yPos > pageHeight - requiredSpace) {
+  if (yPos > pageHeight - margins.bottom - requiredSpace) {
     doc.addPage();
-    return { ...context, yPos: 20 };
+    return { ...context, yPos: margins.top };
   }
   
   return context;
 };
 
-// Helper to add bold text
+// Helper to add emphasized text
 export const addBoldText = (
   context: PdfHelperContext, 
-  text: string, 
-  indent: number = 20
+  text: string
 ): PdfHelperContext => {
-  const { doc, yPos: currentYPos } = context;
+  const { doc, margins, yPos: currentYPos } = context;
   
   try {
-    // Add a highlight behind the text
-    const oldFillColor = doc.getFillColor();
-    doc.setFillColor(240, 247, 255);
-    
-    // Get the width of the text
+    // Add highlighted background
     const textWidth = doc.getTextWidth(text);
-    doc.rect(indent - 2, currentYPos - 4, textWidth + 4, 8, 'F');
-    doc.setFillColor(oldFillColor);
+    doc.setFillColor(240, 247, 255);
+    doc.rect(margins.left - 1, currentYPos - 3, textWidth + 2, 8, 'F');
     
-    doc.setFont(undefined, 'bold');
-    doc.text(text, indent, currentYPos);
-    doc.setFont(undefined, 'normal');
+    // Add bold text
+    doc.setFont('helvetica', 'bold');
+    doc.text(text, margins.left, currentYPos);
+    doc.setFont('helvetica', 'normal');
   } catch (error) {
     console.warn('Error adding bold text:', error, { text });
   }
   
-  return { ...context, yPos: currentYPos + 6 };
+  return { ...context, yPos: currentYPos + 8 };
 };
