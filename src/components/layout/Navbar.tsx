@@ -84,11 +84,11 @@ const Navbar = () => {
             <>
               <Button 
                 variant="secondary" 
-                className="rounded-full text-sm flex items-center gap-2" 
+                className="rounded-full text-sm flex items-center gap-2 bg-green-200 hover:bg-green-100 text-green-800" 
                 onClick={handleBookExpert}
               >
                 <User className="h-4 w-4" />
-                Book Expert
+                Book An Expert
               </Button>
               <Button variant="outline" className="rounded-full text-sm" onClick={handleLogin}>
                 Login

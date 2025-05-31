@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { CheckCircle, User, Phone, Mail, FileText } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface ExpertBookingForm {
   name: string;
@@ -20,18 +22,40 @@ interface ExpertBookingForm {
 const BookExpert = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
   
   const { register, handleSubmit, formState: { errors }, watch } = useForm<ExpertBookingForm>();
 
   const onSubmit = async (data: ExpertBookingForm) => {
+    if (!user) {
+      toast.error('Authentication Required', {
+        description: 'Please sign in to book an expert.',
+      });
+      navigate('/auth');
+      return;
+    }
+
     setIsLoading(true);
     
     try {
-      // Simulate API call for booking
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Here you would typically send the data to your backend
-      console.log('Expert booking data:', data);
+      // Save booking to Supabase
+      const { data: bookingData, error } = await supabase
+        .from('expert_bookings')
+        .insert([
+          {
+            user_id: user.id,
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            notes: data.notes,
+            status: 'pending'
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
       
       // Show success message
       toast.success('Booking Confirmed!', {
@@ -40,6 +64,7 @@ const BookExpert = () => {
       
       setIsSubmitted(true);
     } catch (error) {
+      console.error('Error saving booking:', error);
       toast.error('Booking Failed', {
         description: 'Please try again or contact support.'
       });
@@ -50,7 +75,7 @@ const BookExpert = () => {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4 mt-10">
         <Card className="w-full max-w-md">
           <CardContent className="text-center p-8">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
@@ -72,7 +97,7 @@ const BookExpert = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto mt-10">
         {/* Header Section */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -148,7 +173,7 @@ const BookExpert = () => {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
                   <Label htmlFor="name" className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
+                    <User className="h-4 w-4 mb-4" />
                     Full Name
                   </Label>
                   <Input
@@ -163,7 +188,7 @@ const BookExpert = () => {
 
                 <div>
                   <Label htmlFor="email" className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
+                    <Mail className="h-4 w-4 mb-4" />
                     Email Address
                   </Label>
                   <Input
@@ -185,7 +210,7 @@ const BookExpert = () => {
 
                 <div>
                   <Label htmlFor="phone" className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
+                    <Phone className="h-4 w-4 mb-4" />
                     Phone Number
                   </Label>
                   <Input
@@ -198,7 +223,7 @@ const BookExpert = () => {
                   )}
                 </div>
 
-                <div>
+                {/* <div>
                   <Label htmlFor="address">Address</Label>
                   <Textarea
                     id="address"
@@ -209,7 +234,7 @@ const BookExpert = () => {
                   {errors.address && (
                     <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>
                   )}
-                </div>
+                </div> */}
 
                 <div>
                   <Label htmlFor="notes">Additional Notes (Optional)</Label>
