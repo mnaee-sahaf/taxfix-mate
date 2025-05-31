@@ -1,14 +1,17 @@
+
 import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, User } from 'lucide-react';
 import { VideoTutorial } from './videoTutorial';
 import TaxFilingFree from '@/pages/TaxFilingFree';
 import ThreeStepProcess from './ThreeStepProcess';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Hero = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const heroElement = heroRef.current;
@@ -40,6 +43,10 @@ const Hero = () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, []);
+
+  const handleBookExpert = () => {
+    navigate('/book-expert');
+  };
   
   return (
     <div 
@@ -58,6 +65,19 @@ const Hero = () => {
             We radically simplify the filing experience for you and your business by giving you the information you would pay a consultant to get 🇵🇰
           </p>
 
+          {!isAuthenticated && (
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8">
+              <Button 
+                onClick={handleBookExpert}
+                variant="secondary" 
+                size="lg"
+                className="rounded-full px-6 py-4 text-base font-medium flex items-center gap-2"
+              >
+                <User className="h-4 w-4" />
+                Book an Expert
+              </Button>
+            </div>
+          )}
 
           <VideoTutorial />
 
