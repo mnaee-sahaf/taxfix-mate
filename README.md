@@ -1,6 +1,6 @@
 # TaxFix Mate
 
-A modern web application built with React, TypeScript, and Supabase, featuring a comprehensive UI component library and robust development tools.
+In an attempt to create solve the problem of Taxation filing in Pakistan via shady agents, this is a modern web application built with React, TypeScript, and Supabase, featuring a comprehensive UI component library and robust development tools.
 
 ## 🚀 Tech Stack
 
@@ -354,3 +354,8 @@ Currently this app is maintained purely by (myself) Muneeb Sahaf
 ## 📄 License
 
 TBD
+
+
+## The Problem being solved and Research conducted for the applicatio can be found in KNOWLEDGE.md
+
+
