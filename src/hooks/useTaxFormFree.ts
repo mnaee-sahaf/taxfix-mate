@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { FreeTaxFormData } from '@/components/tax-filing/types';
 import { initialFreeTaxFormData } from '@/components/tax-filing/initialFreeFormData';
 import { useToast } from '@/components/ui/use-toast';
+import { FREE_TAX_FILING_STEPS } from '@/components/tax-filing/constants';
 
 interface UseTaxFormFreeProps {
   updateTaxData?: (data: any) => void;
@@ -38,10 +38,35 @@ export const useTaxFormFree = ({ updateTaxData }: UseTaxFormFreeProps) => {
     setSavedProgress(false);
   };
 
+  const validateCurrentStep = () => {
+    const currentStepId = FREE_TAX_FILING_STEPS[currentStep].id;
+    
+    switch (currentStepId) {
+      case 'identification':
+        return !!formData.name && !!formData.cnic && !!formData.taxpayerCategory;
+      case 'income':
+        return Object.values(formData.incomeStreams).some(value => value === true);
+      case 'expenses':
+        return Object.values(formData.expenses).some(value => value === true);
+      case 'review':
+        return true; // Review step is always valid
+      default:
+        return true;
+    }
+  };
+
   const nextStep = () => {
-    if (currentStep < 3) { // Only 4 steps (0-3) in the free version
-      setCurrentStep(current => current + 1);
-      window.scrollTo(0, 0);
+    if (currentStep < FREE_TAX_FILING_STEPS.length - 1) {
+      if (validateCurrentStep()) {
+        setCurrentStep(current => current + 1);
+        window.scrollTo(0, 0);
+      } else {
+        toast({
+          title: "Incomplete Information",
+          description: "Please complete all required fields before proceeding.",
+          variant: "destructive",
+        });
+      }
     }
   };
   

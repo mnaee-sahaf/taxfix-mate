@@ -1,39 +1,68 @@
-
+import React from 'react';
 import { TaxFormData } from '../types';
 import IncomeToggleSection from './income/IncomeToggleSection';
-import IncomeAmountInputs from './income/IncomeAmountInputs';
-import IncomeTabSection from './income/IncomeTabSection';
 import IncomeNotes from './income/IncomeNotes';
-
+import { useFormValidation } from '@/hooks/useFormValidation';    
+import { NumericInput } from '@/components/ui/numeric-input';
+import { useLogger } from '@/hooks/useLogger';
 
 interface IncomeStepProps {
   formData: TaxFormData;
   handleInputChange: (name: string, value: string | number | boolean) => void;
   handleNestedChange: (category: string, field: string, value: boolean | string | number) => void;
+  onValidationChange: (isValid: boolean) => void;
 }
 
-const IncomeStep = ({ formData, handleInputChange, handleNestedChange }: IncomeStepProps) => {
-  
-  // No need to initialize here now that it's in initialFormData
+const IncomeStep: React.FC<IncomeStepProps> = ({
+  formData,
+  handleInputChange,
+  handleNestedChange,
+  onValidationChange
+}) => {
+  const { errors, validateField } = useFormValidation('IncomeStep');                                                      
+  const logger = useLogger('IncomeStep');
 
   const handleIncomeToggle = (field: keyof typeof formData.incomeStreams) => (checked: boolean) => {
     handleNestedChange('incomeStreams', field, checked);
   };
 
-  const handleIncomeAmountChange = (field: keyof typeof formData.incomeAmounts) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleNestedChange('incomeAmounts', field as string, Number(e.target.value));
+  const handleAmountChange = (field: string, value: string) => {
+    handleInputChange(field, value);
+    
+    // Validate the entire form
+    const isValid = Object.values(formData).every(value => 
+      value === '' || !isNaN(parseFloat(value))
+    );
+    
+    onValidationChange(isValid);
   };
   
   return (
-    <div className="spae-y-2 pb-6">
+    <div className="space-y-4">
       <IncomeNotes />
       <IncomeToggleSection 
         formData={formData} 
         handleIncomeToggle={handleIncomeToggle} 
       />
-      <IncomeAmountInputs 
-        formData={formData} 
-        handleIncomeAmountChange={handleIncomeAmountChange}
+      <NumericInput
+        label="Salary Income"
+        value={formData.salaryIncome}
+        onChange={(value) => handleAmountChange('salaryIncome', value)}
+        placeholder="0.00"
+        decimalPlaces={2}
+        min={0}
+        max={999999999999}
+        required
+      />
+      <NumericInput
+        label="Business Income"
+        value={formData.businessIncome}
+        onChange={(value) => handleAmountChange('businessIncome', value)}
+        placeholder="0.00"
+        decimalPlaces={2}
+        min={0}
+        max={999999999999}
+        required
       />
       {/* <IncomeTabSection /> */}
     </div>

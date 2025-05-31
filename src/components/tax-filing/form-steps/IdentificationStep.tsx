@@ -1,4 +1,4 @@
-
+import React from 'react';
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaxFormData } from '../types';
@@ -9,14 +9,48 @@ import { Switch } from '@/components/ui/switch';
 import IdentificationNotes from './identification/IdentificationNotes';
 import { AlertCircle } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useFormValidation } from '@/hooks/useFormValidation';
+import { cnicSchema } from '@/utils/validation';
+import { useLogger } from '@/hooks/useLogger';
 
 interface IdentificationStepProps {
   formData: TaxFormData;
   handleInputChange: (name: string, value: string | number | boolean) => void;
+  onValidationChange: (isValid: boolean) => void;
 }
 
-const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepProps) => {
+const IdentificationStep = ({ formData, handleInputChange, onValidationChange }: IdentificationStepProps) => {
   const [activeTab, setActiveTab] = useState('identification-form');
+  const logger = useLogger('IdentificationStep');
+  const { errors, validateField } = useFormValidation('IdentificationStep');
+
+  const handleCNICChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Only allow numbers
+    if (!/^\d*$/.test(value)) {
+      logger.warn('Non-numeric input attempted in CNIC field', { value }, 'input');
+      return;
+    }
+
+    // Validate CNIC
+    const result = validateField(value, cnicSchema, 'cnic');
+    onValidationChange(result.isValid);
+    
+    handleInputChange('cnic', value);
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Basic name validation (letters, spaces, and common name characters)
+    if (!/^[a-zA-Z\s\-'\.]*$/.test(value)) {
+      logger.warn('Invalid characters in name field', { value }, 'input');
+      return;
+    }
+    
+    handleInputChange('name', value);
+  };
 
   return (
     <div className="space-y-6 mb-6">
@@ -39,10 +73,15 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
           <Input 
             id="name" 
             value={formData.name} 
-            onChange={(e) => handleInputChange('name', e.target.value)}
+            onChange={handleNameChange}
             placeholder="Muhammad Ahmed"
             required
           />
+          {errors.find(e => e.field === 'name') && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.find(e => e.field === 'name')?.message}
+            </p>
+          )}
         </div>
         
         <div className="space-y-2">
@@ -63,11 +102,16 @@ const IdentificationStep = ({ formData, handleInputChange }: IdentificationStepP
           <Input 
             id="cnic" 
             value={formData.cnic} 
-            onChange={(e) => handleInputChange('cnic', e.target.value)}
+            onChange={handleCNICChange}
             placeholder="3420112345671"
             maxLength={13}
             required
           />
+          {errors.find(e => e.field === 'cnic') && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.find(e => e.field === 'cnic')?.message}
+            </p>
+          )}
         </div>
         
         {/* <div className="space-y-2 pt-4">
